@@ -1,11 +1,25 @@
+// ============================================
+// IMPORTS
+// React state manages the interactive pages and forms.
+// Lucide React supplies the icons used in the interface.
+// App.css contains the component-level visual styles.
+// ============================================
 import React, { useState } from 'react';
+
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
   LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature
 } from 'lucide-react';
+
 import './App.css';
 
+// ============================================
+// SAMPLE MAIL DATA
+// Example messages used to populate the inbox, dashboard,
+// past-mail list, analytics, and message details.
+// This data is local to the prototype.
+// ============================================
 const sampleMail = [
   { id: 1, sender: 'Amazon', subject: 'Your order has shipped', tracking: 'TBA392840157', date: 'Today, 9:42 AM', category: 'Package', status: 'In transit', unread: true },
   { id: 2, sender: 'Best Buy', subject: 'Your delivery is on its way', tracking: 'BBY18463028', date: 'Today, 8:15 AM', category: 'Package', status: 'Out for delivery', unread: true },
@@ -16,6 +30,11 @@ const sampleMail = [
   { id: 7, sender: 'Amazon', subject: 'A package was delivered', tracking: 'TBA392840156', date: 'Oct 6', category: 'Package', status: 'Delivered', unread: false },
 ];
 
+// ============================================
+// REUSABLE BRAND LOGO
+// Displays the Arrivon logo. The compact option is used
+// in places such as the sidebar and footer.
+// ============================================
 function Logo({ compact = false }) {
   return (
     <div className={`logo ${compact ? 'compact' : ''}`}>
@@ -26,6 +45,11 @@ function Logo({ compact = false }) {
   );
 }
 
+// ============================================
+// MAIN APP COMPONENT AND STATE
+// Stores the current page, sample mail, account state,
+// search/filter values, selected message, and UI notices.
+// ============================================
 function App() {
   const [page, setPage] = useState('login');
   const [mail, setMail] = useState(sampleMail);
@@ -41,16 +65,29 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState('');
 
+  // ============================================
+  // PAGE NAVIGATION
+  // Changes the active page and closes the mobile menu.
+  // ============================================
   function navigate(next) {
     setPage(next);
     setMenuOpen(false);
   }
 
+  // ============================================
+  // TEMPORARY NOTIFICATION
+  // Shows a toast message and clears it after three seconds.
+  // ============================================
   function notify(message) {
     setNotice(message);
     window.setTimeout(() => setNotice(''), 3000);
   }
 
+  // ============================================
+  // SEARCH AND FILTER LOGIC
+  // Filters mail by search text, sender, and date.
+  // The filtered results are shared by Current Mail and Past Mail.
+  // ============================================
   const visibleMail = mail.filter((item) => {
     const searchable = [
       item.sender, item.subject, item.tracking, item.status
@@ -63,23 +100,38 @@ function App() {
       dateFilter === 'All' ||
       dateFilter === 'Last 30 Days' ||
       (dateFilter === 'Last 7 Days' &&
-        ['Today, 9:42 AM', 'Today, 8:15 AM', 'Yesterday',
-         'Oct 9', 'Oct 8', 'Oct 7', 'Oct 6'].includes(item.date));
+        [
+          'Today, 9:42 AM', 'Today, 8:15 AM', 'Yesterday',
+          'Oct 9', 'Oct 8', 'Oct 7', 'Oct 6'
+        ].includes(item.date));
 
     return matchesSearch && matchesSender && matchesDate;
   });
 
+  // ============================================
+  // OPEN A MAIL ITEM
+  // Remembers the current page, selects the message,
+  // marks it as read, and navigates to its details.
+  // ============================================
   function openMail(item) {
     setPreviousPage(page);
     setSelectedMail(item);
+
     setMail((old) => old.map((m) =>
       m.id === item.id ? { ...m, unread: false } : m
     ));
+
     navigate('details');
   }
 
+  // ============================================
+  // SIGN-UP HANDLER
+  // Validates passwords, prevents duplicate emails,
+  // creates a local prototype account, and opens the dashboard.
+  // ============================================
   function createAccount(event) {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
     const name = data.get('name').toString().trim();
     const email = data.get('email').toString().trim();
@@ -109,8 +161,14 @@ function App() {
     notify('Welcome to Arrivon!');
   }
 
+  // ============================================
+  // LOGIN HANDLER
+  // Checks credentials against accounts stored in React state.
+  // This is prototype-only authentication, not a secure backend.
+  // ============================================
   function login(event) {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
     const email = data.get('email').toString().trim();
     const password = data.get('password').toString();
@@ -129,6 +187,10 @@ function App() {
     notify('Welcome back!');
   }
 
+  // ============================================
+  // SIDEBAR NAVIGATION ITEMS
+  // Maps each page identifier to its label and icon.
+  // ============================================
   const navItems = [
     { id: 'home', label: 'Home', icon: Inbox },
     { id: 'current', label: 'Current Mail', icon: Mail },
@@ -136,45 +198,77 @@ function App() {
     { id: 'more', label: 'More Mail Info', icon: ChartColumn },
   ];
 
+  // ============================================
+  // REUSABLE PAGE HEADER
+  // Displays the breadcrumb, page title, subtitle,
+  // and optional action button.
+  // ============================================
   function Header({ title, subtitle, action }) {
     return (
       <header className="page-header">
-        <button className="icon-button mobile-menu"
-          onClick={() => setMenuOpen(true)}>
+        <button
+          className="icon-button mobile-menu"
+          onClick={() => setMenuOpen(true)}
+        >
           <Menu size={21} />
         </button>
+
         <div className="header-copy">
-          <div className="breadcrumb">ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}</div>
+          <div className="breadcrumb">
+            ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
+          </div>
           <h1>{title}</h1>
           <p>{subtitle}</p>
         </div>
+
         {action && <div className="header-action">{action}</div>}
       </header>
     );
   }
 
+  // ============================================
+  // SIDEBAR AND MOBILE NAVIGATION
+  // Renders page links, unread count, connection status,
+  // settings, logout, and the signed-in profile.
+  // ============================================
   function Sidebar() {
     return (
       <>
-        {menuOpen && <button className="overlay" onClick={() => setMenuOpen(false)} />}
+        {menuOpen && (
+          <button
+            className="overlay"
+            onClick={() => setMenuOpen(false)}
+          />
+        )}
+
         <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div className="sidebar-top">
             <Logo compact />
-            <button className="icon-button mobile-close" onClick={() => setMenuOpen(false)}>
+            <button
+              className="icon-button mobile-close"
+              onClick={() => setMenuOpen(false)}
+            >
               <X size={19} />
             </button>
           </div>
 
           <div className="nav-label">YOUR MAILBOX</div>
+
           <nav>
             {navItems.map(({ id, label, icon: Icon }) => (
-              <button key={id}
+              <button
+                key={id}
                 className={`nav-link ${page === id ? 'active' : ''}`}
-                onClick={() => navigate(id)}>
+                onClick={() => navigate(id)}
+              >
                 <Icon size={18} />
                 <span>{label}</span>
-                {id === 'current' &&
-                  <span className="nav-count">{mail.filter(m => m.unread).length}</span>}
+
+                {id === 'current' && (
+                  <span className="nav-count">
+                    {mail.filter(m => m.unread).length}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -182,24 +276,53 @@ function App() {
           <div className="sidebar-bottom">
             <div className="connection">
               <CheckCircle size={19} />
-              <div><strong>Mail connected</strong><small>You're all caught up</small></div>
+              <div>
+                <strong>Mail connected</strong>
+                <small>You're all caught up</small>
+              </div>
             </div>
-            <button className="nav-link" onClick={() => notify('Settings coming soon.')}>
-              <User size={18} /><span>Settings</span>
+
+            <button
+              className="nav-link"
+              onClick={() => notify('Settings coming soon.')}
+            >
+              <User size={18} />
+              <span>Settings</span>
             </button>
-            <button className="nav-link" onClick={() => { setUser(null); navigate('login'); }}>
-              <LogOut size={18} /><span>Log out</span>
+
+            <button
+              className="nav-link"
+              onClick={() => {
+                setUser(null);
+                navigate('login');
+              }}
+            >
+              <LogOut size={18} />
+              <span>Log out</span>
             </button>
-            {user && <div className="profile">
-              <div className="avatar">{user.name.charAt(0).toUpperCase()}</div>
-              <div><strong>{user.name}</strong><small>{user.email}</small></div>
-            </div>}
+
+            {user && (
+              <div className="profile">
+                <div className="avatar">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <strong>{user.name}</strong>
+                  <small>{user.email}</small>
+                </div>
+              </div>
+            )}
           </div>
         </aside>
       </>
     );
   }
 
+  // ============================================
+  // REUSABLE MAIL LIST
+  // Displays mail rows or an empty state when no messages
+  // match the active search and filters.
+  // ============================================
   function MailRows({ items }) {
     if (!items.length) {
       return (
@@ -207,52 +330,90 @@ function App() {
           <Search size={30} />
           <h3>No mail found</h3>
           <p>Try another search or clear your filters.</p>
-          <button className="secondary-button" onClick={() => {
-            setSearch('');
-            setDateFilter('All');
-            setSenderFilter('All');
-          }}>Clear filters</button>
+
+          <button
+            className="secondary-button"
+            onClick={() => {
+              setSearch('');
+              setDateFilter('All');
+              setSenderFilter('All');
+            }}
+          >
+            Clear filters
+          </button>
         </div>
       );
     }
 
     return items.map((item) => (
-      <button className={`mail-row ${item.unread ? 'unread' : ''}`}
-        key={item.id} onClick={() => openMail(item)}>
+      <button
+        className={`mail-row ${item.unread ? 'unread' : ''}`}
+        key={item.id}
+        onClick={() => openMail(item)}
+      >
         <div className="sender-avatar">{item.sender.charAt(0)}</div>
+
         <div className="mail-row-content">
           <div className="mail-row-top">
-            <strong>{item.sender}</strong><span>{item.date}</span>
+            <strong>{item.sender}</strong>
+            <span>{item.date}</span>
           </div>
+
           <div className="mail-subject">{item.subject}</div>
+
           <div className="mail-tracking">
-            {item.tracking === '—' ? item.category : `Tracking: ${item.tracking}`}
+            {item.tracking === '—'
+              ? item.category
+              : `Tracking: ${item.tracking}`}
           </div>
         </div>
+
         <span className={`status ${item.status === 'Delivered' ? 'delivered' : ''}`}>
           {item.status}
         </span>
+
         <ChevronRight className="row-arrow" size={17} />
       </button>
     ));
   }
 
+  // ============================================
+  // MAIL SEARCH INPUT
+  // Updates the shared search value and lets the user
+  // clear the search field.
+  // ============================================
   function SearchBar() {
     return (
       <div className="search-box">
         <Search size={18} />
-        <input value={search}
+
+        <input
+          value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search sender, subject, or tracking number..." />
-        {search && <button onClick={() => setSearch('')}><X size={16} /></button>}
+          placeholder="Search sender, subject, or tracking number..."
+        />
+
+        {search && (
+          <button onClick={() => setSearch('')}>
+            <X size={16} />
+          </button>
+        )}
       </div>
     );
   }
 
+  // ============================================
+  // REUSABLE SECTION HEADING
+  // Shows a section title, explanatory text, and action link.
+  // ============================================
   function SectionHeading({ title, subtitle, action, onAction }) {
     return (
       <div className="section-heading">
-        <div><h2>{title}</h2><p>{subtitle}</p></div>
+        <div>
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
+        </div>
+
         <button className="text-button" onClick={onAction}>
           {action} <ChevronRight size={16} />
         </button>
@@ -260,320 +421,672 @@ function App() {
     );
   }
 
+  // ============================================
+  // DASHBOARD STATISTIC CARD
+  // Displays a clickable metric that navigates to a related page.
+  // ============================================
   function StatCard({ icon, label, value, caption, onClick }) {
     return (
       <button className="stat-card" onClick={onClick}>
         <div className="stat-icon">{icon}</div>
-        <span>{label}</span><strong>{value}</strong><small>{caption}</small>
+        <span>{label}</span>
+        <strong>{value}</strong>
+        <small>{caption}</small>
       </button>
     );
   }
 
+  // ============================================
+  // REUSABLE PANEL HEADING
+  // Displays the icon and title at the top of a content panel.
+  // ============================================
   function PanelHeading({ title }) {
     return (
       <div className="panel-heading">
-        <div className="panel-icon"><Mail size={17} /></div>
+        <div className="panel-icon">
+          <Mail size={17} />
+        </div>
         <strong>{title}</strong>
       </div>
     );
   }
-
+    // ============================================
+  // LOGIN AND SIGN-UP SCREENS
+  // Renders the authentication layout before the user
+  // enters the main Arrivon application.
+  // ============================================
   if (page === 'login' || page === 'signup') {
     const signup = page === 'signup';
 
     return (
       <div className="auth-layout">
+        {/* Branding and introduction panel */}
         <section className="auth-art">
           <Logo />
+
           <div className="auth-art-center">
             <div className="big-mail">
               <Mail size={76} strokeWidth={1.2} />
               <CheckCircle className="mail-check" size={28} />
             </div>
+
             <h2>Your mail, all in one place.</h2>
-            <p>Stay on top of deliveries, important messages, and everything in between.</p>
+            <p>
+              Stay on top of deliveries, important messages,
+              and everything in between.
+            </p>
+
             <div className="auth-benefits">
               <span><CheckCircle size={16} /> Smart tracking</span>
               <span><CheckCircle size={16} /> One simple inbox</span>
             </div>
           </div>
-          <small className="auth-footer">ARRIVON · YOUR SMART MAIL BOX COMPANION</small>
+
+          <small className="auth-footer">
+            ARRIVON · YOUR SMART MAIL BOX COMPANION
+          </small>
         </section>
 
+        {/* Authentication form */}
         <main className="auth-main">
-          <div className="auth-mobile-logo"><Logo /></div>
+          <div className="auth-mobile-logo">
+            <Logo />
+          </div>
+
           <div className="auth-card">
-            <span className="eyebrow">{signup ? 'GET STARTED' : 'WELCOME BACK'}</span>
+            <span className="eyebrow">
+              {signup ? 'GET STARTED' : 'WELCOME BACK'}
+            </span>
+
             <h1>{signup ? 'Create your account' : 'Welcome back'}</h1>
+
             <p className="auth-subtitle">
-              {signup ? 'Get notified the moment your mail arrives.' : 'Log in to check your mail.'}
+              {signup
+                ? 'Get notified the moment your mail arrives.'
+                : 'Log in to check your mail.'}
             </p>
 
+            {/* Uses the appropriate form handler for each screen */}
             <form onSubmit={signup ? createAccount : login}>
-              {signup && <>
-                <label>Full name<input name="name" placeholder="Jane Doe" required /></label>
-                <label>Address<input name="address" placeholder="123 Main St, Lincoln, NE" /></label>
-              </>}
+              {signup && (
+                <>
+                  <label>
+                    Full name
+                    <input name="name" placeholder="Jane Doe" required />
+                  </label>
 
-              <label>Email<input name="email" type="email" placeholder="you@example.com" required /></label>
-              <label>Password
+                  <label>
+                    Address
+                    <input
+                      name="address"
+                      placeholder="123 Main St, Lincoln, NE"
+                    />
+                  </label>
+                </>
+              )}
+
+              <label>
+                Email
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  required
+                />
+              </label>
+
+              {/* Password input with show/hide control */}
+              <label>
+                Password
                 <div className="password-field">
-                  <input name="password" type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password" minLength="6" required />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  <input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
+                    minLength="6"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword
+                      ? <EyeOff size={17} />
+                      : <Eye size={17} />}
                   </button>
                 </div>
               </label>
 
-              {signup && <label>Confirm password
-                <input name="confirmPassword" type="password"
-                  placeholder="Confirm your password" minLength="6" required />
-              </label>}
+              {/* Confirmation field appears only during signup */}
+              {signup && (
+                <label>
+                  Confirm password
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirm your password"
+                    minLength="6"
+                    required
+                  />
+                </label>
+              )}
 
-              {!signup && <div className="form-extras">
-                <label className="remember"><input type="checkbox" /> Remember me</label>
-                <button type="button" className="text-button"
-                  onClick={() => notify('Password recovery needs a backend.')}>
-                  Forgot password?
-                </button>
-              </div>}
+              {/* Additional login controls */}
+              {!signup && (
+                <div className="form-extras">
+                  <label className="remember">
+                    <input type="checkbox" />
+                    Remember me
+                  </label>
 
-              <button className="primary-button full-width" type="submit">
-                {signup ? 'Create account' : 'Log in'} <ChevronRight size={17} />
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() =>
+                      notify('Password recovery needs a backend.')
+                    }
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+              <button
+                className="primary-button full-width"
+                type="submit"
+              >
+                {signup ? 'Create account' : 'Log in'}
+                <ChevronRight size={17} />
               </button>
             </form>
 
+            {/* Switches between login and signup */}
             <div className="auth-switch">
-              {signup ? 'Already have an account?' : "Don't have an account?"}
+              {signup
+                ? 'Already have an account?'
+                : "Don't have an account?"}
+
               <button onClick={() => navigate(signup ? 'login' : 'signup')}>
                 {signup ? 'Log in' : 'Sign up'}
               </button>
             </div>
-            <div className="secure-note">Your information stays private</div>
+
+            <div className="secure-note">
+              Your information stays private
+            </div>
           </div>
+
+          {/* Displays temporary success or error messages */}
           {notice && <div className="toast">{notice}</div>}
         </main>
       </div>
     );
   }
 
+  // ============================================
+  // MAIN APPLICATION LAYOUT
+  // After login, displays the sidebar, active page content,
+  // footer, and any temporary notification.
+  // ============================================
   return (
     <div className="app-layout">
       <Sidebar />
+
       <main className="main-content">
-        {page === 'home' && <>
-          <Header title="Home"
-            subtitle={`Here's what's happening with your mail${user ? `, ${user.name.split(' ')[0]}` : ''}.`}
-            action={<button className="secondary-button" onClick={() => navigate('current')}>
-              <Mail size={16} /> View inbox
-            </button>} />
 
-          <section className="welcome-banner">
-            <div className="banner-copy">
-              <div className="live-label"><span /> YOUR MAIL AT A GLANCE</div>
-              <h2>Everything delivered.<br /><span>Nothing missed.</span></h2>
-              <p>Your mail and packages, neatly organized in one place.</p>
-              <button className="banner-button" onClick={() => navigate('past')}>
-                Explore past mail <ChevronRight size={16} />
-              </button>
-            </div>
-            <div className="banner-illustration">
-              <div className="spark">✦</div>
-              <div className="illustration-envelope">
-                <Mail size={76} strokeWidth={1.1} />
-                <CheckCircle className="envelope-check" size={28} />
+        {/* ============================================
+            HOME DASHBOARD
+            Welcome banner, mailbox statistics, and recent mail.
+            ============================================ */}
+        {page === 'home' && (
+          <>
+            <Header
+              title="Home"
+              subtitle={`Here's what's happening with your mail${user ? `, ${user.name.split(' ')[0]}` : ''}.`}
+              action={
+                <button
+                  className="secondary-button"
+                  onClick={() => navigate('current')}
+                >
+                  <Mail size={16} /> View inbox
+                </button>
+              }
+            />
+
+            {/* Welcome banner and link to Past Mail */}
+            <section className="welcome-banner">
+              <div className="banner-copy">
+                <div className="live-label">
+                  <span /> YOUR MAIL AT A GLANCE
+                </div>
+
+                <h2>
+                  Everything delivered.<br />
+                  <span>Nothing missed.</span>
+                </h2>
+
+                <p>
+                  Your mail and packages, neatly organized in one place.
+                </p>
+
+                <button
+                  className="banner-button"
+                  onClick={() => navigate('past')}
+                >
+                  Explore past mail <ChevronRight size={16} />
+                </button>
               </div>
-              <div className="banner-caption">
-                <CheckCircle size={18} />
-                <div><strong>Your mail connected</strong><small>Everything in sync</small></div>
+
+              {/* Decorative mail illustration */}
+              <div className="banner-illustration">
+                <div className="spark">✦</div>
+
+                <div className="illustration-envelope">
+                  <Mail size={76} strokeWidth={1.1} />
+                  <CheckCircle className="envelope-check" size={28} />
+                </div>
+
+                <div className="banner-caption">
+                  <CheckCircle size={18} />
+                  <div>
+                    <strong>Your mail connected</strong>
+                    <small>Everything in sync</small>
+                  </div>
+                </div>
               </div>
+            </section>
+
+            {/* Mailbox overview heading */}
+            <SectionHeading
+              title="Your mailbox"
+              subtitle="A quick look at your mail activity."
+              action="View insights"
+              onAction={() => navigate('more')}
+            />
+
+            {/* Clickable mailbox statistics */}
+            <section className="stat-grid">
+              <StatCard
+                icon={<Inbox />}
+                label="CURRENT MAIL"
+                value={mail.filter(m => m.unread).length}
+                caption="Unread messages"
+                onClick={() => navigate('current')}
+              />
+
+              <StatCard
+                icon={<Clock />}
+                label="PAST MAIL"
+                value={mail.length}
+                caption="Saved messages"
+                onClick={() => navigate('past')}
+              />
+
+              <StatCard
+                icon={<Package />}
+                label="PACKAGES"
+                value={mail.filter(m => m.category === 'Package').length}
+                caption="Tracked deliveries"
+                onClick={() => navigate('current')}
+              />
+
+              <StatCard
+                icon={<FileSignature />}
+                label="IMPORTANT MAIL"
+                value={mail.filter(m => m.category === 'Receipt').length + 2}
+                caption="Ready when you need it"
+                onClick={() => navigate('more')}
+              />
+            </section>
+
+            {/* Recent mail list */}
+            <SectionHeading
+              title="Recent mail"
+              subtitle="Your latest updates and deliveries."
+              action="See all mail"
+              onAction={() => navigate('current')}
+            />
+
+            <section className="panel">
+              <PanelHeading title="Latest activity" />
+              <MailRows items={mail.slice(0, 4)} />
+            </section>
+          </>
+        )}
+
+        {/* ============================================
+            CURRENT MAIL AND PAST MAIL
+            Both pages share search, date filters, and mail rows.
+            Past Mail also displays a mail-history banner.
+            ============================================ */}
+        {(page === 'current' || page === 'past') && (
+          <>
+            <Header
+              title={page === 'current' ? 'Current Mail' : 'Past Mail'}
+              subtitle={
+                page === 'current'
+                  ? 'Keep up with your latest messages and deliveries.'
+                  : 'Find a message from any time, all in one place.'
+              }
+              action={
+                <button
+                  className="secondary-button"
+                  onClick={() => {
+                    setSearch('');
+                    setDateFilter('All');
+                    setSenderFilter('All');
+                  }}
+                >
+                  <Clock size={16} /> Reset filters
+                </button>
+              }
+            />
+
+            {/* Additional heading shown only on Past Mail */}
+            {page === 'past' && (
+              <section className="past-banner">
+                <div className="past-banner-icon">
+                  <Clock size={24} />
+                </div>
+
+                <div>
+                  <h2>Your mail history</h2>
+                  <p>
+                    Search previous messages, deliveries, and receipts.
+                  </p>
+                </div>
+
+                <strong>
+                  {mail.length}
+                  <small>saved messages</small>
+                </strong>
+              </section>
+            )}
+
+            {/* Search field and Current Mail sender filter */}
+            <div className="toolbar">
+              <SearchBar />
+
+              {page === 'current' && (
+                <button
+                  className="secondary-button"
+                  onClick={() =>
+                    setSenderFilter(senderFilter === 'All' ? 'Amazon' : 'All')
+                  }
+                >
+                  <Filter size={16} />
+                  {senderFilter === 'All' ? 'Filter' : 'Amazon'}
+                  <ChevronDown size={14} />
+                </button>
+              )}
             </div>
-          </section>
 
-          <SectionHeading title="Your mailbox"
-            subtitle="A quick look at your mail activity."
-            action="View insights" onAction={() => navigate('more')} />
+            {/* Date-range filter buttons */}
+            <div className="filter-chips">
+              {[
+                'All',
+                'Last 7 Days',
+                'Last 30 Days',
+                ...(page === 'past' ? ['Last 3 Months'] : [])
+              ].map((filter) => (
+                <button
+                  key={filter}
+                  className={dateFilter === filter ? 'selected' : ''}
+                  onClick={() =>
+                    setDateFilter(filter === 'Last 3 Months' ? 'All' : filter)
+                  }
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
 
-          <section className="stat-grid">
-            <StatCard icon={<Inbox />} label="CURRENT MAIL"
-              value={mail.filter(m => m.unread).length} caption="Unread messages"
-              onClick={() => navigate('current')} />
-            <StatCard icon={<Clock />} label="PAST MAIL" value={mail.length}
-              caption="Saved messages" onClick={() => navigate('past')} />
-            <StatCard icon={<Package />} label="PACKAGES"
-              value={mail.filter(m => m.category === 'Package').length}
-              caption="Tracked deliveries" onClick={() => navigate('current')} />
-            <StatCard icon={<FileSignature />} label="IMPORTANT MAIL"
-              value={mail.filter(m => m.category === 'Receipt').length + 2}
-              caption="Ready when you need it" onClick={() => navigate('more')} />
-          </section>
+            {/* Filtered mail results */}
+            <section className="panel">
+              <div className="list-summary">
+                <span><strong>{visibleMail.length}</strong> messages</span>
+                <span>Unread messages are highlighted</span>
+              </div>
 
-          <SectionHeading title="Recent mail"
-            subtitle="Your latest updates and deliveries."
-            action="See all mail" onAction={() => navigate('current')} />
+              <MailRows items={visibleMail} />
+            </section>
+          </>
+        )}
 
-          <section className="panel">
-            <PanelHeading title="Latest activity" />
-            <MailRows items={mail.slice(0, 4)} />
-          </section>
-        </>}
+        {/* ============================================
+            MORE MAIL INFO
+            Displays mail activity statistics, charts, frequent
+            senders, and expandable important-mail sections.
+            ============================================ */}
+        {page === 'more' && (
+          <>
+            <Header
+              title="More Mail Info"
+              subtitle="Useful insights to help you stay organized."
+            />
 
-        {(page === 'current' || page === 'past') && <>
-          <Header title={page === 'current' ? 'Current Mail' : 'Past Mail'}
-            subtitle={page === 'current'
-              ? 'Keep up with your latest messages and deliveries.'
-              : 'Find a message from any time, all in one place.'}
-            action={<button className="secondary-button" onClick={() => {
-              setSearch(''); setDateFilter('All'); setSenderFilter('All');
-            }}><Clock size={16} /> Reset filters</button>} />
+            {/* Analytics introduction banner */}
+            <section className="analytics-banner">
+              <div className="live-label">
+                <span /> YOUR MAIL INSIGHTS
+              </div>
 
-          {page === 'past' && <section className="past-banner">
-            <div className="past-banner-icon"><Clock size={24} /></div>
-            <div><h2>Your mail history</h2>
-              <p>Search previous messages, deliveries, and receipts.</p></div>
-            <strong>{mail.length}<small>saved messages</small></strong>
-          </section>}
+              <h2>A clearer view of your mailbox.</h2>
+              <p>See delivery activity and your frequent senders.</p>
+            </section>
 
-          <div className="toolbar">
-            <SearchBar />
-            {page === 'current' && <button className="secondary-button"
-              onClick={() => setSenderFilter(senderFilter === 'All' ? 'Amazon' : 'All')}>
-              <Filter size={16} /> {senderFilter === 'All' ? 'Filter' : 'Amazon'}
-              <ChevronDown size={14} />
-            </button>}
-          </div>
+            {/* Summary statistics */}
+            <section className="analytics-stats">
+              <div className="mini-stat">
+                <span>DELIVERED</span>
+                <strong>
+                  {mail.filter(m => m.status === 'Delivered').length + 5}
+                </strong>
+                <small>Successfully received</small>
+              </div>
 
-          <div className="filter-chips">
-            {['All', 'Last 7 Days', 'Last 30 Days',
-              ...(page === 'past' ? ['Last 3 Months'] : [])].map((filter) => (
-              <button key={filter} className={dateFilter === filter ? 'selected' : ''}
-                onClick={() => setDateFilter(filter === 'Last 3 Months' ? 'All' : filter)}>
-                {filter}
-              </button>
+              <div className="mini-stat">
+                <span>SENT / REPLIES</span>
+                <strong>3</strong>
+                <small>Recent activity</small>
+              </div>
+
+              <div className="mini-stat">
+                <span>ADDRESSES</span>
+                <strong>4</strong>
+                <small>Saved destinations</small>
+              </div>
+            </section>
+
+            {/* Activity chart and frequent-sender ranking */}
+            <div className="analytics-grid">
+              <section className="panel analytics-panel">
+                <PanelHeading title="Mail activity" />
+                <p className="panel-subtitle">
+                  Messages received this week
+                </p>
+
+                <div className="chart">
+                  {[2, 13, 10, 8, 12, 15, 9].map((n, i) => (
+                    <div className="chart-column" key={i}>
+                      <span>{n}</span>
+                      <div style={{ height: `${n * 6}%` }} />
+                      <small>
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}
+                      </small>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel analytics-panel">
+                <PanelHeading title="Top monthly senders" />
+
+                <div className="ranking">
+                  {[
+                    ['Home Depot', 13],
+                    ['Amazon', 8],
+                    ['SuperSaver', 7],
+                    ['Hyvee', 5],
+                    ['John Doe', 3]
+                  ].map(([name, count], i) => (
+                    <div className="rank-row" key={name}>
+                      <span>{i + 1}</span>
+                      <strong>{name}</strong>
+
+                      <div className="rank-track">
+                        <div style={{ width: `${count / 13 * 100}%` }} />
+                      </div>
+
+                      <small>{count}</small>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            {/* Expandable important-mail and signature sections */}
+            {[
+              ['important', 'Important mail', 'Messages that may need your attention'],
+              ['signature', 'Needs signature', 'Mail that may require a signature']
+            ].map(([id, title, subtitle]) => (
+              <section className="panel expandable" key={id}>
+                <button
+                  className="expand-button"
+                  onClick={() => setExpanded(expanded === id ? '' : id)}
+                >
+                  <FileSignature size={19} />
+
+                  <span>
+                    <strong>{title}</strong>
+                    <small>{subtitle}</small>
+                  </span>
+
+                  {expanded === id ? <X size={17} /> : <Plus size={18} />}
+                </button>
+
+                {expanded === id && (
+                  <div className="expand-content">
+                    {id === 'important'
+                      ? mail
+                          .filter(m => ['Receipt', 'Personal'].includes(m.category))
+                          .map(m => (
+                            <button
+                              className="important-row"
+                              key={m.id}
+                              onClick={() => openMail(m)}
+                            >
+                              {m.sender}: {m.subject}
+                              <ChevronRight size={16} />
+                            </button>
+                          ))
+                      : <p>No mail currently requires a signature.</p>}
+                  </div>
+                )}
+              </section>
             ))}
-          </div>
+          </>
+        )}
 
-          <section className="panel">
-            <div className="list-summary">
-              <span><strong>{visibleMail.length}</strong> messages</span>
-              <span>Unread messages are highlighted</span>
-            </div>
-            <MailRows items={visibleMail} />
-          </section>
-        </>}
+        {/* ============================================
+            MAIL DETAILS
+            Shows information about the selected mail item,
+            including sender, subject, category, date, and status.
+            ============================================ */}
+        {page === 'details' && selectedMail && (
+          <>
+            <Header
+              title="Mail Details"
+              subtitle="Review message and delivery information."
+              action={
+                <button
+                  className="secondary-button"
+                  onClick={() => navigate(previousPage)}
+                >
+                  <ArrowLeft size={16} /> Back to mail
+                </button>
+              }
+            />
 
-        {page === 'more' && <>
-          <Header title="More Mail Info" subtitle="Useful insights to help you stay organized." />
-          <section className="analytics-banner">
-            <div className="live-label"><span /> YOUR MAIL INSIGHTS</div>
-            <h2>A clearer view of your mailbox.</h2>
-            <p>See delivery activity and your frequent senders.</p>
-          </section>
+            <section className="panel detail-panel">
+              {/* Selected message sender and delivery status */}
+              <div className="detail-sender">
+                <div className="sender-avatar large">
+                  {selectedMail.sender.charAt(0)}
+                </div>
 
-          <section className="analytics-stats">
-            <div className="mini-stat"><span>DELIVERED</span>
-              <strong>{mail.filter(m => m.status === 'Delivered').length + 5}</strong>
-              <small>Successfully received</small></div>
-            <div className="mini-stat"><span>SENT / REPLIES</span>
-              <strong>3</strong><small>Recent activity</small></div>
-            <div className="mini-stat"><span>ADDRESSES</span>
-              <strong>4</strong><small>Saved destinations</small></div>
-          </section>
+                <div>
+                  <h2>{selectedMail.sender}</h2>
+                  <p>{selectedMail.date}</p>
+                </div>
 
-          <div className="analytics-grid">
-            <section className="panel analytics-panel">
-              <PanelHeading title="Mail activity" />
-              <p className="panel-subtitle">Messages received this week</p>
-              <div className="chart">
-                {[2, 13, 10, 8, 12, 15, 9].map((n, i) => (
-                  <div className="chart-column" key={i}>
-                    <span>{n}</span><div style={{ height: `${n * 6}%` }} />
-                    <small>{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}</small>
-                  </div>
-                ))}
+                <span className="status">{selectedMail.status}</span>
               </div>
-            </section>
 
-            <section className="panel analytics-panel">
-              <PanelHeading title="Top monthly senders" />
-              <div className="ranking">
-                {[['Home Depot', 13], ['Amazon', 8], ['SuperSaver', 7],
-                  ['Hyvee', 5], ['John Doe', 3]].map(([name, count], i) => (
-                  <div className="rank-row" key={name}>
-                    <span>{i + 1}</span><strong>{name}</strong>
-                    <div className="rank-track">
-                      <div style={{ width: `${count / 13 * 100}%` }} />
-                    </div><small>{count}</small>
-                  </div>
-                ))}
+              <hr />
+
+              {/* Message subject and prototype content */}
+              <small className="detail-label">SUBJECT</small>
+              <h2>{selectedMail.subject}</h2>
+
+              <p className="detail-description">
+                This is a sample message in your Arrivon inbox. Connect a mail provider
+                to display original email content and live delivery updates.
+              </p>
+
+              {/* Key details displayed in a grid */}
+              <div className="detail-grid">
+                <div>
+                  <small>CATEGORY</small>
+                  <strong>{selectedMail.category}</strong>
+                </div>
+
+                <div>
+                  <small>DATE RECEIVED</small>
+                  <strong>{selectedMail.date}</strong>
+                </div>
+
+                <div>
+                  <small>TRACKING NUMBER</small>
+                  <strong>{selectedMail.tracking}</strong>
+                </div>
+
+                <div>
+                  <small>DELIVERY STATUS</small>
+                  <strong>{selectedMail.status}</strong>
+                </div>
               </div>
-            </section>
-          </div>
 
-          {[
-            ['important', 'Important mail', 'Messages that may need your attention'],
-            ['signature', 'Needs signature', 'Mail that may require a signature']
-          ].map(([id, title, subtitle]) => (
-            <section className="panel expandable" key={id}>
-              <button className="expand-button"
-                onClick={() => setExpanded(expanded === id ? '' : id)}>
-                <FileSignature size={19} />
-                <span><strong>{title}</strong><small>{subtitle}</small></span>
-                {expanded === id ? <X size={17} /> : <Plus size={18} />}
+              <button
+                className="primary-button"
+                onClick={() => navigate(previousPage)}
+              >
+                <ArrowLeft size={16} /> Back to inbox
               </button>
-              {expanded === id && <div className="expand-content">
-                {id === 'important'
-                  ? mail.filter(m => ['Receipt', 'Personal'].includes(m.category)).map(m => (
-                    <button className="important-row" key={m.id} onClick={() => openMail(m)}>
-                      {m.sender}: {m.subject}<ChevronRight size={16} />
-                    </button>
-                  ))
-                  : <p>No mail currently requires a signature.</p>}
-              </div>}
             </section>
-          ))}
-        </>}
+          </>
+        )}
 
-        {page === 'details' && selectedMail && <>
-          <Header title="Mail Details" subtitle="Review message and delivery information."
-            action={<button className="secondary-button" onClick={() => navigate(previousPage)}>
-              <ArrowLeft size={16} /> Back to mail
-            </button>} />
-          <section className="panel detail-panel">
-            <div className="detail-sender">
-              <div className="sender-avatar large">{selectedMail.sender.charAt(0)}</div>
-              <div><h2>{selectedMail.sender}</h2><p>{selectedMail.date}</p></div>
-              <span className="status">{selectedMail.status}</span>
-            </div>
-            <hr />
-            <small className="detail-label">SUBJECT</small>
-            <h2>{selectedMail.subject}</h2>
-            <p className="detail-description">
-              This is a sample message in your Arrivon inbox. Connect a mail provider
-              to display original email content and live delivery updates.
-            </p>
-            <div className="detail-grid">
-              <div><small>CATEGORY</small><strong>{selectedMail.category}</strong></div>
-              <div><small>DATE RECEIVED</small><strong>{selectedMail.date}</strong></div>
-              <div><small>TRACKING NUMBER</small><strong>{selectedMail.tracking}</strong></div>
-              <div><small>DELIVERY STATUS</small><strong>{selectedMail.status}</strong></div>
-            </div>
-            <button className="primary-button" onClick={() => navigate(previousPage)}>
-              <ArrowLeft size={16} /> Back to inbox
-            </button>
-          </section>
-        </>}
-
+        {/* ============================================
+            APPLICATION FOOTER
+            Displays the compact brand logo, copyright text,
+            and Help action at the bottom of the page.
+            ============================================ */}
         <footer className="app-footer">
           <Logo compact />
           <span>© 2026 Arrivon. Your mail, made simple.</span>
-          <button onClick={() => notify('Help center coming soon.')}>Help</button>
+          <button onClick={() => notify('Help center coming soon.')}>
+            Help
+          </button>
         </footer>
       </main>
+
+      {/* Displays notifications outside the main page content */}
       {notice && <div className="toast">{notice}</div>}
     </div>
   );
 }
 
+// Export the main component so main.jsx can render it.
 export default App;
