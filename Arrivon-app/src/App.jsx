@@ -127,7 +127,7 @@ function App() {
   // ============================================
   // SIGN-UP HANDLER
   // Validates passwords, prevents duplicate emails,
-  // creates a local prototype account, and opens the dashboard.
+  // creates a local prototype account, and returns to the login page.
   // ============================================
   function createAccount(event) {
     event.preventDefault();
@@ -156,9 +156,8 @@ function App() {
     };
 
     setAccounts((old) => [...old, account]);
-    setUser(account);
-    navigate('home');
-    notify('Welcome to Arrivon!');
+    navigate('login');
+    notify('Congratulations! Your account has been created. Please log in.');
   }
 
   // ============================================
