@@ -1,25 +1,23 @@
-// ============================================
 // IMPORTS
 // React state manages the interactive pages and forms.
 // Lucide React supplies the icons used in the interface.
 // App.css contains the component-level visual styles.
-// ============================================
 import React, { useState } from 'react';
 
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
-  LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature
+  LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature,
+  Bell, ShieldCheck, Zap
 } from 'lucide-react';
 
 import './App.css';
 
-// ============================================
 // SAMPLE MAIL DATA
 // Example messages used to populate the inbox, dashboard,
 // past-mail list, analytics, and message details.
 // This data is local to the prototype.
-// ============================================
+
 const sampleMail = [
   { id: 1, sender: 'Amazon', subject: 'Your order has shipped', tracking: 'TBA392840157', date: 'Today, 9:42 AM', category: 'Package', status: 'In transit', unread: true },
   { id: 2, sender: 'Best Buy', subject: 'Your delivery is on its way', tracking: 'BBY18463028', date: 'Today, 8:15 AM', category: 'Package', status: 'Out for delivery', unread: true },
@@ -30,26 +28,25 @@ const sampleMail = [
   { id: 7, sender: 'Amazon', subject: 'A package was delivered', tracking: 'TBA392840156', date: 'Oct 6', category: 'Package', status: 'Delivered', unread: false },
 ];
 
-// ============================================
 // REUSABLE BRAND LOGO
 // Displays the Arrivon logo. The compact option is used
 // in places such as the sidebar and footer.
-// ============================================
 function Logo({ compact = false }) {
   return (
-    <div className={`logo ${compact ? 'compact' : ''}`}>
-      <Mail size={compact ? 22 : 30} />
-      <span>Arrivon</span>
-      {!compact && <small>Your smart mail box companion</small>}
+    <div className={`auth-brand logo ${compact ? 'compact' : ''}`}>
+      <div className="auth-brand-mark">
+        <Mail size={compact ? 20 : 23} strokeWidth={1.8} />
+        <span />
+      </div>
+      <span className="auth-brand-name">Arrivon</span>
+      <span className="auth-brand-tagline">MAIL, IN MOTION</span>
     </div>
   );
 }
 
-// ============================================
 // MAIN APP COMPONENT AND STATE
 // Stores the current page, sample mail, account state,
 // search/filter values, selected message, and UI notices.
-// ============================================
 function App() {
   const [page, setPage] = useState('login');
   const [mail, setMail] = useState(sampleMail);
@@ -65,29 +62,23 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState('');
 
-  // ============================================
   // PAGE NAVIGATION
   // Changes the active page and closes the mobile menu.
-  // ============================================
   function navigate(next) {
     setPage(next);
     setMenuOpen(false);
   }
 
-  // ============================================
   // TEMPORARY NOTIFICATION
   // Shows a toast message and clears it after three seconds.
-  // ============================================
   function notify(message) {
     setNotice(message);
     window.setTimeout(() => setNotice(''), 3000);
   }
 
-  // ============================================
   // SEARCH AND FILTER LOGIC
   // Filters mail by search text, sender, and date.
   // The filtered results are shared by Current Mail and Past Mail.
-  // ============================================
   const visibleMail = mail.filter((item) => {
     const searchable = [
       item.sender, item.subject, item.tracking, item.status
@@ -108,11 +99,9 @@ function App() {
     return matchesSearch && matchesSender && matchesDate;
   });
 
-  // ============================================
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
-  // ============================================
   function openMail(item) {
     setPreviousPage(page);
     setSelectedMail(item);
@@ -124,11 +113,9 @@ function App() {
     navigate('details');
   }
 
-  // ============================================
   // SIGN-UP HANDLER
   // Validates passwords, prevents duplicate emails,
-  // creates a local prototype account, and opens the dashboard.
-  // ============================================
+  // creates a local prototype account, and returns to the login page.
   function createAccount(event) {
     event.preventDefault();
 
@@ -156,16 +143,13 @@ function App() {
     };
 
     setAccounts((old) => [...old, account]);
-    setUser(account);
-    navigate('home');
-    notify('Welcome to Arrivon!');
+    navigate('login');
+    notify('Congratulations! Your account has been created. Please log in.');
   }
 
-  // ============================================
   // LOGIN HANDLER
   // Checks credentials against accounts stored in React state.
   // This is prototype-only authentication, not a secure backend.
-  // ============================================
   function login(event) {
     event.preventDefault();
 
@@ -187,10 +171,8 @@ function App() {
     notify('Welcome back!');
   }
 
-  // ============================================
   // SIDEBAR NAVIGATION ITEMS
   // Maps each page identifier to its label and icon.
-  // ============================================
   const navItems = [
     { id: 'home', label: 'Home', icon: Inbox },
     { id: 'current', label: 'Current Mail', icon: Mail },
@@ -198,11 +180,9 @@ function App() {
     { id: 'more', label: 'More Mail Info', icon: ChartColumn },
   ];
 
-  // ============================================
   // REUSABLE PAGE HEADER
   // Displays the breadcrumb, page title, subtitle,
   // and optional action button.
-  // ============================================
   function Header({ title, subtitle, action }) {
     return (
       <header className="page-header">
@@ -226,11 +206,9 @@ function App() {
     );
   }
 
-  // ============================================
   // SIDEBAR AND MOBILE NAVIGATION
   // Renders page links, unread count, connection status,
   // settings, logout, and the signed-in profile.
-  // ============================================
   function Sidebar() {
     return (
       <>
@@ -243,7 +221,14 @@ function App() {
 
         <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div className="sidebar-top">
-            <Logo compact />
+            <button
+              className="brand-home-button"
+              type="button"
+              aria-label="Go to home"
+              onClick={() => navigate('home')}
+            >
+              <Logo compact />
+            </button>
             <button
               className="icon-button mobile-close"
               onClick={() => setMenuOpen(false)}
@@ -318,11 +303,9 @@ function App() {
     );
   }
 
-  // ============================================
   // REUSABLE MAIL LIST
   // Displays mail rows or an empty state when no messages
   // match the active search and filters.
-  // ============================================
   function MailRows({ items }) {
     if (!items.length) {
       return (
@@ -377,11 +360,9 @@ function App() {
     ));
   }
 
-  // ============================================
   // MAIL SEARCH INPUT
   // Updates the shared search value and lets the user
   // clear the search field.
-  // ============================================
   function SearchBar() {
     return (
       <div className="search-box">
@@ -402,10 +383,8 @@ function App() {
     );
   }
 
-  // ============================================
   // REUSABLE SECTION HEADING
   // Shows a section title, explanatory text, and action link.
-  // ============================================
   function SectionHeading({ title, subtitle, action, onAction }) {
     return (
       <div className="section-heading">
@@ -421,10 +400,8 @@ function App() {
     );
   }
 
-  // ============================================
   // DASHBOARD STATISTIC CARD
   // Displays a clickable metric that navigates to a related page.
-  // ============================================
   function StatCard({ icon, label, value, caption, onClick }) {
     return (
       <button className="stat-card" onClick={onClick}>
@@ -436,10 +413,8 @@ function App() {
     );
   }
 
-  // ============================================
   // REUSABLE PANEL HEADING
   // Displays the icon and title at the top of a content panel.
-  // ============================================
   function PanelHeading({ title }) {
     return (
       <div className="panel-heading">
@@ -450,11 +425,9 @@ function App() {
       </div>
     );
   }
-    // ============================================
   // LOGIN AND SIGN-UP SCREENS
   // Renders the authentication layout before the user
   // enters the main Arrivon application.
-  // ============================================
   if (page === 'login' || page === 'signup') {
     const signup = page === 'signup';
 
@@ -465,25 +438,30 @@ function App() {
           <Logo />
 
           <div className="auth-art-center">
-            <div className="big-mail">
-              <Mail size={76} strokeWidth={1.2} />
-              <CheckCircle className="mail-check" size={28} />
-            </div>
-
-            <h2>Your mail, all in one place.</h2>
+            <h2>Your mail,<br /><span>moving in sync.</span></h2>
             <p>
-              Stay on top of deliveries, important messages,
-              and everything in between.
+              Get notified the moment your mail arrives — so you're always in
+              the loop.
             </p>
 
             <div className="auth-benefits">
-              <span><CheckCircle size={16} /> Smart tracking</span>
-              <span><CheckCircle size={16} /> One simple inbox</span>
+              <div className="auth-benefit">
+                <span className="auth-benefit-icon"><Bell size={20} fill="currentColor" /></span>
+                <span><strong>Instant Notifications</strong><small>Know when your mail arrives.</small></span>
+              </div>
+              <div className="auth-benefit">
+                <span className="auth-benefit-icon"><ShieldCheck size={20} fill="currentColor" /></span>
+                <span><strong>Stay Organized</strong><small>Never miss what matters.</small></span>
+              </div>
+              <div className="auth-benefit">
+                <span className="auth-benefit-icon"><Zap size={20} fill="currentColor" /></span>
+                <span><strong>Simple &amp; Secure</strong><small>Your information stays private.</small></span>
+              </div>
             </div>
           </div>
 
           <small className="auth-footer">
-            ARRIVON · YOUR SMART MAIL BOX COMPANION
+            A LITTLE MORE ARRIVED, EVERY DAY
           </small>
         </section>
 
@@ -498,12 +476,12 @@ function App() {
               {signup ? 'GET STARTED' : 'WELCOME BACK'}
             </span>
 
-            <h1>{signup ? 'Create your account' : 'Welcome back'}</h1>
+            <h1>{signup ? 'Create your account' : 'Welcome to Arrivon'}</h1>
 
             <p className="auth-subtitle">
               {signup
-                ? 'Get notified the moment your mail arrives.'
-                : 'Log in to check your mail.'}
+                ? 'Create an account and keep every delivery and important update in sync.'
+                : 'Sign in to see what’s arrived and stay in the loop.'}
             </p>
 
             {/* Uses the appropriate form handler for each screen */}
@@ -624,21 +602,19 @@ function App() {
     );
   }
 
-  // ============================================
   // MAIN APPLICATION LAYOUT
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
-  // ============================================
   return (
     <div className="app-layout">
       <Sidebar />
 
       <main className="main-content">
 
-        {/* ============================================
+        {/* 
             HOME DASHBOARD
             Welcome banner, mailbox statistics, and recent mail.
-            ============================================ */}
+            */}
         {page === 'home' && (
           <>
             <Header
@@ -755,11 +731,11 @@ function App() {
           </>
         )}
 
-        {/* ============================================
+        {/* 
             CURRENT MAIL AND PAST MAIL
             Both pages share search, date filters, and mail rows.
             Past Mail also displays a mail-history banner.
-            ============================================ */}
+            */}
         {(page === 'current' || page === 'past') && (
           <>
             <Header
@@ -854,11 +830,11 @@ function App() {
           </>
         )}
 
-        {/* ============================================
+        {/* 
             MORE MAIL INFO
             Displays mail activity statistics, charts, frequent
             senders, and expandable important-mail sections.
-            ============================================ */}
+             */}
         {page === 'more' && (
           <>
             <Header
@@ -989,11 +965,11 @@ function App() {
           </>
         )}
 
-        {/* ============================================
+        {/* 
             MAIL DETAILS
             Shows information about the selected mail item,
             including sender, subject, category, date, and status.
-            ============================================ */}
+             */}
         {page === 'details' && selectedMail && (
           <>
             <Header
@@ -1068,13 +1044,20 @@ function App() {
           </>
         )}
 
-        {/* ============================================
+        {/* 
             APPLICATION FOOTER
             Displays the compact brand logo, copyright text,
             and Help action at the bottom of the page.
-            ============================================ */}
+            */}
         <footer className="app-footer">
-          <Logo compact />
+          <button
+            className="brand-home-button"
+            type="button"
+            aria-label="Go to home"
+            onClick={() => navigate('home')}
+          >
+            <Logo compact />
+          </button>
           <span>© 2026 Arrivon. Your mail, made simple.</span>
           <button onClick={() => notify('Help center coming soon.')}>
             Help
