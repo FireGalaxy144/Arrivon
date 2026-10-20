@@ -19,13 +19,83 @@ import './App.css';
 // This data is local to the prototype.
 
 const sampleMail = [
-  { id: 1, sender: 'Amazon', subject: 'Your order has shipped', tracking: 'TBA392840157', date: 'Today, 9:42 AM', category: 'Package', status: 'In transit', unread: true },
-  { id: 2, sender: 'Best Buy', subject: 'Your delivery is on its way', tracking: 'BBY18463028', date: 'Today, 8:15 AM', category: 'Package', status: 'Out for delivery', unread: true },
-  { id: 3, sender: 'eBay', subject: 'Your item has been delivered', tracking: 'EBY99201743', date: 'Yesterday', category: 'Package', status: 'Delivered', unread: false },
-  { id: 4, sender: 'Home Depot', subject: 'Thanks for your recent purchase', tracking: 'HD41028933', date: 'Oct 9', category: 'Receipt', status: 'Order confirmed', unread: false },
-  { id: 5, sender: 'Hyvee', subject: 'Your weekly savings are here', tracking: 'HV3381045', date: 'Oct 8', category: 'Promotion', status: 'Received', unread: false },
-  { id: 6, sender: 'John Doe', subject: 'Project notes for next week', tracking: '—', date: 'Oct 7', category: 'Personal', status: 'Received', unread: true },
-  { id: 7, sender: 'Amazon', subject: 'A package was delivered', tracking: 'TBA392840156', date: 'Oct 6', category: 'Package', status: 'Delivered', unread: false },
+  {
+    id: 1,
+    sender: 'Amazon',
+    subject: 'Your order has shipped',
+    tracking: 'TBA392840157',
+    date: 'Today, 9:42 AM',
+    daysAgo: 0,
+    category: 'Package',
+    status: 'In transit',
+    unread: true,
+  },
+  {
+    id: 2,
+    sender: 'Best Buy',
+    subject: 'Your delivery is on its way',
+    tracking: 'BBY18463028',
+    date: 'Today, 8:15 AM',
+    daysAgo: 0,
+    category: 'Package',
+    status: 'Out for delivery',
+    unread: true,
+  },
+  {
+    id: 3,
+    sender: 'eBay',
+    subject: 'Your item has been delivered',
+    tracking: 'EBY99201743',
+    date: 'Yesterday',
+    daysAgo: 1,
+    category: 'Package',
+    status: 'Delivered',
+    unread: false,
+  },
+  {
+    id: 4,
+    sender: 'Home Depot',
+    subject: 'Thanks for your recent purchase',
+    tracking: 'HD41028933',
+    date: 'Oct 9',
+    daysAgo: 10,
+    category: 'Receipt',
+    status: 'Order confirmed',
+    unread: false,
+  },
+  {
+    id: 5,
+    sender: 'Hyvee',
+    subject: 'Your weekly savings are here',
+    tracking: 'HV3381045',
+    date: 'Oct 8',
+    daysAgo: 11,
+    category: 'Promotion',
+    status: 'Received',
+    unread: false,
+  },
+  {
+    id: 6,
+    sender: 'John Doe',
+    subject: 'Project notes for next week',
+    tracking: '—',
+    date: 'Oct 7',
+    daysAgo: 12,
+    category: 'Personal',
+    status: 'Received',
+    unread: true,
+  },
+  {
+    id: 7,
+    sender: 'Amazon',
+    subject: 'A package was delivered',
+    tracking: 'TBA392840156',
+    date: 'Oct 6',
+    daysAgo: 13,
+    category: 'Package',
+    status: 'Delivered',
+    unread: false,
+  },
 ];
 
 // REUSABLE BRAND LOGO
@@ -43,7 +113,31 @@ function Logo({ compact = false }) {
     </div>
   );
 }
+// Defined outside App so React does not remount it on every keystroke.
+function SearchBar({ search, setSearch }) {
+  return (
+    <div className="search-box">
+      <Search size={18} />
 
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search sender, subject, or tracking number..."
+      />
+
+      {search && (
+        <button
+          type="button"
+          onClick={() => setSearch('')}
+          aria-label="Clear search"
+        >
+          <X size={16} />
+        </button>
+      )}
+    </div>
+  );
+}
 // MAIN APP COMPONENT AND STATE
 // Stores the current page, sample mail, account state,
 // search/filter values, selected message, and UI notices.
@@ -76,29 +170,56 @@ function App() {
     window.setTimeout(() => setNotice(''), 3000);
   }
 
-  // SEARCH AND FILTER LOGIC
-  // Filters mail by search text, sender, and date.
-  // The filtered results are shared by Current Mail and Past Mail.
-  const visibleMail = mail.filter((item) => {
-    const searchable = [
-      item.sender, item.subject, item.tracking, item.status
-    ].join(' ').toLowerCase();
+// SEARCH AND FILTER LOGIC
+// Filters mail by search text, sender, and selected date range.
+const visibleMail = mail.filter((item) => {
+  const query = search.toLowerCase().trim();
 
-    const matchesSearch = searchable.includes(search.toLowerCase());
-    const matchesSender = senderFilter === 'All' || item.sender === senderFilter;
+  // Search sender, subject, tracking number, and delivery status.
+  const searchable = [
+    item.sender,
+    item.subject,
+    item.tracking,
+    item.status,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
 
-    const matchesDate =
-      dateFilter === 'All' ||
-      dateFilter === 'Last 30 Days' ||
-      (dateFilter === 'Last 7 Days' &&
-        [
-          'Today, 9:42 AM', 'Today, 8:15 AM', 'Yesterday',
-          'Oct 9', 'Oct 8', 'Oct 7', 'Oct 6'
-        ].includes(item.date));
+  const matchesSearch = searchable.includes(query);
 
-    return matchesSearch && matchesSender && matchesDate;
-  });
+  // Filter by sender.
+  const matchesSender =
+    senderFilter === 'All' || item.sender === senderFilter;
 
+  // Filter by date range.
+  let matchesDate = true;
+
+  if (dateFilter === 'Last 7 Days') {
+    matchesDate = item.daysAgo <= 7;
+  } else if (dateFilter === 'Last 30 Days') {
+    matchesDate = item.daysAgo <= 30;
+  } else if (dateFilter === 'Last 3 Months') {
+    matchesDate = item.daysAgo <= 90;
+  }
+
+  return matchesSearch && matchesSender && matchesDate;
+});
+
+// Current Mail: packages on the way and orders awaiting completion.
+const currentMail = visibleMail.filter(
+  (item) =>
+    item.status !== 'Delivered' ||
+    item.date.startsWith('Today')
+);
+
+// Past Mail: packages delivered before today.
+const pastMail = visibleMail.filter(
+  (item) =>
+    item.category === 'Package' &&
+    item.status === 'Delivered' &&
+    !item.date.startsWith('Today')
+);
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
@@ -363,25 +484,7 @@ function App() {
   // MAIL SEARCH INPUT
   // Updates the shared search value and lets the user
   // clear the search field.
-  function SearchBar() {
-    return (
-      <div className="search-box">
-        <Search size={18} />
-
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search sender, subject, or tracking number..."
-        />
-
-        {search && (
-          <button onClick={() => setSearch('')}>
-            <X size={16} />
-          </button>
-        )}
-      </div>
-    );
-  }
+  // MAIL SEARCH INPUT
 
   // REUSABLE SECTION HEADING
   // Shows a section title, explanatory text, and action link.
@@ -759,30 +862,11 @@ function App() {
               }
             />
 
-            {/* Additional heading shown only on Past Mail */}
-            {page === 'past' && (
-              <section className="past-banner">
-                <div className="past-banner-icon">
-                  <Clock size={24} />
-                </div>
-
-                <div>
-                  <h2>Your mail history</h2>
-                  <p>
-                    Search previous messages, deliveries, and receipts.
-                  </p>
-                </div>
-
-                <strong>
-                  {mail.length}
-                  <small>saved messages</small>
-                </strong>
-              </section>
-            )}
+           
 
             {/* Search field and Current Mail sender filter */}
             <div className="toolbar">
-              <SearchBar />
+              <SearchBar search={search} setSearch={setSearch} />
 
               {page === 'current' && (
                 <button
@@ -809,9 +893,7 @@ function App() {
                 <button
                   key={filter}
                   className={dateFilter === filter ? 'selected' : ''}
-                  onClick={() =>
-                    setDateFilter(filter === 'Last 3 Months' ? 'All' : filter)
-                  }
+                  onClick={() => setDateFilter(filter)}
                 >
                   {filter}
                 </button>
@@ -821,11 +903,18 @@ function App() {
             {/* Filtered mail results */}
             <section className="panel">
               <div className="list-summary">
-                <span><strong>{visibleMail.length}</strong> messages</span>
+                <span>
+                  <strong>
+                 {page === 'current' ? currentMail.length : pastMail.length}
+  </strong>{' '}
+  messages
+</span>
                 <span>Unread messages are highlighted</span>
               </div>
 
-              <MailRows items={visibleMail} />
+             <MailRows
+              items={page === 'current' ? currentMail : pastMail}
+            />
             </section>
           </>
         )}
