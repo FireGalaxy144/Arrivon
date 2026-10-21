@@ -49,8 +49,7 @@ Arrivon-app/
 ├── index.html        # HTML entry point
 ├── package.json      # Dependencies and npm scripts
 ├── package-lock.json # Locked dependency versions
-├── vite.config.js    # Vite configuration
-└── README.md         # Project documentation
+└── vite.config.js    # Vite configuration
 ```
 
 ## Where to Find the Code
@@ -99,6 +98,30 @@ http://localhost:5173
 ```
 
 Use the actual URL displayed by your development server if the port is different.
+
+## Building for Production
+
+Run these commands from the `Arrivon-app` directory after installing dependencies.
+
+### 1. Create the production build
+
+```bash
+npm run build
+```
+
+Vite bundles and optimizes the application into the `dist/` folder. The contents of `dist/` are static files that can be deployed to any static hosting service.
+
+### 2. Preview the production build
+
+```bash
+npm run preview
+```
+
+This serves the `dist/` folder locally so you can check the production build before deploying it. Open the URL printed in the terminal, commonly:
+
+```text
+http://localhost:4173
+```
 
 ## Technologies Used
 

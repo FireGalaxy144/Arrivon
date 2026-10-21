@@ -1879,3 +1879,148 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
     display: none;
   }
 }
+
+/* Detailed Home dashboard cards */
+.home-navigation-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 30px 0;
+}
+
+.home-navigation-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  min-width: 0;
+  min-height: 225px;
+  padding: 22px;
+  text-align: left;
+  background: white;
+  color: var(--navy);
+  border: 1px solid #dfe3f2;
+  border-radius: 16px;
+  box-shadow: 0 5px 16px rgba(35, 43, 100, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.home-navigation-card:hover {
+  transform: translateY(-4px);
+  border-color: #9ca8ee;
+  box-shadow: 0 12px 26px rgba(35, 43, 100, 0.15);
+}
+
+.home-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.home-card-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: #e2f7fb;
+  color: var(--navy);
+}
+
+.home-card-count {
+  padding: 7px 10px;
+  border-radius: 20px;
+  background: #f0f1ff;
+  color: var(--navy);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.home-navigation-card > strong {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.home-navigation-card > p {
+  margin: 0;
+  min-height: 54px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.home-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #eceef7;
+  color: var(--navy);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.home-card-arrow {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: white;
+  transition: transform 0.2s ease;
+}
+
+.home-navigation-card:hover .home-card-arrow {
+  transform: translateX(3px);
+}
+
+@media (max-width: 760px) {
+  .home-navigation-cards {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .home-navigation-card {
+    min-height: 200px;
+  }
+}
+.new-mail-today-card {
+  width: 220px;
+  padding: 20px 24px;
+  margin-top: 20px;
+  background: white;
+  border-radius: 18px;
+  color: #242341;
+}
+
+.new-mail-today-card .new-mail-today-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: #d9f5fb;
+  color: #37318c;
+}
+
+.new-mail-today-card h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.new-mail-today-card p {
+  margin: 0;
+  color: #555477;
+  font-size: 14px;
+}
