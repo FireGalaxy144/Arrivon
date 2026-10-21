@@ -1,10 +1,9 @@
 # Arrivon
 
 ## 3 Tasks to Complete by Users
-1. User should be able to create and account with their respective details and should be able to login to the main dashboard of Arrivon
+1. User should be able to open current mail to review incoming, or currently tracked mail and packages
 
-2. Users should be able to be view and identify new mail in home page and should be able to click on current mail and view what's out for delivery and in transit and should be able to view past 7 mails and past 3 mails and should be able to click on any mails that's in trasit or delivery to view tracking number and the status and should be able to perform the same task for past mail
-
+2.  User should be able to open past mail to review delivered items. Use the search bar to look for a sender and use the all, and time filters to narrow the list.
 3. User should be able to view overall mail status in their mailbox (ex. delivered, sent, address) and should be able to identitfy each and also should be able to see a vusual trend of mails in their box. Also should be able to click on important mail and view anything important and should be able to click on the mail to view its status and also should be able to click on Needs Signature to view any mail that requires a signature. User should be able to click on logo to return to home screen and if the log out button is clicked it should log the user out of the main dashboard and land in the login page.
 
 ## Project Overview
