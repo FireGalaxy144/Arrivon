@@ -37,7 +37,7 @@ button {
 
 /* Authentication screens share the Arrivon blue visual theme. */
 .auth-layout {
-  --auth-blue: #2787ed;
+  --auth-blue: #0a6789;
   --auth-blue-dark: #0b4d9e;
   --auth-ink: #10366e;
   --auth-muted: #6884ad;
@@ -61,7 +61,7 @@ button {
   padding: 42px clamp(32px, 5vw, 72px) 34px;
   overflow: hidden;
   isolation: isolate;
-  background: linear-gradient(145deg, #eaf5ff, #d7ebff);
+background: linear-gradient(145deg, #eaf5ff, #1983ee);
   color: var(--auth-ink);
 }
 

@@ -1,5 +1,12 @@
 # Arrivon
 
+## 3 Tasks to Complete by Users
+1. User should be able to create and account with their respective details and should be able to login to the main dashboard of Arrivon
+
+2. Users should be able to be view and identify new mail in home page and should be able to click on current mail and view what's out for delivery and in transit and should be able to view past 7 mails and past 3 mails and should be able to click on any mails that's in trasit or delivery to view tracking number and the status and should be able to perform the same task for past mail
+
+3. User should be able to view overall mail status in their mailbox (ex. delivered, sent, address) and should be able to identitfy each and also should be able to see a vusual trend of mails in their box. Also should be able to click on important mail and view anything important and should be able to click on the mail to view its status and also should be able to click on Needs Signature to view any mail that requires a signature. User should be able to click on logo to return to home screen and if the log out button is clicked it should log the user out of the main dashboard and land in the login page.
+
 ## Project Overview
 
 Arrivon is a React-based web application prototype designed to help users view, organize, and review their mail and package deliveries through a centralized interface.
@@ -116,3 +123,4 @@ Use the actual URL displayed by your development server if the port is different
 - Update application-wide styling in `src/index.css`.
 - Update dependencies through npm and keep `package-lock.json` synchronized.
 - Keep this README updated as new features and integrations are added.
+
