@@ -19,13 +19,90 @@ import './App.css';
 // This data is local to the prototype.
 
 const sampleMail = [
-  { id: 1, sender: 'Amazon', subject: 'Your order has shipped', tracking: 'TBA392840157', date: 'Today, 9:42 AM', category: 'Package', status: 'In transit', unread: true },
-  { id: 2, sender: 'Best Buy', subject: 'Your delivery is on its way', tracking: 'BBY18463028', date: 'Today, 8:15 AM', category: 'Package', status: 'Out for delivery', unread: true },
-  { id: 3, sender: 'eBay', subject: 'Your item has been delivered', tracking: 'EBY99201743', date: 'Yesterday', category: 'Package', status: 'Delivered', unread: false },
-  { id: 4, sender: 'Home Depot', subject: 'Thanks for your recent purchase', tracking: 'HD41028933', date: 'Oct 9', category: 'Receipt', status: 'Order confirmed', unread: false },
-  { id: 5, sender: 'Hyvee', subject: 'Your weekly savings are here', tracking: 'HV3381045', date: 'Oct 8', category: 'Promotion', status: 'Received', unread: false },
-  { id: 6, sender: 'John Doe', subject: 'Project notes for next week', tracking: '—', date: 'Oct 7', category: 'Personal', status: 'Received', unread: true },
-  { id: 7, sender: 'Amazon', subject: 'A package was delivered', tracking: 'TBA392840156', date: 'Oct 6', category: 'Package', status: 'Delivered', unread: false },
+  {
+    id: 1,
+    sender: 'Amazon',
+    subject: 'Your order has shipped',
+    tracking: 'TBA392840157',
+    date: '2026-10-20',
+    category: 'Package',
+    status: 'In transit',
+    unread: true,
+  },
+  {
+    id: 2,
+    sender: 'Best Buy',
+    subject: 'Your delivery is on its way',
+    tracking: 'BBY18463028',
+    date: '2026-10-20',
+    category: 'Package',
+    status: 'Out for delivery',
+    unread: true,
+  },
+  {
+    id: 3,
+    sender: 'eBay',
+    subject: 'Your item has been delivered',
+    tracking: 'EBY99201743',
+    date: '2026-10-19',
+    deliveredAt: '2026-10-19',
+    category: 'Package',
+    status: 'Delivered',
+    unread: false,
+  },
+  {
+    id: 4,
+    sender: 'Home Depot',
+    subject: 'Thanks for your recent purchase',
+    tracking: 'HD41028933',
+    date: '2026-10-09',
+    category: 'Receipt',
+    status: 'Order confirmed',
+    unread: false,
+  },
+  {
+    id: 5,
+    sender: 'Hyvee',
+    subject: 'Your weekly savings are here',
+    tracking: '',
+    date: '2026-10-08',
+    category: 'Promotion',
+    status: 'Received',
+    unread: false,
+  },
+  {
+    id: 7,
+    sender: 'Amazon',
+    subject: 'A package was delivered',
+    tracking: 'TBA392840156',
+    date: '2026-10-06',
+    deliveredAt: '2026-10-06',
+    category: 'Package',
+    status: 'Delivered',
+    unread: false,
+  },
+  {
+    id: 8,
+    sender: 'Amazon',
+    subject: 'A package was delivered',
+    tracking: 'RTY392840156',
+    date: '2026-10-20',
+    deliveredAt: '2026-10-20',
+    category: 'Package',
+    status: 'Delivered',
+    unread: false,
+  },
+  {
+    id: 9,
+    sender: 'Target',
+    subject: 'A package was delivered',
+    tracking: 'YUII92840156',
+    date: '2026-05-20',
+    deliveredAt: '2026-05-20',
+    category: 'Package',
+    status: 'Delivered',
+    unread: false,
+  },
 ];
 
 // REUSABLE BRAND LOGO
@@ -43,7 +120,43 @@ function Logo({ compact = false }) {
     </div>
   );
 }
+// Defined outside App so React does not remount it on every keystroke.
+function SearchBar({ search, setSearch }) {
+  return (
+    <div className="search-box">
+      <Search size={18} />
 
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search sender, subject, or tracking number..."
+      />
+
+      {search && (
+        <button
+          type="button"
+          onClick={() => setSearch('')}
+          aria-label="Clear search"
+        >
+          <X size={16} />
+        </button>
+      )}
+    </div>
+  );
+}
+function isToday(dateString) {
+  if (!dateString) return false;
+
+  const date = new Date(dateString);
+  const today = new Date();
+
+  return (
+    date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate()
+  );
+}
 // MAIN APP COMPONENT AND STATE
 // Stores the current page, sample mail, account state,
 // search/filter values, selected message, and UI notices.
@@ -76,29 +189,75 @@ function App() {
     window.setTimeout(() => setNotice(''), 3000);
   }
 
-  // SEARCH AND FILTER LOGIC
-  // Filters mail by search text, sender, and date.
-  // The filtered results are shared by Current Mail and Past Mail.
-  const visibleMail = mail.filter((item) => {
-    const searchable = [
-      item.sender, item.subject, item.tracking, item.status
-    ].join(' ').toLowerCase();
+// SEARCH AND FILTER LOGIC
+// Filters mail by search text, sender, and selected date range.
+const visibleMail = mail.filter((item) => {
+  const query = search.toLowerCase().trim();
 
-    const matchesSearch = searchable.includes(search.toLowerCase());
-    const matchesSender = senderFilter === 'All' || item.sender === senderFilter;
+  // Search sender, subject, tracking number, and delivery status.
+  const searchable = [
+    item.sender,
+    item.subject,
+    item.tracking,
+    item.status,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
 
-    const matchesDate =
-      dateFilter === 'All' ||
-      dateFilter === 'Last 30 Days' ||
-      (dateFilter === 'Last 7 Days' &&
-        [
-          'Today, 9:42 AM', 'Today, 8:15 AM', 'Yesterday',
-          'Oct 9', 'Oct 8', 'Oct 7', 'Oct 6'
-        ].includes(item.date));
+  const matchesSearch = searchable.includes(query);
 
-    return matchesSearch && matchesSender && matchesDate;
-  });
+  // Filter by sender.
+  const matchesSender =
+    senderFilter === 'All' || item.sender === senderFilter;
 
+  
+  // Filter by date range using actual timestamps.
+  let matchesDate = true;
+
+  if (dateFilter !== 'All') {
+    const messageDate = new Date(item.date);
+    const cutoff = new Date();
+
+    if (dateFilter === 'Last 7 Days') {
+      cutoff.setDate(cutoff.getDate() - 7);
+    } else if (dateFilter === 'Last 30 Days') {
+      cutoff.setDate(cutoff.getDate() - 30);
+    } else if (dateFilter === 'Last 3 Months') {
+      cutoff.setMonth(cutoff.getMonth() - 3);
+    }
+
+    matchesDate =
+      !Number.isNaN(messageDate.getTime()) &&
+      messageDate >= cutoff &&
+      messageDate <= new Date();
+  }
+
+
+  return matchesSearch && matchesSender && matchesDate;
+});
+
+const currentMail = visibleMail.filter((item) => {
+  // Keep delivered packages in Current Mail for the day of delivery.
+  if (item.status === "Delivered") {
+    return isToday(item.deliveredAt);
+  }
+
+  // Keep orders still being processed or shipped in Current Mail.
+  return item.status === "Order confirmed" ||
+         item.status === "In transit" ||
+         item.status === "Out for delivery";
+});
+
+const pastMail = visibleMail.filter((item) => {
+  return (
+    item.category === "Package" &&
+    item.status === "Delivered" &&
+    item.deliveredAt &&
+    !isToday(item.deliveredAt) &&
+    new Date(item.deliveredAt) < new Date()
+  );
+});
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
@@ -249,11 +408,7 @@ function App() {
                 <Icon size={18} />
                 <span>{label}</span>
 
-                {id === 'current' && (
-                  <span className="nav-count">
-                    {mail.filter(m => m.unread).length}
-                  </span>
-                )}
+                
               </button>
             ))}
           </nav>
@@ -363,25 +518,7 @@ function App() {
   // MAIL SEARCH INPUT
   // Updates the shared search value and lets the user
   // clear the search field.
-  function SearchBar() {
-    return (
-      <div className="search-box">
-        <Search size={18} />
-
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search sender, subject, or tracking number..."
-        />
-
-        {search && (
-          <button onClick={() => setSearch('')}>
-            <X size={16} />
-          </button>
-        )}
-      </div>
-    );
-  }
+  // MAIL SEARCH INPUT
 
   // REUSABLE SECTION HEADING
   // Shows a section title, explanatory text, and action link.
@@ -630,39 +767,36 @@ function App() {
               }
             />
 
-            {/* Welcome banner and link to Past Mail */}
-            <section className="welcome-banner">
+            {/* Home welcome banner */}
+            <section className="welcome-banner home-welcome">
               <div className="banner-copy">
                 <div className="live-label">
                   <span /> YOUR MAIL AT A GLANCE
                 </div>
-
                 <h2>
-                  Everything delivered.<br />
-                  <span>Nothing missed.</span>
+                  Your mail,<br />
+                  <span>all in sync.</span>
                 </h2>
+                <p>Your mail and packages, neatly organized in one place.</p>
+                <div className="new-mail-today-card">
+                  <div className="new-mail-today-icon">
+                       <Mail size={24} />
+                   </div>
 
-                <p>
-                  Your mail and packages, neatly organized in one place.
-                </p>
+            <h3>New mail today</h3>
 
-                <button
-                  className="banner-button"
-                  onClick={() => navigate('past')}
-                >
-                  Explore past mail <ChevronRight size={16} />
-                </button>
+  <p>
+    {mail.filter(item => isToday(item.date)).length} mail updates today
+  </p>
+</div>
               </div>
 
-              {/* Decorative mail illustration */}
               <div className="banner-illustration">
                 <div className="spark">✦</div>
-
                 <div className="illustration-envelope">
                   <Mail size={76} strokeWidth={1.1} />
                   <CheckCircle className="envelope-check" size={28} />
                 </div>
-
                 <div className="banner-caption">
                   <CheckCircle size={18} />
                   <div>
@@ -672,61 +806,44 @@ function App() {
                 </div>
               </div>
             </section>
-
-            {/* Mailbox overview heading */}
-            <SectionHeading
-              title="Your mailbox"
-              subtitle="A quick look at your mail activity."
-              action="View insights"
-              onAction={() => navigate('more')}
-            />
-
-            {/* Clickable mailbox statistics */}
-            <section className="stat-grid">
-              <StatCard
-                icon={<Inbox />}
-                label="CURRENT MAIL"
-                value={mail.filter(m => m.unread).length}
-                caption="Unread messages"
+            
+            {/* Three main navigation cards */}
+            <section className="home-navigation-cards">
+              <button
+                className="home-navigation-card"
                 onClick={() => navigate('current')}
-              />
+              >
+                <span className="home-card-icon"><Mail size={19} /></span>
+                <strong>Current Mail</strong>
+                <p>See mail and packages on the way or arriving today.</p>
+                <span className="home-card-action">
+                  View current mail <ChevronRight size={14} />
+                </span>
+              </button>
 
-              <StatCard
-                icon={<Clock />}
-                label="PAST MAIL"
-                value={mail.length}
-                caption="Saved messages"
+              <button
+                className="home-navigation-card"
                 onClick={() => navigate('past')}
-              />
+              >
+                <span className="home-card-icon"><Clock size={19} /></span>
+                <strong>Past Mail</strong>
+                <p>Search and filter everything that has been delivered.</p>
+                <span className="home-card-action">
+                  View past mail <ChevronRight size={14} />
+                </span>
+              </button>
 
-              <StatCard
-                icon={<Package />}
-                label="PACKAGES"
-                value={mail.filter(m => m.category === 'Package').length}
-                caption="Tracked deliveries"
-                onClick={() => navigate('current')}
-              />
-
-              <StatCard
-                icon={<FileSignature />}
-                label="IMPORTANT MAIL"
-                value={mail.filter(m => m.category === 'Receipt').length + 2}
-                caption="Ready when you need it"
+              <button
+                className="home-navigation-card"
                 onClick={() => navigate('more')}
-              />
-            </section>
-
-            {/* Recent mail list */}
-            <SectionHeading
-              title="Recent mail"
-              subtitle="Your latest updates and deliveries."
-              action="See all mail"
-              onAction={() => navigate('current')}
-            />
-
-            <section className="panel">
-              <PanelHeading title="Latest activity" />
-              <MailRows items={mail.slice(0, 4)} />
+              >
+                <span className="home-card-icon"><ChartColumn size={19} /></span>
+                <strong>More Mail Info</strong>
+                <p>Delivery counts, top senders, and important mail.</p>
+                <span className="home-card-action">
+                  View mail info <ChevronRight size={14} />
+                </span>
+              </button>
             </section>
           </>
         )}
@@ -759,30 +876,11 @@ function App() {
               }
             />
 
-            {/* Additional heading shown only on Past Mail */}
-            {page === 'past' && (
-              <section className="past-banner">
-                <div className="past-banner-icon">
-                  <Clock size={24} />
-                </div>
-
-                <div>
-                  <h2>Your mail history</h2>
-                  <p>
-                    Search previous messages, deliveries, and receipts.
-                  </p>
-                </div>
-
-                <strong>
-                  {mail.length}
-                  <small>saved messages</small>
-                </strong>
-              </section>
-            )}
+           
 
             {/* Search field and Current Mail sender filter */}
             <div className="toolbar">
-              <SearchBar />
+              <SearchBar search={search} setSearch={setSearch} />
 
               {page === 'current' && (
                 <button
@@ -809,9 +907,7 @@ function App() {
                 <button
                   key={filter}
                   className={dateFilter === filter ? 'selected' : ''}
-                  onClick={() =>
-                    setDateFilter(filter === 'Last 3 Months' ? 'All' : filter)
-                  }
+                  onClick={() => setDateFilter(filter)}
                 >
                   {filter}
                 </button>
@@ -821,11 +917,18 @@ function App() {
             {/* Filtered mail results */}
             <section className="panel">
               <div className="list-summary">
-                <span><strong>{visibleMail.length}</strong> messages</span>
+                <span>
+                  <strong>
+                 {page === 'current' ? currentMail.length : pastMail.length}
+  </strong>{' '}
+  messages
+</span>
                 <span>Unread messages are highlighted</span>
               </div>
 
-              <MailRows items={visibleMail} />
+             <MailRows
+              items={page === 'current' ? currentMail : pastMail}
+            />
             </section>
           </>
         )}
@@ -1020,7 +1123,7 @@ function App() {
 
                 <div>
                   <small>DATE RECEIVED</small>
-                  <strong>{selectedMail.date}</strong>
+                  <strong>{selectedMail.date?.split('T')[0]}</strong>
                 </div>
 
                 <div>
