@@ -1,0 +1,101 @@
+sender,subject,category,date,time,trackingNumber,deliveryStatus,unread
+Amazon,Your package has been delivered,Package,2026-10-26,14:25:00,TBA392840157,Delivered,True
+USPS,Package arriving tomorrow,Package,2026-10-25,10:30:00,9400111899223856921045,In Transit,True
+UNL,Tuition payment reminder,Mail,2026-10-24,09:15:00,,Received,False
+First National Bank,Your monthly statement is ready,Mail,2026-10-23,08:00:00,,Received,False
+FedEx,Your delivery is out for delivery,Package,2026-10-22,11:40:00,781245903612,Out for Delivery,True
+Target,Your order has shipped,Package,2026-10-21,16:05:00,TGT839201745,In Transit,False
+UPS,Delivery update for your package,Package,2026-10-20,13:20:00,1Z85A73E0392847612,In Transit,True
+Capital One,Your account statement is available,Mail,2026-10-19,08:45:00,,Received,False
+Walmart,Your order is ready for pickup,Package,2026-10-18,12:10:00,WM482019573,Ready for Pickup,True
+Netflix,Your monthly billing receipt,Mail,2026-10-17,07:30:00,,Received,False
+Best Buy,Your statement is ready to download,Billing,2026-10-16,10:50:00,,Received,True
+Spotify,Your order has shipped,Package,2026-10-15,15:07:00,TRK2026087109,Delayed,True
+Verizon,Important account update,Mail,2026-10-14,08:24:00,,Received,False
+T-Mobile,Your account settings were updated,Appointment,2026-10-13,13:41:00,,Received,True
+Nebraska DMV,Package arriving tomorrow,Package,2026-10-12,18:58:00,TRK2026110866,Delivered,True
+Lincoln Electric System,Your order is ready for pickup,Package,2026-10-11,11:15:00,TRK2026118785,Ready for Pickup,False
+Chewy,Your payment was received,Billing,2026-10-10,16:32:00,,Received,True
+Etsy,Your subscription renewal is coming up,Billing,2026-10-09,09:49:00,,Received,True
+Home Depot,Your delivery is out for delivery,Package,2026-10-08,14:06:00,TRK2026142542,Delayed,False
+Lowe's,Your receipt is ready,Billing,2026-10-07,19:23:00,,Received,True
+PayPal,Your package delivery has been rescheduled,Package,2026-10-06,12:40:00,TRK2026158380,Received,True
+Venmo,Your package has been delivered,Package,2026-10-05,17:57:00,TRK2026166299,Delivered,False
+Discover,Your account statement is available,Billing,2026-10-04,10:14:00,,Received,True
+Chase,Your order confirmation,Package,2026-10-03,15:31:00,TRK2026182137,Action Required,True
+University Health Center,Your service request has been received,Billing,2026-10-02,08:48:00,,Received,False
+State Farm,Your monthly statement is ready,Billing,2026-10-01,13:05:00,,Received,True
+Progressive,Action may be required on your account,Mail,2026-09-30,18:22:00,,Received,True
+Dell,A reminder about your upcoming payment,Billing,2026-09-29,11:39:00,,Received,False
+Apple,Your delivery has been delayed,Package,2026-09-28,16:56:00,TRK2026221732,Delivered,True
+Google Store,Delivery update for your package,Package,2026-09-27,09:13:00,TRK2026229651,Ready for Pickup,True
+Microsoft,Your appointment confirmation,Delivery,2026-09-26,14:30:00,TRK2026237570,Action Required,False
+Adobe,Your application status has changed,Billing,2026-09-25,19:47:00,,Received,True
+DoorDash,Tuition payment reminder,Billing,2026-09-24,12:04:00,,Received,True
+Uber,Your monthly billing receipt,Billing,2026-09-23,17:21:00,,Received,False
+Lyft,Your document is ready to view,Appointment,2026-09-22,10:38:00,,Received,True
+Airbnb,Your statement is ready to download,Billing,2026-09-21,15:55:00,,Received,True
+Delta Air Lines,Your order has shipped,Package,2026-09-20,08:12:00,TRK2026285084,Ready for Pickup,False
+Southwest Airlines,Important account update,Delivery,2026-09-19,13:29:00,TRK2026293003,Action Required,True
+Marriott,Your account settings were updated,Billing,2026-09-18,18:46:00,,Received,True
+Hilton,Package arriving tomorrow,Package,2026-09-17,11:03:00,TRK2026308841,Delayed,False
+US Department of Education,Your order is ready for pickup,Package,2026-09-16,16:20:00,TRK2026316760,In Transit,True
+StudentAid.gov,Your payment was received,Billing,2026-09-15,09:37:00,,Received,True
+Nebraska Department of Revenue,Your subscription renewal is coming up,Billing,2026-09-14,14:54:00,,Received,False
+City of Lincoln,Your delivery is out for delivery,Package,2026-09-13,19:11:00,TRK2026340517,Ready for Pickup,True
+Lincoln Public Schools,Your receipt is ready,Billing,2026-09-12,12:28:00,,Received,True
+American Express,Your package delivery has been rescheduled,Package,2026-10-26,17:45:00,TRK2026356355,Out for Delivery,False
+IKEA,Your package has been delivered,Package,2026-10-25,10:02:00,TRK2026364274,Delayed,True
+Kohl's,Your account statement is available,Billing,2026-10-24,15:19:00,,Received,True
+Macy's,Your order confirmation,Package,2026-10-23,08:36:00,TRK2026380112,Received,False
+Wayfair,Your service request has been received,Package,2026-10-22,13:53:00,TRK2026388031,Delivered,True
+Amazon,Your monthly statement is ready,Billing,2026-10-21,18:10:00,,Received,True
+USPS,Action may be required on your account,Delivery,2026-10-20,11:27:00,TRK2026403869,Action Required,False
+UNL,A reminder about your upcoming payment,Billing,2026-10-19,16:44:00,,Received,True
+First National Bank,Your delivery has been delayed,Package,2026-10-18,09:01:00,TRK2026419707,Delayed,True
+FedEx,Delivery update for your package,Package,2026-10-17,14:18:00,TRK2026427626,In Transit,False
+Target,Your appointment confirmation,Appointment,2026-10-16,19:35:00,,Received,True
+UPS,Your application status has changed,Package,2026-10-15,12:52:00,TRK2026443464,Delivered,True
+Capital One,Tuition payment reminder,Billing,2026-10-14,17:09:00,,Received,False
+Walmart,Your monthly billing receipt,Billing,2026-10-13,10:26:00,,Received,True
+Netflix,Your document is ready to view,Billing,2026-10-12,15:43:00,,Received,True
+Best Buy,Your statement is ready to download,Billing,2026-10-11,08:00:00,,Received,False
+Spotify,Your order has shipped,Package,2026-10-10,13:17:00,TRK2026483059,In Transit,True
+Verizon,Important account update,Appointment,2026-10-09,18:34:00,,Received,True
+T-Mobile,Your account settings were updated,Package,2026-10-08,11:51:00,TRK2026498897,Delivered,False
+Nebraska DMV,Package arriving tomorrow,Package,2026-10-07,16:08:00,TRK2026506816,Ready for Pickup,True
+Lincoln Electric System,Your order is ready for pickup,Package,2026-10-06,09:25:00,TRK2026514735,Action Required,True
+Chewy,Your payment was received,Billing,2026-10-05,14:42:00,,Received,False
+Etsy,Your subscription renewal is coming up,Billing,2026-10-04,19:59:00,,Received,True
+Home Depot,Your delivery is out for delivery,Package,2026-10-03,12:16:00,TRK2026538492,In Transit,True
+Lowe's,Your receipt is ready,Billing,2026-10-02,17:33:00,,Received,False
+PayPal,Your package delivery has been rescheduled,Package,2026-10-01,10:50:00,TRK2026554330,Delivered,True
+Venmo,Your package has been delivered,Package,2026-09-30,15:07:00,TRK2026562249,Ready for Pickup,True
+Discover,Your account statement is available,Billing,2026-09-29,08:24:00,,Received,False
+Chase,Your order confirmation,Package,2026-09-28,13:41:00,TRK2026578087,Out for Delivery,True
+University Health Center,Your service request has been received,Document,2026-09-27,18:58:00,,Received,True
+State Farm,Your monthly statement is ready,Billing,2026-09-26,11:15:00,,Received,False
+Progressive,Action may be required on your account,Appointment,2026-09-25,16:32:00,,Received,True
+Dell,A reminder about your upcoming payment,Billing,2026-09-24,09:49:00,,Received,True
+Apple,Your delivery has been delayed,Package,2026-09-23,14:06:00,TRK2026617682,Ready for Pickup,False
+Google Store,Delivery update for your package,Package,2026-09-22,19:23:00,TRK2026625601,Action Required,True
+Microsoft,Your appointment confirmation,Billing,2026-09-21,12:40:00,,Received,True
+Adobe,Your application status has changed,Document,2026-09-20,17:57:00,,Received,False
+DoorDash,Tuition payment reminder,Billing,2026-09-19,10:14:00,,Received,True
+Uber,Your monthly billing receipt,Billing,2026-09-18,15:31:00,,Received,True
+Lyft,Your document is ready to view,Package,2026-09-17,08:48:00,TRK2026665196,Delivered,False
+Airbnb,Your statement is ready to download,Billing,2026-09-16,13:05:00,,Received,True
+Delta Air Lines,Your order has shipped,Package,2026-09-15,18:22:00,TRK2026681034,Action Required,True
+Southwest Airlines,Important account update,Billing,2026-09-14,11:39:00,,Received,False
+Marriott,Your account settings were updated,Document,2026-09-13,16:56:00,,Received,True
+Hilton,Package arriving tomorrow,Package,2026-09-12,09:13:00,TRK2026704791,In Transit,True
+US Department of Education,Your order is ready for pickup,Package,2026-10-26,14:30:00,TRK2026712710,Received,False
+StudentAid.gov,Your payment was received,Billing,2026-10-25,19:47:00,,Received,True
+Nebraska Department of Revenue,Your subscription renewal is coming up,Billing,2026-10-24,12:04:00,,Received,True
+City of Lincoln,Your delivery is out for delivery,Package,2026-10-23,17:21:00,TRK2026736467,Action Required,False
+Lincoln Public Schools,Your receipt is ready,Billing,2026-10-22,10:38:00,,Received,True
+American Express,Your package delivery has been rescheduled,Package,2026-10-21,15:55:00,TRK2026752305,Delayed,True
+IKEA,Your package has been delivered,Package,2026-10-20,08:12:00,TRK2026760224,In Transit,False
+Kohl's,Your account statement is available,Billing,2026-10-19,13:29:00,,Received,True
+Macy's,Your order confirmation,Package,2026-10-18,18:46:00,TRK2026776062,Delivered,True
+Wayfair,Your service request has been received,Account,2026-10-17,11:03:00,,Received,False
