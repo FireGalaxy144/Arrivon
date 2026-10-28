@@ -762,14 +762,6 @@ const pastMail = visibleMail.filter((item) => {
             <Header
               title="Home"
               subtitle={`Here's what's happening with your mail${user ? `, ${user.name.split(' ')[0]}` : ''}.`}
-              action={
-                <button
-                  className="secondary-button"
-                  onClick={() => navigate('current')}
-                >
-                  <Mail size={16} /> View inbox
-                </button>
-              }
             />
 
             {/* Home welcome banner */}
@@ -832,7 +824,7 @@ const pastMail = visibleMail.filter((item) => {
               >
                 <span className="home-card-icon"><Clock size={19} /></span>
                 <strong>Past Mail</strong>
-                <p>Search and filter everything that has been delivered.</p>
+                <p>See packages that were delivered in the past.</p>
                 <span className="home-card-action">
                   View past mail <ChevronRight size={14} />
                 </span>
