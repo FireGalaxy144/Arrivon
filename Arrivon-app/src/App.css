@@ -4,7 +4,7 @@
 :root {
   font-family: 'DM Sans', sans-serif;
   color: #10366e;
-  background: #f5f9fd;
+  background: #f6f8fb;
 
   /* Reusable colors used throughout the application. */
   --navy: #10366e;
@@ -441,8 +441,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   position: fixed;
   inset: 0 auto 0 0;
   width: 245px;
-  background: white;
-  border-right: 1px solid var(--border);
+  background: #edf3f8;
+  border-right: 1px solid #dce5ee;
   padding: 27px 16px 16px;
   display: flex;
   flex-direction: column;
@@ -475,7 +475,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 /* Small label that introduces a navigation section. */
 .nav-label {
-  color: #a0a5bb;
+  color: #8191a3;
   font-size: 9px;
   letter-spacing: 1.3px;
   font-weight: 700;
@@ -500,7 +500,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   border: none;
   border-radius: 9px;
   background: transparent;
-  color: #777d98;
+  color: #53677d;
   text-align: left;
   font-size: 12px;
   font-weight: 600;
@@ -508,12 +508,12 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 /* Add a subtle background when hovering over a navigation link. */
 .nav-link:hover {
-  background: #f0f7ff;
+  background: #e3edf6;
 }
 
 /* Highlight the currently selected page in the sidebar. */
 .nav-link.active {
-  background: #e8f3ff;
+  background: #dceafa;
   color: #155da8;
 }
 
@@ -537,8 +537,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   align-items: center;
   gap: 10px;
   padding: 13px 11px;
-  background: #f3f8fd;
-  border: 1px solid #e5eff8;
+  background: #e5eef6;
+  border: 1px solid #d7e3ee;
   border-radius: 10px;
   margin-bottom: 14px;
 }
@@ -565,7 +565,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 /* Style secondary text and allow long values to wrap. */
 .connection small,
 .profile small {
-  color: #969bb2;
+  color: #71849a;
   font-size: 10px;
   overflow-wrap: anywhere;
 }
@@ -575,7 +575,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   display: flex;
   align-items: center;
   gap: 10px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #dce5ee;
   margin-top: 12px;
   padding: 16px 5px 0;
 }
@@ -594,11 +594,16 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 /* Main page: offset the content so it sits beside the sidebar. */
 .main-content {
-  margin-left: 245px;
+  margin-left: 0;
   padding: 35px clamp(22px, 4vw, 55px) 20px;
   min-height: 100vh;
+  background: #f6f8fb;
   display: flex;
   flex-direction: column;
+}
+
+.app-layout.has-sidebar .main-content {
+  margin-left: 245px;
 }
 
 /* Page heading row containing the title and optional action. */
@@ -1050,6 +1055,77 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   align-items: center;
   gap: 10px;
   margin-bottom: 13px;
+}
+
+.sender-filter {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 210px;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid #dce8f4;
+  border-radius: 9px;
+  background: white;
+  color: #71849b;
+  flex: 0 0 auto;
+}
+
+.sender-filter:focus-within {
+  border-color: #70b1f0;
+}
+
+.sender-filter select {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  appearance: none;
+  background: transparent;
+  color: var(--navy);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.sender-filter select option {
+  color: var(--navy);
+}
+
+.past-date-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 290px);
+  height: 46px;
+  padding: 0 13px;
+  margin: 0 0 13px;
+  border: 1px solid #dce8f4;
+  border-radius: 9px;
+  background: white;
+  color: #71849b;
+}
+
+.past-date-filters:focus-within {
+  border-color: #70b1f0;
+}
+
+.past-date-filters > span {
+  flex: 0 0 auto;
+  color: #71849b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.past-date-filters select {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  appearance: none;
+  background: transparent;
+  color: var(--navy);
+  font-size: 11px;
+  cursor: pointer;
 }
 
 /* Search field container, including its icon and input. */
@@ -1579,7 +1655,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
     width: 215px;
   }
 
-  .main-content {
+  .app-layout.has-sidebar .main-content {
     margin-left: 215px;
     padding: 28px 24px 18px;
   }
