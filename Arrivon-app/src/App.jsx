@@ -176,86 +176,86 @@ function App() {
     window.setTimeout(() => setNotice(''), 3000);
   }
 
-// SEARCH AND FILTER LOGIC
-// Filters mail by search text, sender, and selected date range.
-const activeDateFilter = page === 'past' ? pastPeriodFilter : dateFilter;
-const visibleMail = mail.filter((item) => {
-  const query = search.toLowerCase().trim();
+  // SEARCH AND FILTER LOGIC
+  // Filters mail by search text, sender, and selected date range.
+  const activeDateFilter = page === 'past' ? pastPeriodFilter : dateFilter;
+  const visibleMail = mail.filter((item) => {
+    const query = search.toLowerCase().trim();
 
-  // Search sender, subject, tracking number, and delivery status.
-  const searchable = [
-    item.sender,
-    item.subject,
-    item.tracking,
-    item.status,
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
+    // Search sender, subject, tracking number, and delivery status.
+    const searchable = [
+      item.sender,
+      item.subject,
+      item.tracking,
+      item.status,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
-  const matchesSearch = searchable.includes(query);
+    const matchesSearch = searchable.includes(query);
 
-  // Filter by sender.
-  const matchesSender =
-    senderFilter === 'All' || item.sender === senderFilter;
+    // Filter by sender.
+    const matchesSender =
+      senderFilter === 'All' || item.sender === senderFilter;
 
-  
-  // Filter by date range using actual timestamps.
-  let matchesDate = true;
 
-  if (activeDateFilter !== 'All') {
-    const messageDate = new Date(item.date);
-    const cutoff = new Date();
+    // Filter by date range using actual timestamps.
+    let matchesDate = true;
 
-    if (activeDateFilter === 'Last 7 Days') {
-      cutoff.setDate(cutoff.getDate() - 7);
-    } else if (activeDateFilter === 'Last 40 Days') {
-      cutoff.setDate(cutoff.getDate() - 40);
-    } else if (activeDateFilter === 'Last 30 Days') {
-      cutoff.setDate(cutoff.getDate() - 30);
-    } else if (activeDateFilter === 'Last 3 Months') {
-      cutoff.setMonth(cutoff.getMonth() - 3);
-    } else if (activeDateFilter === 'Last 6 Months') {
-      cutoff.setMonth(cutoff.getMonth() - 6);
-    } else if (activeDateFilter === 'Last 9 Months') {
-      cutoff.setMonth(cutoff.getMonth() - 9);
-    } else if (activeDateFilter === 'Last 1 Year') {
-      cutoff.setFullYear(cutoff.getFullYear() - 1);
-    } else if (activeDateFilter === 'Last 2 Years') {
-      cutoff.setFullYear(cutoff.getFullYear() - 2);
-    } else if (activeDateFilter === 'Last 5 Years') {
-      cutoff.setFullYear(cutoff.getFullYear() - 5);
+    if (activeDateFilter !== 'All') {
+      const messageDate = new Date(item.date);
+      const cutoff = new Date();
+
+      if (activeDateFilter === 'Last 7 Days') {
+        cutoff.setDate(cutoff.getDate() - 7);
+      } else if (activeDateFilter === 'Last 40 Days') {
+        cutoff.setDate(cutoff.getDate() - 40);
+      } else if (activeDateFilter === 'Last 30 Days') {
+        cutoff.setDate(cutoff.getDate() - 30);
+      } else if (activeDateFilter === 'Last 3 Months') {
+        cutoff.setMonth(cutoff.getMonth() - 3);
+      } else if (activeDateFilter === 'Last 6 Months') {
+        cutoff.setMonth(cutoff.getMonth() - 6);
+      } else if (activeDateFilter === 'Last 9 Months') {
+        cutoff.setMonth(cutoff.getMonth() - 9);
+      } else if (activeDateFilter === 'Last 1 Year') {
+        cutoff.setFullYear(cutoff.getFullYear() - 1);
+      } else if (activeDateFilter === 'Last 2 Years') {
+        cutoff.setFullYear(cutoff.getFullYear() - 2);
+      } else if (activeDateFilter === 'Last 5 Years') {
+        cutoff.setFullYear(cutoff.getFullYear() - 5);
+      }
+
+      matchesDate =
+        !Number.isNaN(messageDate.getTime()) &&
+        messageDate >= cutoff &&
+        messageDate <= new Date();
     }
 
-    matchesDate =
-      !Number.isNaN(messageDate.getTime()) &&
-      messageDate >= cutoff &&
-      messageDate <= new Date();
-  }
 
+    return matchesSearch && matchesSender && matchesDate;
+  });
 
-  return matchesSearch && matchesSender && matchesDate;
-});
+  const currentMail = visibleMail.filter((item) => {
+    // Keep delivered packages in Current Mail for the day of delivery.
+    if (item.status === "Delivered") {
+      return isToday(item.deliveredAt);
+    }
 
-const currentMail = visibleMail.filter((item) => {
-  // Keep delivered packages in Current Mail for the day of delivery.
-  if (item.status === "Delivered") {
-    return isToday(item.deliveredAt);
-  }
+    // Keep orders still being processed or shipped in Current Mail.
+    return item.status !== 'Delivered';
+  });
 
-  // Keep orders still being processed or shipped in Current Mail.
-  return item.status !== 'Delivered';
-});
-
-const pastMail = visibleMail.filter((item) => {
-  return (
-    item.category === "Package" &&
-    item.status === "Delivered" &&
-    item.deliveredAt &&
-    !isToday(item.deliveredAt) &&
-    new Date(item.deliveredAt) < new Date()
-  );
-});
+  const pastMail = visibleMail.filter((item) => {
+    return (
+      item.category === "Package" &&
+      item.status === "Delivered" &&
+      item.deliveredAt &&
+      !isToday(item.deliveredAt) &&
+      new Date(item.deliveredAt) < new Date()
+    );
+  });
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
@@ -777,15 +777,15 @@ const pastMail = visibleMail.filter((item) => {
                 <p>Your mail and packages, neatly organized in one place.</p>
                 <div className="new-mail-today-card">
                   <div className="new-mail-today-icon">
-                       <Mail size={24} />
-                   </div>
+                    <Mail size={24} />
+                  </div>
 
-            <h3>New mail today</h3>
+                  <h3>New mail today</h3>
 
-  <p>
-    {mail.filter(item => isToday(item.date)).length} mail updates today
-  </p>
-</div>
+                  <p>
+                    {mail.filter(item => isToday(item.date)).length} mail updates today
+                  </p>
+                </div>
               </div>
 
               <div className="banner-illustration">
@@ -803,7 +803,7 @@ const pastMail = visibleMail.filter((item) => {
                 </div>
               </div>
             </section>
-            
+
             {/* Three main navigation cards */}
             <section className="home-navigation-cards">
               <button
@@ -874,7 +874,7 @@ const pastMail = visibleMail.filter((item) => {
               }
             />
 
-           
+
 
             {/* Search field and CSV-backed sender filter */}
             <div className="toolbar">
@@ -939,16 +939,16 @@ const pastMail = visibleMail.filter((item) => {
               <div className="list-summary">
                 <span>
                   <strong>
-                 {page === 'current' ? currentMail.length : pastMail.length}
-  </strong>{' '}
-  messages
-</span>
+                    {page === 'current' ? currentMail.length : pastMail.length}
+                  </strong>{' '}
+                  messages
+                </span>
                 <span>Unread messages are highlighted</span>
               </div>
 
-             <MailRows
-              items={page === 'current' ? currentMail : pastMail}
-            />
+              <MailRows
+                items={page === 'current' ? currentMail : pastMail}
+              />
             </section>
           </>
         )}
@@ -965,55 +965,31 @@ const pastMail = visibleMail.filter((item) => {
               subtitle="Useful insights to help you stay organized."
             />
 
-            {/* Analytics introduction banner */}
-            <section className="analytics-banner">
-              <div className="live-label">
-                <span /> YOUR MAIL INSIGHTS
-              </div>
-
-              <h2>A clearer view of your mailbox.</h2>
-              <p>See delivery activity and your frequent senders.</p>
-            </section>
-
             {/* Summary statistics */}
             <section className="analytics-stats">
-              <div className="mini-stat">
-                <span>DELIVERED</span>
-                <strong>
-                  {mail.filter(m => m.status === 'Delivered').length + 5}
-                </strong>
-                <small>Successfully received</small>
-              </div>
-
-              <div className="mini-stat">
-                <span>SENT / REPLIES</span>
-                <strong>3</strong>
-                <small>Recent activity</small>
-              </div>
-
-              <div className="mini-stat">
-                <span>ADDRESSES</span>
-                <strong>4</strong>
-                <small>Saved destinations</small>
-              </div>
+              {[
+                ['DELIVERED', mail.filter((m) => m.status === 'Delivered').length + 5, 'Successfully received'],
+                ['SENT / REPLIES', 3, 'Recent activity'],
+                ['ADDRESSES', 4, 'Saved destinations'],
+              ].map(([label, value, caption]) => (
+                <div className="mini-stat" key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                  <small>{caption}</small>
+                </div>
+              ))}
             </section>
 
-            {/* Activity chart and frequent-sender ranking */}
+            {/* Weekly activity chart and top senders */}
             <div className="analytics-grid">
               <section className="panel analytics-panel">
-                <PanelHeading title="Mail activity" />
-                <p className="panel-subtitle">
-                  Messages received this week
-                </p>
-
+                <PanelHeading title="Mail activity this week" />
                 <div className="chart">
                   {[2, 13, 10, 8, 12, 15, 9].map((n, i) => (
                     <div className="chart-column" key={i}>
                       <span>{n}</span>
                       <div style={{ height: `${n * 6}%` }} />
-                      <small>
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}
-                      </small>
+                      <small>{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}</small>
                     </div>
                   ))}
                 </div>
@@ -1021,70 +997,38 @@ const pastMail = visibleMail.filter((item) => {
 
               <section className="panel analytics-panel">
                 <PanelHeading title="Top monthly senders" />
-
                 <div className="ranking">
-                  {[
-                    ['Home Depot', 13],
-                    ['Amazon', 8],
-                    ['SuperSaver', 7],
-                    ['Hyvee', 5],
-                    ['John Doe', 3]
-                  ].map(([name, count], i) => (
-                    <div className="rank-row" key={name}>
-                      <span>{i + 1}</span>
-                      <strong>{name}</strong>
-
-                      <div className="rank-track">
-                        <div style={{ width: `${count / 13 * 100}%` }} />
+                  {[['Home Depot', 13], ['Amazon', 8], ['SuperSaver', 7], ['Hyvee', 5], ['John Doe', 3]].map(
+                    ([name, count], i) => (
+                      <div className="rank-row" key={name}>
+                        <span>{i + 1}</span>
+                        <strong>{name}</strong>
+                        <div className="rank-track">
+                          <div style={{ width: `${(count / 13) * 100}%` }} />
+                        </div>
+                        <small>{count}</small>
                       </div>
-
-                      <small>{count}</small>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               </section>
             </div>
 
-            {/* Expandable important-mail and signature sections */}
-            {[
-              ['important', 'Important mail', 'Messages that may need your attention'],
-              ['signature', 'Needs signature', 'Mail that may require a signature']
-            ].map(([id, title, subtitle]) => (
-              <section className="panel expandable" key={id}>
-                <button
-                  className="expand-button"
-                  onClick={() => setExpanded(expanded === id ? '' : id)}
-                >
-                  <FileSignature size={19} />
-
-                  <span>
-                    <strong>{title}</strong>
-                    <small>{subtitle}</small>
-                  </span>
-
-                  {expanded === id ? <X size={17} /> : <Plus size={18} />}
-                </button>
-
-                {expanded === id && (
-                  <div className="expand-content">
-                    {id === 'important'
-                      ? mail
-                          .filter(m => ['Receipt', 'Personal'].includes(m.category))
-                          .map(m => (
-                            <button
-                              className="important-row"
-                              key={m.id}
-                              onClick={() => openMail(m)}
-                            >
-                              {m.sender}: {m.subject}
-                              <ChevronRight size={16} />
-                            </button>
-                          ))
-                      : <p>No mail currently requires a signature.</p>}
-                  </div>
-                )}
-              </section>
-            ))}
+            {/* Important mail: always visible, no expand/collapse */}
+            <section className="panel analytics-panel">
+              <PanelHeading title="Important mail" />
+              <div className="expand-content">
+                {mail
+                  .filter((m) => ['Receipt', 'Personal'].includes(m.category))
+                  .map((m) => (
+                    <button className="important-row" key={m.id} onClick={() => openMail(m)}>
+                      {m.sender}: {m.subject}
+                      <ChevronRight size={16} />
+                    </button>
+                  ))}
+                <p>No mail currently requires a signature.</p>
+              </div>
+            </section>
           </>
         )}
 
