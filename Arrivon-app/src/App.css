@@ -4,11 +4,19 @@
 :root {
   font-family: 'DM Sans', sans-serif;
   color: #10366e;
-  background: #f6f8fb;
+  background: var(--canvas);
 
-  /* Reusable colors used throughout the application. */
+  /* 60/30/10 palette: neutral base, blue-gray support, blue accent. */
+  --canvas: #f7f9fc;
+  --surface: #ffffff;
+  --secondary-surface: #dce8f4;
+  --secondary-hover: #cfdfed;
+  --secondary-tint: #edf4fa;
+  --secondary-active: #2677cc;
+  --accent: #2677cc;
+  --accent-hover: #155da8;
   --navy: #10366e;
-  --purple: #2787ed;
+  --purple: var(--accent);
   --muted: #71849b;
   --border: #e1ebf5;
 }
@@ -47,7 +55,7 @@ button {
   height: 100dvh;
   min-height: 0;
   overflow: hidden;
-  background: #f7fbff;
+  background: var(--canvas);
   color: var(--auth-ink);
 }
 
@@ -61,7 +69,7 @@ button {
   padding: 42px clamp(32px, 5vw, 72px) 34px;
   overflow: hidden;
   isolation: isolate;
-background: linear-gradient(145deg, #eaf5ff, #1983ee);
+background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   color: var(--auth-ink);
 }
 
@@ -262,7 +270,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   min-height: 0;
   overflow: hidden;
   padding: 48px clamp(28px, 6vw, 88px);
-  background: #f7fbff;
+  background: var(--canvas);
 }
 
 .auth-card {
@@ -392,7 +400,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   padding: 13px 16px;
   border: none;
   border-radius: 9px;
-  background: #1974d2;
+  background: var(--accent);
   box-shadow: 0 8px 18px #1974d229;
   color: white;
   font-size: 12px;
@@ -401,7 +409,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 }
 
 .primary-button:hover {
-  background: #105eaf;
+  background: var(--accent-hover);
   transform: translateY(-1px);
 }
 
@@ -441,7 +449,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   position: fixed;
   inset: 0 auto 0 0;
   width: 245px;
-  background: #edf3f8;
+  background: var(--secondary-surface);
   border-right: 1px solid #dce5ee;
   padding: 27px 16px 16px;
   display: flex;
@@ -508,13 +516,13 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 /* Add a subtle background when hovering over a navigation link. */
 .nav-link:hover {
-  background: #e3edf6;
+  background: var(--secondary-hover);
 }
 
 /* Highlight the currently selected page in the sidebar. */
 .nav-link.active {
-  background: #dceafa;
-  color: #155da8;
+  background: var(--secondary-active);
+  color: white;
 }
 
 /* Small count badge shown beside a navigation item. */
@@ -537,8 +545,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   align-items: center;
   gap: 10px;
   padding: 13px 11px;
-  background: #e5eef6;
-  border: 1px solid #d7e3ee;
+  background: var(--secondary-hover);
+  border: 1px solid var(--border);
   border-radius: 10px;
   margin-bottom: 14px;
 }
@@ -585,8 +593,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: #e2f0ff;
-  color: #1767b5;
+  background: var(--secondary-tint);
+  color: var(--accent-hover);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -597,7 +605,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   margin-left: 0;
   padding: 35px clamp(22px, 4vw, 55px) 20px;
   min-height: 100vh;
-  background: #f6f8fb;
+  background: var(--canvas);
   display: flex;
   flex-direction: column;
 }
@@ -661,7 +669,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   padding: 10px 13px;
   border: 1px solid #dce8f4;
   border-radius: 9px;
-  background: white;
+  background: var(--surface);
   color: #31577f;
   font-size: 11px;
   font-weight: 700;
@@ -678,7 +686,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   border-radius: 16px;
   padding: 29px 32px;
   color: white;
-  background: linear-gradient(115deg, #10366e, #1769bd 60%, #3996ed);
+  background: linear-gradient(115deg, #10366e, #1769bd 60%, var(--accent));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -877,8 +885,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   display: grid;
   place-items: center;
   border-radius: 10px;
-  background: #eaf4ff;
-  color: #2787ed;
+  background: var(--secondary-tint);
+  color: var(--accent);
   margin-bottom: 15px;
 }
 
@@ -932,8 +940,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: #eaf4ff;
-  color: #2787ed;
+  background: var(--secondary-tint);
+  color: var(--accent);
 }
 
 /* Clickable row representing one mail item. */
@@ -1194,9 +1202,9 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 /* Visually distinguish the currently selected filter. */
 .filter-chips button.selected {
-  background: #e8f3ff;
-  border-color: #c9e2fb;
-  color: #155da8;
+  background: var(--secondary-active);
+  border-color: var(--secondary-active);
+  color: white;
 }
 
 /* Summary row showing information about the current mail list. */
@@ -1427,10 +1435,10 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 /* Small badge showing the sender's ranking position. */
 .rank-row > span {
-  background: #eaf4ff;
+  background: var(--secondary-tint);
   border-radius: 5px;
   padding: 4px 6px;
-  color: #1974d2;
+  color: var(--accent);
 }
 
 /* Set a consistent width for sender names in the ranking. */
@@ -1444,7 +1452,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 .rank-track {
   height: 6px;
   flex: 1;
-  background: #f0f1f8;
+  background: var(--secondary-surface);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -1452,7 +1460,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 /* Colored portion representing the sender's ranking value. */
 .rank-track > div {
   height: 100%;
-  background: linear-gradient(90deg, #2787ed, #78bbf7);
+  background: linear-gradient(90deg, var(--accent), #78bbf7);
   border-radius: 6px;
 }
 
@@ -1633,7 +1641,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   right: 24px;
   bottom: 24px;
   z-index: 100;
-  background: #292f70;
+  background: var(--navy);
   color: white;
   padding: 14px 18px;
   border-radius: 9px;
@@ -1973,11 +1981,11 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   min-height: 225px;
   padding: 22px;
   text-align: left;
-  background: white;
+  background: var(--surface);
   color: var(--navy);
-  border: 1px solid #dfe3f2;
+  border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 5px 16px rgba(35, 43, 100, 0.08);
+  box-shadow: 0 5px 16px rgba(16, 54, 110, 0.08);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease,
     border-color 0.2s ease;
@@ -1985,8 +1993,8 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
 
 .home-navigation-card:hover {
   transform: translateY(-4px);
-  border-color: #9ca8ee;
-  box-shadow: 0 12px 26px rgba(35, 43, 100, 0.15);
+  border-color: #9cc2e8;
+  box-shadow: 0 12px 26px rgba(16, 54, 110, 0.14);
 }
 
 .home-card-topline {
@@ -2004,14 +2012,14 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   height: 46px;
   flex-shrink: 0;
   border-radius: 14px;
-  background: #e2f7fb;
-  color: var(--navy);
+  background: var(--secondary-tint);
+  color: var(--accent-hover);
 }
 
 .home-card-count {
   padding: 7px 10px;
   border-radius: 20px;
-  background: #f0f1ff;
+  background: var(--secondary-surface);
   color: var(--navy);
   font-size: 10px;
   font-weight: 700;
@@ -2037,7 +2045,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   gap: 10px;
   margin-top: auto;
   padding-top: 14px;
-  border-top: 1px solid #eceef7;
+  border-top: 1px solid var(--border);
   color: var(--navy);
   font-size: 11px;
   font-weight: 700;
@@ -2049,7 +2057,7 @@ background: linear-gradient(145deg, #eaf5ff, #1983ee);
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: var(--navy);
+  background: var(--accent-hover);
   color: white;
   transition: transform 0.2s ease;
 }
