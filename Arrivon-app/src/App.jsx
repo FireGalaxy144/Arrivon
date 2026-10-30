@@ -146,7 +146,7 @@ function isToday(dateString) {
 // search/filter values, selected message, and UI notices.
 function App() {
   const [user, setUser] = useState(() => getRememberedUser());
-  const [page, setPage] = useState(() => getRememberedUser() ? 'home' : 'login');
+  const [page, setPage] = useState(() => getRememberedUser() ? 'home' : 'signup');
   const [mail, setMail] = useState(() => mailFromCsv);
   const [accounts, setAccounts] = useState(() => devAccounts);
   const [search, setSearch] = useState('');
