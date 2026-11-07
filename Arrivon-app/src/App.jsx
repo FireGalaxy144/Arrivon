@@ -89,6 +89,59 @@ function getRememberedUser() {
   }
 }
 
+function getSessionUser() {
+  try {
+    const storedUser = sessionStorage.getItem('arrivonSessionUser');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getStoredAppUser() {
+  try {
+    const storedUser = localStorage.getItem('arrivonSessionUser');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getCurrentUser() {
+  return getSessionUser() || getStoredAppUser() || getRememberedUser();
+}
+
+function getStoredSelectedMail() {
+  try {
+    const selectedMailId = Number(
+      sessionStorage.getItem('arrivonSelectedMail') ||
+      localStorage.getItem('arrivonSelectedMail')
+    );
+    return mailFromCsv.find((item) => item.id === selectedMailId) || null;
+  } catch {
+    return null;
+  }
+}
+
+function getInitialPage() {
+  const user = getCurrentUser();
+  const authPages = ['login', 'signup'];
+  const appPages = ['home', 'current', 'past', 'more', 'details'];
+
+  try {
+    const storedPage = sessionStorage.getItem('arrivonPage') ||
+      localStorage.getItem('arrivonPage');
+    if (authPages.includes(storedPage)) return storedPage;
+    if (appPages.includes(storedPage) && user) {
+      if (storedPage !== 'details' || getStoredSelectedMail()) return storedPage;
+    }
+  } catch {
+    return user ? 'home' : 'signup';
+  }
+
+  return user ? 'home' : 'signup';
+}
+
 // REUSABLE BRAND LOGO
 // Displays the Arrivon logo. The compact option is used
 // in places such as the sidebar and footer.
@@ -145,19 +198,31 @@ function isToday(dateString) {
 // Stores the current page, sample mail, account state,
 // search/filter values, selected message, and UI notices.
 function App() {
-  const [user, setUser] = useState(() => getRememberedUser());
-  const [page, setPage] = useState(() => getRememberedUser() ? 'home' : 'signup');
+  const [user, setUser] = useState(() => getCurrentUser());
+  const [page, setPage] = useState(() => getInitialPage());
   const [mail, setMail] = useState(() => mailFromCsv);
   const [accounts, setAccounts] = useState(() => devAccounts);
   const [search, setSearch] = useState('');
   const [dateFilter, setDateFilter] = useState('All');
   const [pastPeriodFilter, setPastPeriodFilter] = useState('All');
   const [senderFilter, setSenderFilter] = useState('All');
-  const [selectedMail, setSelectedMail] = useState(null);
-  const [previousPage, setPreviousPage] = useState('current');
+  const [selectedMail, setSelectedMail] = useState(() => getStoredSelectedMail());
+  const [previousPage, setPreviousPage] = useState(() => {
+    try {
+      const storedPreviousPage = sessionStorage.getItem('arrivonPreviousPage');
+      return ['home', 'current', 'past', 'more'].includes(storedPreviousPage)
+        ? storedPreviousPage
+        : 'current';
+    } catch {
+      return 'current';
+    }
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [expanded, setExpanded] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => sessionStorage.getItem('arrivonSidebarCollapsed') === 'true'
+  );
   const [notice, setNotice] = useState('');
   const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
@@ -166,7 +231,24 @@ function App() {
   // Changes the active page and closes the mobile menu.
   function navigate(next) {
     setPage(next);
+    sessionStorage.setItem('arrivonPage', next);
+    localStorage.setItem('arrivonPage', next);
     setMenuOpen(false);
+  }
+
+  function toggleSidebar() {
+    const collapsed = !sidebarCollapsed;
+    setSidebarCollapsed(collapsed);
+    sessionStorage.setItem('arrivonSidebarCollapsed', String(collapsed));
+  }
+
+  function toggleNavigation() {
+    if (window.matchMedia('(max-width: 760px)').matches) {
+      setMenuOpen((isOpen) => !isOpen);
+      return;
+    }
+
+    toggleSidebar();
   }
 
   // TEMPORARY NOTIFICATION
@@ -262,6 +344,9 @@ function App() {
   function openMail(item) {
     setPreviousPage(page);
     setSelectedMail(item);
+    sessionStorage.setItem('arrivonPreviousPage', page);
+    sessionStorage.setItem('arrivonSelectedMail', String(item.id));
+    localStorage.setItem('arrivonSelectedMail', String(item.id));
 
     setMail((old) => old.map((m) =>
       m.id === item.id ? { ...m, unread: false } : m
@@ -324,8 +409,20 @@ function App() {
     }
 
     setUser(account);
+    const { name, email: accountEmail, address } = account;
+    sessionStorage.setItem('arrivonSessionUser', JSON.stringify({
+      name,
+      email: accountEmail,
+      address,
+    }));
+    localStorage.setItem('arrivonSessionUser', JSON.stringify({
+      name,
+      email: accountEmail,
+      address,
+    }));
+    setSidebarCollapsed(true);
+    sessionStorage.setItem('arrivonSidebarCollapsed', 'true');
     if (data.get('remember') === 'on') {
-      const { name, email: accountEmail, address } = account;
       localStorage.setItem('arrivonRememberedUser', JSON.stringify({
         name,
         email: accountEmail,
@@ -353,19 +450,25 @@ function App() {
   function Header({ title, subtitle, action }) {
     return (
       <header className="page-header">
-        <button
-          className="icon-button mobile-menu"
-          onClick={() => setMenuOpen(true)}
-        >
-          <Menu size={21} />
-        </button>
+        <div className="header-leading">
+          <button
+            className="icon-button sidebar-toggle"
+            type="button"
+            onClick={toggleNavigation}
+            aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
+            aria-expanded={menuOpen || !sidebarCollapsed}
+            title={menuOpen ? 'Close menu' : 'Toggle menu'}
+          >
+            <Menu size={21} />
+          </button>
 
-        <div className="header-copy">
-          <div className="breadcrumb">
-            ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
+          <div className="header-copy">
+            <div className="breadcrumb">
+              ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
+            </div>
+            <h1>{title}</h1>
+            <p>{subtitle}</p>
           </div>
-          <h1>{title}</h1>
-          <p>{subtitle}</p>
         </div>
 
         {action && <div className="header-action">{action}</div>}
@@ -377,8 +480,6 @@ function App() {
   // Renders page links, unread count, connection status,
   // settings, logout, and the signed-in profile.
   function Sidebar() {
-    const showMailNavigation = ['current', 'past', 'more'].includes(page);
-
     return (
       <>
         {menuOpen && (
@@ -406,23 +507,19 @@ function App() {
             </button>
           </div>
 
-          {showMailNavigation && (
-            <>
-              <div className="nav-label">YOUR MAILBOX</div>
-              <nav>
-                {navItems.map(({ id, label, icon: Icon }) => (
-                  <button
-                    key={id}
-                    className={`nav-link ${page === id ? 'active' : ''}`}
-                    onClick={() => navigate(id)}
-                  >
-                    <Icon size={18} />
-                    <span>{label}</span>
-                  </button>
-                ))}
-              </nav>
-            </>
-          )}
+          <div className="nav-label">YOUR MAILBOX</div>
+          <nav>
+            {navItems.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                className={`nav-link ${page === id ? 'active' : ''}`}
+                onClick={() => navigate(id)}
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+              </button>
+            ))}
+          </nav>
 
           <div className="sidebar-bottom">
             {user && (
@@ -450,6 +547,8 @@ function App() {
               onClick={() => {
                 setUser(null);
                 localStorage.removeItem('arrivonRememberedUser');
+                localStorage.removeItem('arrivonSessionUser');
+                sessionStorage.removeItem('arrivonSessionUser');
                 navigate('login');
               }}
             >
@@ -748,7 +847,7 @@ function App() {
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
   return (
-    <div className="app-layout has-sidebar">
+    <div className={`app-layout has-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <Sidebar />
 
       <main className="main-content">
@@ -969,7 +1068,7 @@ function App() {
             <section className="analytics-stats">
               {[
                 ['DELIVERED', mail.filter((m) => m.status === 'Delivered').length + 5, 'Successfully received'],
-                ['SENT / REPLIES', 3, 'Recent activity'],
+                ['SENT', 3, 'Recent activity'],
                 ['ADDRESSES', 4, 'Saved destinations'],
               ].map(([label, value, caption]) => (
                 <div className="mini-stat" key={label}>
