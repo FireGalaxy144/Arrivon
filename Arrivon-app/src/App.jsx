@@ -9,7 +9,7 @@ import devLoginCsv from './dev-logins.csv?raw';
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
-  LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature,
+  LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
   Bell, ShieldCheck, Zap
 } from 'lucide-react';
 
@@ -68,6 +68,20 @@ function parseMailCsv(csv) {
 }
 
 const mailFromCsv = parseMailCsv(mailCsv);
+
+function getStatusClass(status) {
+  const statusClasses = {
+    'Action Required': 'action-required',
+    Delayed: 'delayed',
+    Received: 'received',
+    'In transit': 'in-transit',
+    'Out for delivery': 'out-for-delivery',
+    'Ready for pickup': 'ready-for-pickup',
+    Delivered: 'delivered',
+  };
+
+  return statusClasses[status] || 'unknown';
+}
 
 // Development-only accounts for exercising the prototype login form.
 const devAccounts = devLoginCsv
@@ -213,6 +227,9 @@ function App() {
   const [notice, setNotice] = useState('');
   const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
+  const importantMail = mail.filter((item) =>
+    ['Receipt', 'Personal'].includes(item.category)
+  );
 
   // PAGE NAVIGATION
   // Changes the active page and closes the mobile menu.
@@ -449,6 +466,17 @@ function App() {
             <h1>{title}</h1>
             <p>{subtitle}</p>
           </div>
+          <div className="header-decoration" aria-hidden="true">
+            <span className="header-decoration-orbit" />
+            <span className="header-decoration-dot header-decoration-dot-one" />
+            <span className="header-decoration-dot header-decoration-dot-two" />
+            <span className="header-decoration-mail">
+              <Mail size={22} />
+            </span>
+            <span className="header-decoration-check">
+              <CheckCircle size={16} />
+            </span>
+          </div>
         </div>
 
         {action && <div className="header-action">{action}</div>}
@@ -584,7 +612,7 @@ function App() {
           </div>
         </div>
 
-        <span className={`status ${item.status === 'Delivered' ? 'delivered' : ''}`}>
+        <span className={`status status-${getStatusClass(item.status)}`}>
           {item.status}
         </span>
 
@@ -1087,19 +1115,47 @@ function App() {
               </section>
             </div>
 
-            {/* Important mail: always visible, no expand/collapse */}
-            <section className="panel analytics-panel">
-              <PanelHeading title="Important mail" />
-              <div className="expand-content">
-                {mail
-                  .filter((m) => ['Receipt', 'Personal'].includes(m.category))
-                  .map((m) => (
-                    <button className="important-row" key={m.id} onClick={() => openMail(m)}>
-                      {m.sender}: {m.subject}
-                      <ChevronRight size={16} />
+            <section className="panel analytics-panel important-mail-panel">
+              <div className="important-mail-heading">
+                <span className="important-mail-heading-icon">
+                  <CircleAlert size={20} />
+                </span>
+                <div>
+                  <strong>Important mail</strong>
+                  <small>Review messages that may need your attention</small>
+                </div>
+                {importantMail.length > 0 && (
+                  <span className="important-mail-count">
+                    {importantMail.length} {importantMail.length === 1 ? 'item' : 'items'}
+                  </span>
+                )}
+              </div>
+              <div className="important-mail-list">
+                {importantMail.length > 0 ? (
+                  importantMail.map((item) => (
+                    <button
+                      className="important-row"
+                      key={item.id}
+                      onClick={() => openMail(item)}
+                    >
+                      <span className="important-row-icon">
+                        <FileSignature size={18} />
+                      </span>
+                      <span className="important-row-copy">
+                        <strong>{item.sender}</strong>
+                        <small>{item.subject}</small>
+                      </span>
+                      <span className="important-row-action">
+                        Review <ChevronRight size={15} />
+                      </span>
                     </button>
-                  ))}
-                <p>No mail currently requires a signature.</p>
+                  ))
+                ) : (
+                  <div className="important-mail-empty">
+                    <CheckCircle size={18} />
+                    <span>No important mail needs your attention right now.</span>
+                  </div>
+                )}
               </div>
             </section>
           </>
@@ -1137,7 +1193,9 @@ function App() {
                   <p>{selectedMail.date}</p>
                 </div>
 
-                <span className="status">{selectedMail.status}</span>
+                <span className={`status status-${getStatusClass(selectedMail.status)}`}>
+                  {selectedMail.status}
+                </span>
               </div>
 
               <hr />
@@ -1170,7 +1228,9 @@ function App() {
 
                 <div>
                   <small>DELIVERY STATUS</small>
-                  <strong>{selectedMail.status}</strong>
+                  <strong className={`status status-${getStatusClass(selectedMail.status)}`}>
+                    {selectedMail.status}
+                  </strong>
                 </div>
               </div>
 
