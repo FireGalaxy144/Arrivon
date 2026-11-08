@@ -466,17 +466,6 @@ function App() {
             <h1>{title}</h1>
             <p>{subtitle}</p>
           </div>
-          <div className="header-decoration" aria-hidden="true">
-            <span className="header-decoration-orbit" />
-            <span className="header-decoration-dot header-decoration-dot-one" />
-            <span className="header-decoration-dot header-decoration-dot-two" />
-            <span className="header-decoration-mail">
-              <Mail size={22} />
-            </span>
-            <span className="header-decoration-check">
-              <CheckCircle size={16} />
-            </span>
-          </div>
         </div>
 
         {action && <div className="header-action">{action}</div>}
