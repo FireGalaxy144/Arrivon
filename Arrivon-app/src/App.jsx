@@ -430,24 +430,25 @@ function App() {
   function Header({ title, subtitle, action }) {
     return (
       <header className="page-header">
-        <button
-          className="icon-button sidebar-toggle"
-          type="button"
-          onClick={toggleNavigation}
-          aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
-          aria-expanded={menuOpen || !sidebarCollapsed}
-          title={menuOpen ? 'Close menu' : 'Toggle menu'}
-        >
-          <Menu size={21} />
-          <span>Menu</span>
-        </button>
+        <div className="header-leading">
+          <button
+            className="icon-button sidebar-toggle"
+            type="button"
+            onClick={toggleNavigation}
+            aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
+            aria-expanded={menuOpen || !sidebarCollapsed}
+            title={menuOpen ? 'Close menu' : 'Toggle menu'}
+          >
+            <Menu size={21} />
+          </button>
 
-        <div className="header-copy">
-          <div className="breadcrumb">
-            ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
+          <div className="header-copy">
+            <div className="breadcrumb">
+              ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
+            </div>
+            <h1>{title}</h1>
+            <p>{subtitle}</p>
           </div>
-          <h1>{title}</h1>
-          <p>{subtitle}</p>
         </div>
 
         {action && <div className="header-action">{action}</div>}
@@ -470,14 +471,9 @@ function App() {
 
         <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div className="sidebar-top">
-            <button
-              className="brand-home-button"
-              type="button"
-              aria-label="Go to home"
-              onClick={() => navigate('home')}
-            >
+            <div className="sidebar-brand">
               <Logo compact />
-            </button>
+            </div>
             <button
               className="icon-button mobile-close"
               onClick={() => setMenuOpen(false)}
@@ -1188,20 +1184,8 @@ function App() {
           </>
         )}
 
-        {/* 
-            APPLICATION FOOTER
-            Displays the compact brand logo, copyright text,
-            and Help action at the bottom of the page.
-            */}
+        {/* APPLICATION FOOTER */}
         <footer className="app-footer">
-          <button
-            className="brand-home-button"
-            type="button"
-            aria-label="Go to home"
-            onClick={() => navigate('home')}
-          >
-            <Logo compact />
-          </button>
           <span>© 2026 Arrivon. Your mail, made simple.</span>
           <button onClick={() => notify('Help center coming soon.')}>
             Help
