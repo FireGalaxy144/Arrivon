@@ -98,25 +98,13 @@ function getSessionUser() {
   }
 }
 
-function getStoredAppUser() {
-  try {
-    const storedUser = localStorage.getItem('arrivonSessionUser');
-    return storedUser ? JSON.parse(storedUser) : null;
-  } catch {
-    return null;
-  }
-}
-
 function getCurrentUser() {
-  return getSessionUser() || getStoredAppUser() || getRememberedUser();
+  return getSessionUser() || getRememberedUser();
 }
 
 function getStoredSelectedMail() {
   try {
-    const selectedMailId = Number(
-      sessionStorage.getItem('arrivonSelectedMail') ||
-      localStorage.getItem('arrivonSelectedMail')
-    );
+    const selectedMailId = Number(sessionStorage.getItem('arrivonSelectedMail'));
     return mailFromCsv.find((item) => item.id === selectedMailId) || null;
   } catch {
     return null;
@@ -129,8 +117,7 @@ function getInitialPage() {
   const appPages = ['home', 'current', 'past', 'more', 'details'];
 
   try {
-    const storedPage = sessionStorage.getItem('arrivonPage') ||
-      localStorage.getItem('arrivonPage');
+    const storedPage = sessionStorage.getItem('arrivonPage');
     if (authPages.includes(storedPage)) return storedPage;
     if (appPages.includes(storedPage) && user) {
       if (storedPage !== 'details' || getStoredSelectedMail()) return storedPage;
@@ -232,7 +219,6 @@ function App() {
   function navigate(next) {
     setPage(next);
     sessionStorage.setItem('arrivonPage', next);
-    localStorage.setItem('arrivonPage', next);
     setMenuOpen(false);
   }
 
@@ -346,7 +332,6 @@ function App() {
     setSelectedMail(item);
     sessionStorage.setItem('arrivonPreviousPage', page);
     sessionStorage.setItem('arrivonSelectedMail', String(item.id));
-    localStorage.setItem('arrivonSelectedMail', String(item.id));
 
     setMail((old) => old.map((m) =>
       m.id === item.id ? { ...m, unread: false } : m
@@ -415,11 +400,6 @@ function App() {
       email: accountEmail,
       address,
     }));
-    localStorage.setItem('arrivonSessionUser', JSON.stringify({
-      name,
-      email: accountEmail,
-      address,
-    }));
     setSidebarCollapsed(true);
     sessionStorage.setItem('arrivonSidebarCollapsed', 'true');
     if (data.get('remember') === 'on') {
@@ -450,25 +430,24 @@ function App() {
   function Header({ title, subtitle, action }) {
     return (
       <header className="page-header">
-        <div className="header-leading">
-          <button
-            className="icon-button sidebar-toggle"
-            type="button"
-            onClick={toggleNavigation}
-            aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
-            aria-expanded={menuOpen || !sidebarCollapsed}
-            title={menuOpen ? 'Close menu' : 'Toggle menu'}
-          >
-            <Menu size={21} />
-          </button>
+        <button
+          className="icon-button sidebar-toggle"
+          type="button"
+          onClick={toggleNavigation}
+          aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
+          aria-expanded={menuOpen || !sidebarCollapsed}
+          title={menuOpen ? 'Close menu' : 'Toggle menu'}
+        >
+          <Menu size={21} />
+          <span>Menu</span>
+        </button>
 
-          <div className="header-copy">
-            <div className="breadcrumb">
-              ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
-            </div>
-            <h1>{title}</h1>
-            <p>{subtitle}</p>
+        <div className="header-copy">
+          <div className="breadcrumb">
+            ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
           </div>
+          <h1>{title}</h1>
+          <p>{subtitle}</p>
         </div>
 
         {action && <div className="header-action">{action}</div>}
@@ -491,9 +470,14 @@ function App() {
 
         <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div className="sidebar-top">
-            <div className="sidebar-brand">
+            <button
+              className="brand-home-button"
+              type="button"
+              aria-label="Go to home"
+              onClick={() => navigate('home')}
+            >
               <Logo compact />
-            </div>
+            </button>
             <button
               className="icon-button mobile-close"
               onClick={() => setMenuOpen(false)}
@@ -542,7 +526,6 @@ function App() {
               onClick={() => {
                 setUser(null);
                 localStorage.removeItem('arrivonRememberedUser');
-                localStorage.removeItem('arrivonSessionUser');
                 sessionStorage.removeItem('arrivonSessionUser');
                 navigate('login');
               }}
@@ -1205,8 +1188,20 @@ function App() {
           </>
         )}
 
-        {/* APPLICATION FOOTER */}
+        {/* 
+            APPLICATION FOOTER
+            Displays the compact brand logo, copyright text,
+            and Help action at the bottom of the page.
+            */}
         <footer className="app-footer">
+          <button
+            className="brand-home-button"
+            type="button"
+            aria-label="Go to home"
+            onClick={() => navigate('home')}
+          >
+            <Logo compact />
+          </button>
           <span>© 2026 Arrivon. Your mail, made simple.</span>
           <button onClick={() => notify('Help center coming soon.')}>
             Help

@@ -465,9 +465,20 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   justify-content: space-between;
 }
 
-.sidebar-brand {
+.brand-home-button {
   display: inline-flex;
   align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.brand-home-button:focus-visible {
+  outline: 2px solid #2787ed;
+  outline-offset: 5px;
+  border-radius: 4px;
 }
 
 /* Small label that introduces a navigation section. */
