@@ -16,6 +16,7 @@ import {
 import './App.css';
 import './theme.css';
 import './text-size.css';
+import './responsive.css';
 
 // Convert the CSV rows into the message shape used by the app.
 function parseMailCsv(csv) {
@@ -586,6 +587,8 @@ function App() {
         {menuOpen && (
           <button
             className="overlay"
+            type="button"
+            aria-label="Close navigation menu"
             onClick={() => setMenuOpen(false)}
           />
         )}
@@ -597,6 +600,8 @@ function App() {
             </div>
             <button
               className="icon-button mobile-close"
+              type="button"
+              aria-label="Close navigation menu"
               onClick={() => setMenuOpen(false)}
             >
               <X size={19} />
