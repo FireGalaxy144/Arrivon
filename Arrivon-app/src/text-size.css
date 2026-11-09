@@ -1,0 +1,56 @@
+.app-layout { --text-scale: 1; }
+.app-layout.text-size-large { --text-scale: 1.2; }
+.app-layout.text-size-extra-large { --text-scale: 1.4; }
+
+.text-size-setting {
+  min-width: 0;
+  margin: 24px 0 0;
+  padding: 0;
+  border: 0;
+}
+.text-size-setting legend {
+  padding: 0;
+  color: var(--navy);
+  font-size: calc(12px * var(--text-scale));
+  font-weight: 700;
+}
+.text-size-options {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+}
+.text-size-options button { padding: 10px 6px; overflow-wrap: anywhere; }
+
+/* Let controls and content accommodate larger text instead of clipping it. */
+.app-layout .sidebar { overflow-y: auto; }
+.app-layout .sidebar > * { flex-shrink: 0; }
+.app-layout .nav-link {
+  height: auto;
+  min-height: 44px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 1.5;
+}
+.app-layout .nav-link > svg,
+.app-layout .avatar { flex-shrink: 0; }
+.app-layout .mail-filter-toolbar :is(.search-box, .sender-filter, .past-date-filters, .reset-filters-button) {
+  height: calc(46px * var(--text-scale));
+  min-height: calc(46px * var(--text-scale));
+}
+.app-layout .mail-filter-toolbar .sender-filter { width: calc(180px * var(--text-scale)); }
+.app-layout .mail-filter-toolbar .past-date-filters {
+  flex-basis: calc(260px * var(--text-scale));
+  width: calc(260px * var(--text-scale));
+}
+.app-layout .past-date-filters select { padding-left: calc(132px * var(--text-scale)); }
+.app-layout:not(.text-size-normal) :is(.mail-subject, .mail-tracking, .important-row-copy strong, .important-row-copy small) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.app-layout:not(.text-size-normal) .mail-row-top {
+  flex-wrap: wrap;
+}
+.app-layout:not(.text-size-normal) .important-row { flex-wrap: wrap; }
+.app-layout:not(.text-size-normal) .settings-section-heading { flex-wrap: wrap; }
+@media (max-width: 1000px) {
+  .app-layout:not(.text-size-normal) .settings-grid { grid-template-columns: 1fr; }
+}

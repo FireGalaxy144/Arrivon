@@ -15,6 +15,7 @@ import {
 
 import './App.css';
 import './theme.css';
+import './text-size.css';
 
 // Convert the CSV rows into the message shape used by the app.
 function parseMailCsv(csv) {
@@ -251,12 +252,14 @@ function App() {
         importantMailAlerts: saved.importantMailAlerts ?? true,
         deliveryUpdates: saved.deliveryUpdates ?? true,
         showTrackingNumbers: saved.showTrackingNumbers ?? true,
+        textSize: ['normal', 'large', 'extra-large'].includes(saved.textSize) ? saved.textSize : 'normal',
       };
     } catch {
       return {
         importantMailAlerts: true,
         deliveryUpdates: true,
         showTrackingNumbers: true,
+        textSize: 'normal',
       };
     }
   });
@@ -298,7 +301,8 @@ function App() {
   function updateSetting(name, value) {
     const updatedSettings = { ...settings, [name]: value };
     setSettings(updatedSettings);
-    localStorage.setItem('arrivonSettings', JSON.stringify(updatedSettings));
+    try { localStorage.setItem('arrivonSettings', JSON.stringify(updatedSettings)); }
+    catch { /* Keep settings usable when browser storage is unavailable. */ }
   }
 
   function resetMailFilters() {
@@ -959,7 +963,7 @@ function App() {
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
   return (
-    <div className={`app-layout has-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
+    <div className={`app-layout has-sidebar text-size-${settings.textSize} ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
       <Sidebar />
 
       <main className="main-content">
@@ -1133,7 +1137,6 @@ function App() {
                   </strong>{' '}
                   messages
                 </span>
-                <span>Unread messages are highlighted</span>
               </div>
 
               <MailRows
@@ -1259,7 +1262,6 @@ function App() {
                   <span className="settings-icon"><Sun size={18} /></span>
                   <div>
                     <h2>Appearance</h2>
-                    <p>Choose the brightness that feels right for you.</p>
                   </div>
                 </div>
                 <div className="appearance-options" aria-label="Appearance mode">
@@ -1281,7 +1283,6 @@ function App() {
                 <div className="settings-row contrast-setting">
                   <div>
                     <strong>High contrast</strong>
-                    <small>Increase text contrast and make controls and borders easier to see in light or dark mode.</small>
                   </div>
                   <button
                     className={`settings-switch ${highContrast ? 'on' : ''}`}
@@ -1294,6 +1295,26 @@ function App() {
                     <span />
                   </button>
                 </div>
+                <fieldset className="text-size-setting">
+                  <legend>Text size</legend>
+                  <div className="appearance-options text-size-options">
+                    {[
+                      ['normal', 'Normal'],
+                      ['large', 'Large'],
+                      ['extra-large', 'Extra large'],
+                    ].map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={settings.textSize === value ? 'selected' : ''}
+                        aria-pressed={settings.textSize === value}
+                        onClick={() => updateSetting('textSize', value)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
               </section>
 
               <section className="panel settings-section">

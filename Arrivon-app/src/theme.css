@@ -146,12 +146,12 @@
 /* Keep row typography the same size when a message changes read state. */
 .app-layout .mail-row :is(.mail-row-top strong, .mail-subject),
 .app-layout .important-row .important-row-copy strong {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   line-height: 1.5;
 }
 .app-layout .mail-row :is(.mail-row-top > span, .mail-tracking),
 .app-layout .important-row .important-row-copy small {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   line-height: 1.5;
 }
 

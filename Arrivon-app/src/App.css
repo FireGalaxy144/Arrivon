@@ -134,14 +134,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .auth-brand-name {
   align-self: end;
   color: #103e7e;
-  font: 800 29px/1 Manrope, sans-serif;
+  font: 800 calc(29px * var(--text-scale, 1))/1 Manrope, sans-serif;
   letter-spacing: -1.2px;
 }
 
 .auth-brand-tagline {
   align-self: start;
   color: #2787ed;
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   font-weight: 700;
   letter-spacing: 2.2px;
 }
@@ -167,11 +167,11 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 .auth-brand.compact .auth-brand-name {
-  font-size: 23px;
+  font-size: calc(23px * var(--text-scale, 1));
 }
 
 .auth-brand.compact .auth-brand-tagline {
-  font-size: 7px;
+  font-size: calc(7px * var(--text-scale, 1));
   letter-spacing: 1.5px;
 }
 
@@ -187,7 +187,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .auth-art-center h2 {
   margin: 0 0 18px;
   color: #10366e;
-  font: 800 clamp(34px, 3.2vw, 46px)/1.12 Manrope, sans-serif;
+  font: 800 clamp(calc(34px * var(--text-scale, 1)), 3.2vw, calc(46px * var(--text-scale, 1)))/1.12 Manrope, sans-serif;
   letter-spacing: -1.8px;
 }
 
@@ -199,7 +199,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   max-width: 330px;
   margin: 0;
   color: #5d7fab;
-  font-size: 16px;
+  font-size: calc(16px * var(--text-scale, 1));
   line-height: 1.6;
 }
 
@@ -234,12 +234,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .auth-benefit strong {
   color: #10366e;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
 }
 
 .auth-benefit small {
   color: #5d7fab;
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 .auth-footer {
@@ -247,7 +247,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   z-index: 1;
   padding-left: 60px;
   color: #5d7fab;
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   font-weight: 700;
   letter-spacing: 2px;
 }
@@ -292,13 +292,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .auth-card h1 {
   margin: 8px 0;
   color: #10366e;
-  font: 800 32px/1.2 Manrope, sans-serif;
+  font: 800 calc(32px * var(--text-scale, 1))/1.2 Manrope, sans-serif;
   letter-spacing: -1px;
 }
 
 .eyebrow {
   color: #2787ed;
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   font-weight: 700;
   letter-spacing: 1.5px;
 }
@@ -306,7 +306,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .auth-subtitle {
   margin: 0 0 28px;
   color: #7389a7;
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
   line-height: 1.6;
 }
 
@@ -319,7 +319,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: grid;
   gap: 7px;
   color: #264d7e;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   font-weight: 700;
 }
 
@@ -332,7 +332,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   outline: none;
   background: #fff;
   color: #10366e;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   transition: border-color .18s, box-shadow .18s;
 }
 
@@ -374,7 +374,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   align-items: center;
   gap: 6px;
   color: #7389a7;
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 .remember input {
@@ -388,7 +388,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border: none;
   background: none;
   color: #1974d2;
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   font-weight: 700;
 }
 
@@ -403,7 +403,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   background: var(--accent);
   box-shadow: 0 8px 18px #1974d229;
   color: white;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   font-weight: 700;
   transition: background .18s, transform .18s;
 }
@@ -421,7 +421,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .auth-switch {
   margin-top: 22px;
   color: #7389a7;
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   text-align: center;
 }
 
@@ -436,7 +436,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .secure-note {
   margin-top: 32px;
   color: #91a2b8;
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   text-align: center;
 }
 
@@ -473,7 +473,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Small label that introduces a navigation section. */
 .nav-label {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   letter-spacing: 1.3px;
   font-weight: 700;
   padding: 0 13px;
@@ -499,7 +499,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   background: transparent;
   color: var(--navy);
   text-align: left;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   font-weight: 600;
 }
 
@@ -520,7 +520,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   background: #d8ebff;
   border-radius: 20px;
   padding: 3px 7px;
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Push the connection and profile sections to the bottom. */
@@ -556,14 +556,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Emphasize the primary text in connection and profile cards. */
 .connection strong,
 .profile strong {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 /* Style secondary text and allow long values to wrap. */
 .connection small,
 .profile small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   overflow-wrap: anywhere;
 }
 
@@ -629,14 +629,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Main heading for each application page. */
 .page-header h1 {
   margin: 0;
-  font: 800 30px Manrope, sans-serif;
+  font: 800 calc(30px * var(--text-scale, 1)) Manrope, sans-serif;
   letter-spacing: -1px;
   color: var(--navy);
 }
 
 /* Subtitle beneath the page title. */
 .page-header p {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   color: var(--muted);
   margin: 8px 0 0;
 }
@@ -657,7 +657,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border-radius: 9px;
   background: var(--surface);
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   font-weight: 700;
 }
 
@@ -692,7 +692,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   align-items: center;
   gap: 9px;
   color: #d1e8ff;
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   letter-spacing: 1.2px;
   font-weight: 700;
 }
@@ -707,7 +707,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Main welcome heading inside the dashboard banner. */
 .banner-copy h2 {
-  font: 800 32px Manrope, sans-serif;
+  font: 800 calc(32px * var(--text-scale, 1)) Manrope, sans-serif;
   letter-spacing: -1px;
   line-height: 1.2;
   margin: 17px 0 10px;
@@ -720,7 +720,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Supporting copy inside the welcome banner. */
 .banner-copy p {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   line-height: 1.7;
   color: #e0efff;
   margin-bottom: 20px;
@@ -736,7 +736,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   padding: 11px 14px;
   background: var(--surface);
   color: #155da8;
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   font-weight: 700;
 }
 
@@ -782,7 +782,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   top: 20px;
   left: 25%;
   color: #9deeff;
-  font-size: 28px;
+  font-size: calc(28px * var(--text-scale, 1));
 }
 
 /* Floating caption beside the envelope illustration. */
@@ -808,12 +808,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Caption title and supporting text. */
 .banner-caption strong {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 .banner-caption small {
   color: #d1e8ff;
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
 }
 
 /* Dashboard cards: headings and reusable summary statistics. */
@@ -827,13 +827,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Heading for each dashboard section. */
 .section-heading h2 {
-  font: 700 16px Manrope, sans-serif;
+  font: 700 calc(16px * var(--text-scale, 1)) Manrope, sans-serif;
   margin: 0;
 }
 
 /* Optional explanatory text beneath a section heading. */
 .section-heading p {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   color: var(--muted);
   margin: 5px 0 0;
 }
@@ -879,7 +879,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Small label identifying the statistic. */
 .stat-card > span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   font-weight: 700;
   letter-spacing: .5px;
 }
@@ -887,14 +887,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Large numeric value displayed on a statistic card. */
 .stat-card > strong {
   color: var(--navy);
-  font: 800 27px Manrope, sans-serif;
+  font: 800 calc(27px * var(--text-scale, 1)) Manrope, sans-serif;
   margin: 7px 0 4px;
 }
 
 /* Supporting detail beneath the statistic value. */
 .stat-card > small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Mail list: reusable panel and message-row styling. */
@@ -916,7 +916,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Panel heading text. */
 .panel-heading > strong {
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 
 /* Icon container beside the panel heading. */
@@ -969,7 +969,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: grid;
   place-items: center;
   font-weight: 700;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 
 /* Allow the mail text section to use remaining row space. */
@@ -989,13 +989,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Sender name styling. */
 .mail-row-top strong {
   color: var(--navy);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 /* Date or time shown at the right of a mail row. */
 .mail-row-top > span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   white-space: nowrap;
 }
 
@@ -1010,14 +1010,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Mail subject preview. */
 .mail-subject {
   color: var(--text-secondary);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   margin-top: 4px;
 }
 
 /* Tracking or additional mail information preview. */
 .mail-tracking {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   margin-top: 4px;
 }
 
@@ -1030,7 +1030,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border-radius: 6px;
   background: var(--secondary-tint);
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   font-weight: 700;
 }
 
@@ -1147,7 +1147,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   appearance: none;
   background: transparent;
   color: var(--navy);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   cursor: pointer;
 }
 
@@ -1176,7 +1176,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .past-date-filters > span {
   flex: 0 0 auto;
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   font-weight: 600;
 }
 
@@ -1188,7 +1188,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   appearance: none;
   background: transparent;
   color: var(--navy);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   cursor: pointer;
 }
 
@@ -1253,7 +1253,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   outline: none;
   background: transparent;
   color: var(--navy);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 /* Muted placeholder text in the search field. */
@@ -1285,7 +1285,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border-radius: 7px;
   background: var(--surface);
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   font-weight: 600;
 }
 
@@ -1304,7 +1304,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   padding: 13px 18px;
   border-bottom: 1px solid var(--border);
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Emphasize important values in the list summary. */
@@ -1331,7 +1331,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Supporting message inside the empty state. */
 .empty-state p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 
 /* Past mail: banner introducing the archived mail section. */
@@ -1359,13 +1359,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Past-mail banner heading. */
 .past-banner h2 {
-  font: 700 16px Manrope, sans-serif;
+  font: 700 calc(16px * var(--text-scale, 1)) Manrope, sans-serif;
   margin: 0;
 }
 
 /* Supporting description in the past-mail banner. */
 .past-banner p {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   color: #d9ecff;
   margin-bottom: 0;
 }
@@ -1374,13 +1374,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .past-banner > strong {
   display: grid;
   margin-left: auto;
-  font: 800 25px Manrope, sans-serif;
+  font: 800 calc(25px * var(--text-scale, 1)) Manrope, sans-serif;
   text-align: right;
 }
 
 /* Smaller label below the archive count. */
 .past-banner > strong small {
-  font: 400 9px 'DM Sans', sans-serif;
+  font: 400 calc(9px * var(--text-scale, 1)) 'DM Sans', sans-serif;
   color: #d9ecff;
 }
 
@@ -1394,14 +1394,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Main heading in the analytics banner. */
 .analytics-banner h2 {
-  font: 800 24px Manrope, sans-serif;
+  font: 800 calc(24px * var(--text-scale, 1)) Manrope, sans-serif;
   margin: 14px 0 8px;
 }
 
 /* Supporting text in the analytics banner. */
 .analytics-banner p {
   color: #d9ecff;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 
 /* Display three compact analytics metrics in a row. */
@@ -1425,19 +1425,19 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Label identifying an analytics metric. */
 .mini-stat > span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   font-weight: 700;
 }
 
 /* Large metric value. */
 .mini-stat > strong {
-  font: 800 26px Manrope, sans-serif;
+  font: 800 calc(26px * var(--text-scale, 1)) Manrope, sans-serif;
 }
 
 /* Supporting detail beneath the metric. */
 .mini-stat > small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Place the analytics chart and ranking side by side. */
@@ -1451,7 +1451,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .panel-subtitle {
   padding: 0 18px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Chart container with horizontal grid lines and vertical bars. */
@@ -1486,7 +1486,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Numeric value displayed above each chart bar. */
 .chart-column > span {
   color: var(--text-secondary);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   margin-bottom: 4px;
 }
 
@@ -1503,7 +1503,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .chart-column > small {
   position: absolute;
   bottom: -21px;
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   color: var(--muted);
 }
 
@@ -1519,7 +1519,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Small badge showing the sender's ranking position. */
@@ -1534,7 +1534,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .rank-row > strong {
   width: 85px;
   color: var(--navy);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Background track behind a ranking progress bar. */
@@ -1581,20 +1581,20 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Title inside an expandable section. */
 .expand-button strong {
   color: var(--navy);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 /* Description inside an expandable section. */
 .expand-button small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Content revealed when an analytics section is expanded. */
 .expand-content {
   padding: 0 18px 15px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 /* Alert styling for important mail and its actionable message rows. */
@@ -1632,12 +1632,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .important-mail-heading > div strong {
   color: var(--danger-text);
-  font-size: 13px;
+  font-size: calc(13px * var(--text-scale, 1));
 }
 
 .important-mail-heading > div small {
   color: var(--danger-text);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 .important-mail-count {
@@ -1647,7 +1647,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border-radius: 20px;
   background: var(--surface);
   color: var(--danger-text);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1700,7 +1700,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .important-row-copy strong {
   overflow: hidden;
   color: var(--danger-text);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1708,7 +1708,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .important-row-copy small {
   overflow: hidden;
   color: var(--danger-text);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1719,14 +1719,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   align-items: center;
   gap: 3px;
   color: var(--danger-text);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   font-weight: 700;
 }
 
 .important-mail-empty {
   padding: 8px 6px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 
 /* Mail details: layout for the selected mail's information panel. */
@@ -1750,21 +1750,21 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Sender name in the mail details view. */
 .detail-sender h2 {
-  font: 700 17px Manrope, sans-serif;
+  font: 700 calc(17px * var(--text-scale, 1)) Manrope, sans-serif;
   margin: 0;
 }
 
 /* Sender email or other supporting sender information. */
 .detail-sender p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
 }
 
 /* Larger avatar for the mail details screen. */
 .sender-avatar.large {
   width: 48px;
   height: 48px;
-  font-size: 16px;
+  font-size: calc(16px * var(--text-scale, 1));
 }
 
 /* Horizontal divider separating mail detail sections. */
@@ -1778,7 +1778,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .detail-label,
 .detail-grid small {
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   letter-spacing: .8px;
   font-weight: 700;
 }
@@ -1786,7 +1786,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Main message description or tracking explanation. */
 .detail-description {
   max-width: 620px;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   line-height: 1.7;
   color: var(--muted);
 }
@@ -1812,7 +1812,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Metadata values can wrap if they contain long text. */
 .detail-grid strong {
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   overflow-wrap: anywhere;
 }
 
@@ -1824,7 +1824,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   margin-top: auto;
   padding-top: 32px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
 }
 
 /* Let the main footer text occupy the available space. */
@@ -1837,7 +1837,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border: none;
   background: none;
   color: var(--muted);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
 }
 
 /* Fixed notification message displayed above the page. */
@@ -1851,7 +1851,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   padding: 14px 18px;
   border-radius: 9px;
   box-shadow: 0 10px 30px #20255030;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 
 /* Hide mobile-only navigation controls on larger screens. */
@@ -1962,13 +1962,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .settings-section-heading h2 {
     margin: 1px 0 5px;
     color: var(--navy);
-    font: 700 14px Manrope, sans-serif;
+    font: 700 calc(14px * var(--text-scale, 1)) Manrope, sans-serif;
   }
 
 .settings-section-heading p {
     margin: 0;
     color: var(--muted);
-    font-size: 11px;
+    font-size: calc(11px * var(--text-scale, 1));
     line-height: 1.5;
   }
 
@@ -2006,7 +2006,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     border-radius: 9px;
     background: var(--canvas);
     color: var(--muted);
-    font-size: 12px;
+    font-size: calc(12px * var(--text-scale, 1));
     font-weight: 600;
   }
 
@@ -2037,14 +2037,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .settings-row strong,
 .account-details strong {
     color: var(--navy);
-    font-size: 11px;
+    font-size: calc(11px * var(--text-scale, 1));
     font-weight: 600;
   }
 
 .settings-row small {
     max-width: 360px;
     color: var(--muted);
-    font-size: 10px;
+    font-size: calc(10px * var(--text-scale, 1));
     line-height: 1.5;
   }
 
@@ -2095,7 +2095,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     align-items: center;
     gap: 5px;
     color: var(--muted);
-    font-size: 9px;
+    font-size: calc(9px * var(--text-scale, 1));
     font-weight: 700;
     letter-spacing: .5px;
   }
@@ -2208,7 +2208,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 
   .page-header h1 {
-    font-size: 26px;
+    font-size: calc(26px * var(--text-scale, 1));
   }
 
   /* Make the page action button span the available width. */
@@ -2228,7 +2228,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 
   .banner-copy h2 {
-    font-size: 27px;
+    font-size: calc(27px * var(--text-scale, 1));
   }
 
   .banner-illustration {
@@ -2245,7 +2245,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 
   .stat-card > strong {
-    font-size: 24px;
+    font-size: calc(24px * var(--text-scale, 1));
   }
 
   .toolbar {
@@ -2261,7 +2261,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 
   .mini-stat > strong {
-    font-size: 22px;
+    font-size: calc(22px * var(--text-scale, 1));
   }
 
   /* Reduce message row spacing and remove the trailing arrow. */
@@ -2299,7 +2299,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 
   .auth-card h1 {
-    font-size: 28px;
+    font-size: calc(28px * var(--text-scale, 1));
   }
 
   /* Further reduce dashboard card spacing and typography. */
@@ -2312,15 +2312,15 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 
   .stat-card > span {
-    font-size: 8px;
+    font-size: calc(8px * var(--text-scale, 1));
   }
 
   .stat-card > strong {
-    font-size: 22px;
+    font-size: calc(22px * var(--text-scale, 1));
   }
 
   .stat-card > small {
-    font-size: 9px;
+    font-size: calc(9px * var(--text-scale, 1));
   }
 
   /* Make sender and date information stack vertically. */
@@ -2349,7 +2349,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
   .filter-chips button {
     padding: 8px 9px;
-    font-size: 9px;
+    font-size: calc(9px * var(--text-scale, 1));
   }
 
   /* Stack analytics metrics into a single column. */
@@ -2446,12 +2446,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border-radius: 20px;
   background: var(--secondary-surface);
   color: var(--navy);
-  font-size: 10px;
+  font-size: calc(10px * var(--text-scale, 1));
   font-weight: 700;
 }
 
 .home-navigation-card > strong {
-  font-size: 17px;
+  font-size: calc(17px * var(--text-scale, 1));
   font-weight: 800;
 }
 
@@ -2459,7 +2459,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   margin: 0;
   min-height: 54px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
   line-height: 1.7;
 }
 
@@ -2472,7 +2472,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   padding-top: 14px;
   border-top: 1px solid var(--border);
   color: var(--navy);
-  font-size: 11px;
+  font-size: calc(11px * var(--text-scale, 1));
   font-weight: 700;
 }
 
@@ -2524,12 +2524,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .new-mail-today-card h3 {
   margin: 0 0 8px;
-  font-size: 20px;
+  font-size: calc(20px * var(--text-scale, 1));
   font-weight: 700;
 }
 
 .new-mail-today-card p {
   margin: 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--text-scale, 1));
 }
