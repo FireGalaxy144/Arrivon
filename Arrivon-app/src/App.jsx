@@ -10,7 +10,7 @@ import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
   LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
-  Bell, ShieldCheck, Zap
+  Bell, ShieldCheck, Zap, Settings, Sun, Moon, MapPin, Pencil
 } from 'lucide-react';
 
 import './App.css';
@@ -128,7 +128,7 @@ function getStoredSelectedMail() {
 function getInitialPage() {
   const user = getCurrentUser();
   const authPages = ['login', 'signup'];
-  const appPages = ['home', 'current', 'past', 'more', 'details'];
+  const appPages = ['home', 'current', 'past', 'more', 'details', 'settings'];
 
   try {
     const storedPage = sessionStorage.getItem('arrivonPage');
@@ -201,6 +201,25 @@ function isToday(dateString) {
 function App() {
   const [user, setUser] = useState(() => getCurrentUser());
   const [page, setPage] = useState(() => getInitialPage());
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('arrivonDarkMode') === 'true'
+  );
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('arrivonSettings') || '{}');
+      return {
+        importantMailAlerts: saved.importantMailAlerts ?? true,
+        deliveryUpdates: saved.deliveryUpdates ?? true,
+        showTrackingNumbers: saved.showTrackingNumbers ?? true,
+      };
+    } catch {
+      return {
+        importantMailAlerts: true,
+        deliveryUpdates: true,
+        showTrackingNumbers: true,
+      };
+    }
+  });
   const [mail, setMail] = useState(() => mailFromCsv);
   const [accounts, setAccounts] = useState(() => devAccounts);
   const [search, setSearch] = useState('');
@@ -237,6 +256,17 @@ function App() {
     setPage(next);
     sessionStorage.setItem('arrivonPage', next);
     setMenuOpen(false);
+  }
+
+  function updateSetting(name, value) {
+    const updatedSettings = { ...settings, [name]: value };
+    setSettings(updatedSettings);
+    localStorage.setItem('arrivonSettings', JSON.stringify(updatedSettings));
+  }
+
+  function changeAppearance(isDark) {
+    setDarkMode(isDark);
+    localStorage.setItem('arrivonDarkMode', String(isDark));
   }
 
   function toggleSidebar() {
@@ -527,10 +557,10 @@ function App() {
             )}
 
             <button
-              className="nav-link"
-              onClick={() => notify('Settings coming soon.')}
+              className={`nav-link ${page === 'settings' ? 'active' : ''}`}
+              onClick={() => navigate('settings')}
             >
-              <User size={18} />
+              <Settings size={18} />
               <span>Settings</span>
             </button>
 
@@ -595,9 +625,9 @@ function App() {
           <div className="mail-subject">{item.subject}</div>
 
           <div className="mail-tracking">
-            {item.tracking === '—'
-              ? item.category
-              : `Tracking: ${item.tracking}`}
+            {settings.showTrackingNumbers
+              ? (item.tracking === '—' ? item.category : `Tracking: ${item.tracking}`)
+              : item.category}
           </div>
         </div>
 
@@ -859,7 +889,7 @@ function App() {
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
   return (
-    <div className={`app-layout has-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className={`app-layout has-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''}`}>
       <Sidebar />
 
       <main className="main-content">
@@ -1163,6 +1193,136 @@ function App() {
                 )}
               </div>
             </section>
+          </>
+        )}
+
+        {page === 'settings' && (
+          <>
+            <Header
+              title="Settings"
+              subtitle="Make Arrivon work the way you like."
+            />
+
+            <div className="settings-grid">
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><Sun size={18} /></span>
+                  <div>
+                    <h2>Appearance</h2>
+                    <p>Choose the brightness that feels right for you.</p>
+                  </div>
+                </div>
+                <div className="appearance-options" aria-label="Appearance mode">
+                  <button
+                    className={!darkMode ? 'selected' : ''}
+                    aria-pressed={!darkMode}
+                    onClick={() => changeAppearance(false)}
+                  >
+                    <Sun size={17} /> Light
+                  </button>
+                  <button
+                    className={darkMode ? 'selected' : ''}
+                    aria-pressed={darkMode}
+                    onClick={() => changeAppearance(true)}
+                  >
+                    <Moon size={17} /> Dark
+                  </button>
+                </div>
+              </section>
+
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><Bell size={18} /></span>
+                  <div>
+                    <h2>Notifications</h2>
+                    <p>Choose which mail updates you want to keep enabled.</p>
+                  </div>
+                </div>
+                <div className="settings-options">
+                  {[
+                    ['importantMailAlerts', 'Important mail alerts', 'Get a heads-up when a message may need your attention.'],
+                    ['deliveryUpdates', 'Delivery status updates', 'Stay informed about package status changes.'],
+                  ].map(([key, title, description]) => (
+                    <div className="settings-row" key={key}>
+                      <div>
+                        <strong>{title}</strong>
+                        <small>{description}</small>
+                      </div>
+                      <button
+                        className={`settings-switch ${settings[key] ? 'on' : ''}`}
+                        type="button"
+                        role="switch"
+                        aria-checked={settings[key]}
+                        aria-label={title}
+                        onClick={() => updateSetting(key, !settings[key])}
+                      >
+                        <span />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><Package size={18} /></span>
+                  <div>
+                    <h2>Inbox preferences</h2>
+                    <p>Adjust the delivery details shown in your mail list.</p>
+                  </div>
+                </div>
+                <div className="settings-options">
+                  <div className="settings-row">
+                    <div>
+                      <strong>Show tracking numbers</strong>
+                      <small>Display package tracking numbers beneath message subjects.</small>
+                    </div>
+                    <button
+                      className={`settings-switch ${settings.showTrackingNumbers ? 'on' : ''}`}
+                      type="button"
+                      role="switch"
+                      aria-checked={settings.showTrackingNumbers}
+                      aria-label="Show tracking numbers"
+                      onClick={() => updateSetting('showTrackingNumbers', !settings.showTrackingNumbers)}
+                    >
+                      <span />
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><User size={18} /></span>
+                  <div>
+                    <h2>Account</h2>
+                    <p>Your profile and saved delivery destination.</p>
+                  </div>
+                  <button
+                    className="account-edit-button"
+                    type="button"
+                    aria-label="Edit profile"
+                    title="Edit profile"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                </div>
+                <div className="account-details">
+                  <div>
+                    <small>NAME</small>
+                    <strong>{user?.name || 'Not available'}</strong>
+                  </div>
+                  <div>
+                    <small>EMAIL</small>
+                    <strong>{user?.email || 'Not available'}</strong>
+                  </div>
+                  <div>
+                    <small><MapPin size={13} /> DELIVERY ADDRESS</small>
+                    <strong>{user?.address || 'No saved address'}</strong>
+                  </div>
+                </div>
+              </section>
+            </div>
           </>
         )}
 
