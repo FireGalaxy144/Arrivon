@@ -1,0 +1,204 @@
+/* Semantic pairs keep text, icons, and controls readable on every surface. */
+.app-layout {
+  color-scheme: light;
+  color: var(--navy);
+  background: var(--canvas);
+  --muted: #4c5e74;
+  --text-secondary: #385675;
+  --border: #6b7f95;
+  --on-accent: #ffffff;
+  --accent: #185da4;
+  --accent-hover: #155da8;
+  --secondary-active: #1b65b2;
+  --danger-surface: #fff0f0;
+  --danger-text: #9f2020;
+  --danger-border: #b65c5c;
+  --warning-surface: #fff4d6;
+  --warning-text: #874600;
+  --success-surface: #e2f5eb;
+  --success-text: #166343;
+  --switch-off: #61758a;
+  --switch-thumb: #ffffff;
+  --toast-background: #10366e;
+  --toast-text: #ffffff;
+  --banner-background: linear-gradient(115deg, #10366e, #155da8);
+  --mail-unread-surface: #ffffff;
+  --mail-read-surface: #f2f6fc;
+}
+
+/* Charcoal surfaces and cool accents, inspired by Chrome's dark appearance. */
+.app-layout.dark-mode {
+  color-scheme: dark;
+  --canvas: #202124;
+  --surface: #292a2d;
+  --secondary-surface: #292a2d;
+  --secondary-hover: #414349;
+  --secondary-tint: #35363a;
+  --secondary-active: #a8c7fa;
+  --accent: #a8c7fa;
+  --accent-hover: #c2d7fc;
+  --on-accent: #172d4e;
+  --navy: #f1f3f4;
+  --muted: #bdc1c6;
+  --text-secondary: #d5d8dc;
+  --border: #92969e;
+  --danger-surface: #422729;
+  --danger-text: #ffb4ab;
+  --danger-border: #d98c87;
+  --warning-surface: #40331e;
+  --warning-text: #ffda8a;
+  --success-surface: #203b30;
+  --success-text: #96dbb5;
+  --switch-off: #858991;
+  --switch-thumb: #202124;
+  --toast-background: #e8eaed;
+  --toast-text: #202124;
+  --banner-background: #293b55;
+  --mail-unread-surface: #292a2d;
+  --mail-read-surface: #202124;
+}
+
+.app-layout.high-contrast {
+  --canvas: #ffffff;
+  --surface: #ffffff;
+  --secondary-surface: #ffffff;
+  --secondary-hover: #e6e6e6;
+  --secondary-tint: #f0f0f0;
+  --navy: #000000;
+  --muted: #252525;
+  --text-secondary: #111111;
+  --border: #000000;
+  --accent: #003a90;
+  --accent-hover: #002a68;
+  --secondary-active: #003a90;
+  --on-accent: #ffffff;
+  --danger-surface: #ffffff;
+  --danger-text: #800000;
+  --danger-border: #800000;
+  --warning-surface: #ffffff;
+  --warning-text: #603600;
+  --success-surface: #ffffff;
+  --success-text: #004d25;
+  --switch-off: #252525;
+  --switch-thumb: #ffffff;
+  --banner-background: #000000;
+  --mail-unread-surface: #ffffff;
+  --mail-read-surface: #f0f0f0;
+}
+
+.app-layout.dark-mode.high-contrast {
+  --canvas: #000000;
+  --surface: #000000;
+  --secondary-surface: #000000;
+  --secondary-hover: #262626;
+  --secondary-tint: #1a1a1a;
+  --navy: #ffffff;
+  --muted: #eeeeee;
+  --text-secondary: #ffffff;
+  --border: #ffffff;
+  --accent: #a8d5ff;
+  --accent-hover: #d4eaff;
+  --secondary-active: #a8d5ff;
+  --on-accent: #000000;
+  --danger-surface: #000000;
+  --danger-text: #ffb4ab;
+  --danger-border: #ffb4ab;
+  --warning-surface: #000000;
+  --warning-text: #ffe49c;
+  --success-surface: #000000;
+  --success-text: #a4f4bf;
+  --switch-off: #ffffff;
+  --switch-thumb: #000000;
+  --toast-background: #ffffff;
+  --toast-text: #000000;
+  --mail-unread-surface: #000000;
+  --mail-read-surface: #1a1a1a;
+}
+
+/* Gmail-style rows: unread messages stand out on a brighter surface in bold;
+   opened messages use a tinted surface and medium-weight text. */
+.app-layout :is(.mail-row, .important-row).unread {
+  background: var(--mail-unread-surface);
+}
+.app-layout :is(.mail-row, .important-row).read {
+  background: var(--mail-read-surface);
+}
+.app-layout :is(.mail-row, .important-row):hover {
+  background: var(--secondary-hover);
+}
+.app-layout .mail-row :is(.mail-row-top strong, .mail-subject, .mail-row-top > span),
+.app-layout .important-row :is(.important-row-copy strong, .important-row-copy small) {
+  font-weight: 500;
+}
+.app-layout .mail-row.unread :is(.mail-row-top strong, .mail-subject, .mail-row-top > span),
+.app-layout .important-row.unread :is(.important-row-copy strong, .important-row-copy small) {
+  font-weight: 700;
+}
+.app-layout .mail-row.unread :is(.mail-subject, .mail-row-top > span) {
+  color: var(--navy);
+}
+.app-layout .mail-row.read :is(.mail-row-top strong, .mail-subject) {
+  color: var(--navy);
+}
+.app-layout .mail-row.read :is(.mail-row-top > span, .mail-tracking) {
+  color: var(--text-secondary);
+}
+/* Keep row typography the same size when a message changes read state. */
+.app-layout .mail-row :is(.mail-row-top strong, .mail-subject),
+.app-layout .important-row .important-row-copy strong {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.app-layout .mail-row :is(.mail-row-top > span, .mail-tracking),
+.app-layout .important-row .important-row-copy small {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.app-layout .auth-brand .auth-brand-name { color: var(--navy); }
+.app-layout .auth-brand .auth-brand-tagline { color: var(--accent); }
+.app-layout :is(.text-button, .expand-button, .empty-state) { color: var(--accent); }
+.app-layout .primary-button { color: var(--on-accent); }
+.app-layout .importance-button.selected {
+  background: var(--secondary-tint);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.app-layout .nav-count {
+  background: var(--secondary-tint);
+  color: var(--navy);
+}
+.app-layout .banner-button {
+  background: var(--surface);
+  color: var(--accent);
+}
+.app-layout .settings-switch { border: 1px solid var(--border); }
+.app-layout .settings-switch.on { background: var(--secondary-active); }
+.app-layout .contrast-setting { margin-top: 18px; padding-bottom: 0; }
+.app-layout select option { background: var(--surface); color: var(--navy); }
+.app-layout :is(button, input, select, a):focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+.app-layout :is(.search-box, .sender-filter, .past-date-filters):focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.app-layout .appearance-options button.selected {
+  outline: 1px solid var(--accent);
+  font-weight: 700;
+}
+.app-layout .chart-column > div { background: var(--accent); }
+.app-layout .rank-track > div { background: var(--accent); }
+.app-layout.high-contrast :is(.panel, .home-navigation-card, .stat-card, .mini-stat, .toast) {
+  border: 2px solid var(--border);
+  box-shadow: none;
+}
+.app-layout.high-contrast .status { border: 1px solid currentColor; }
+.app-layout.high-contrast :is(.welcome-banner, .past-banner, .analytics-banner) {
+  border: 2px solid var(--border);
+}
+.app-layout.high-contrast :is(.banner-copy h2 span, .banner-copy p, .live-label,
+  .past-banner p, .past-banner > strong small, .analytics-banner p, .banner-caption small) {
+  color: #ffffff;
+}

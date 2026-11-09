@@ -450,7 +450,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   inset: 0 auto 0 0;
   width: 245px;
   background: var(--secondary-surface);
-  border-right: 1px solid #dce5ee;
+  border-right: 1px solid var(--border);
   padding: 27px 16px 16px;
   display: flex;
   flex-direction: column;
@@ -472,7 +472,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Small label that introduces a navigation section. */
 .nav-label {
-  color: #8191a3;
+  color: var(--muted);
   font-size: 9px;
   letter-spacing: 1.3px;
   font-weight: 700;
@@ -497,7 +497,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border: none;
   border-radius: 9px;
   background: transparent;
-  color: #53677d;
+  color: var(--navy);
   text-align: left;
   font-size: 12px;
   font-weight: 600;
@@ -511,7 +511,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Highlight the currently selected page in the sidebar. */
 .nav-link.active {
   background: var(--secondary-active);
-  color: white;
+  color: var(--on-accent);
 }
 
 /* Small count badge shown beside a navigation item. */
@@ -542,7 +542,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Green accent indicates a connected status. */
 .connection > svg {
-  color: #39bd9a;
+  color: var(--success-text);
 }
 
 /* Arrange the connection and profile text vertically. */
@@ -562,7 +562,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Style secondary text and allow long values to wrap. */
 .connection small,
 .profile small {
-  color: #71849a;
+  color: var(--muted);
   font-size: 10px;
   overflow-wrap: anywhere;
 }
@@ -572,8 +572,9 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: flex;
   align-items: center;
   gap: 10px;
-  border-top: 1px solid #dce5ee;
+  border-top: 1px solid var(--border);
   margin-top: 12px;
+  margin-bottom: 20px;
   padding: 16px 5px 0;
 }
 
@@ -625,24 +626,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   min-width: 0;
 }
 
-/* Breadcrumb navigation above the page title. */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #969bb3;
-  font-size: 9px;
-  letter-spacing: 1px;
-  font-weight: 700;
-  margin-bottom: 9px;
-}
-
 /* Main heading for each application page. */
 .page-header h1 {
   margin: 0;
   font: 800 30px Manrope, sans-serif;
   letter-spacing: -1px;
-  color: #10366e;
+  color: var(--navy);
 }
 
 /* Subtitle beneath the page title. */
@@ -664,17 +653,17 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   justify-content: center;
   gap: 8px;
   padding: 10px 13px;
-  border: 1px solid #dce8f4;
+  border: 1px solid var(--border);
   border-radius: 9px;
   background: var(--surface);
-  color: #31577f;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 700;
 }
 
 /* Highlight the secondary button border on hover. */
 .secondary-button:hover {
-  border-color: #8bbff2;
+  border-color: var(--accent);
 }
 
 /* Home banner: welcome message and decorative envelope illustration. */
@@ -683,7 +672,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border-radius: 16px;
   padding: 29px 32px;
   color: white;
-  background: linear-gradient(115deg, #10366e, #1769bd 60%, var(--accent));
+  background: var(--banner-background);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -745,7 +734,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   border: none;
   border-radius: 8px;
   padding: 11px 14px;
-  background: white;
+  background: var(--surface);
   color: #155da8;
   font-size: 11px;
   font-weight: 700;
@@ -864,7 +853,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   text-align: left;
   min-width: 0;
   padding: 17px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   transition: transform .15s;
@@ -889,7 +878,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Small label identifying the statistic. */
 .stat-card > span {
-  color: #9398b0;
+  color: var(--muted);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: .5px;
@@ -897,20 +886,20 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Large numeric value displayed on a statistic card. */
 .stat-card > strong {
-  color: #173e70;
+  color: var(--navy);
   font: 800 27px Manrope, sans-serif;
   margin: 7px 0 4px;
 }
 
 /* Supporting detail beneath the statistic value. */
 .stat-card > small {
-  color: #999eb3;
+  color: var(--muted);
   font-size: 10px;
 }
 
 /* Mail list: reusable panel and message-row styling. */
 .panel {
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
@@ -922,7 +911,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   align-items: center;
   gap: 10px;
   padding: 16px 18px;
-  border-bottom: 1px solid #edf3f8;
+  border-bottom: 1px solid var(--border);
 }
 
 /* Panel heading text. */
@@ -949,8 +938,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 100%;
   padding: 13px 18px;
   border: none;
-  border-bottom: 1px solid #edf3f8;
-  background: white;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
   text-align: left;
 }
 
@@ -961,12 +950,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Highlight a mail row when the pointer hovers over it. */
 .mail-row:hover {
-  background: #f6faff;
+  background: var(--secondary-tint);
 }
 
 /* Subtle background for unread mail items. */
 .mail-row.unread {
-  background: #f3f9ff;
+  background: var(--secondary-tint);
 }
 
 /* Sender initials displayed beside a mail item. */
@@ -975,8 +964,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 36px;
   height: 36px;
   border-radius: 11px;
-  background: #e6f2ff;
-  color: #1767b5;
+  background: var(--secondary-tint);
+  color: var(--accent);
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -999,13 +988,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Sender name styling. */
 .mail-row-top strong {
-  color: #23476f;
+  color: var(--navy);
   font-size: 11px;
 }
 
 /* Date or time shown at the right of a mail row. */
 .mail-row-top > span {
-  color: #a0a5b8;
+  color: var(--muted);
   font-size: 9px;
   white-space: nowrap;
 }
@@ -1020,14 +1009,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Mail subject preview. */
 .mail-subject {
-  color: #58718d;
+  color: var(--text-secondary);
   font-size: 11px;
   margin-top: 4px;
 }
 
 /* Tracking or additional mail information preview. */
 .mail-tracking {
-  color: #a0a5b8;
+  color: var(--muted);
   font-size: 9px;
   margin-top: 4px;
 }
@@ -1039,56 +1028,56 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   flex-shrink: 0;
   padding: 5px 8px;
   border-radius: 6px;
-  background: #edf2f7;
-  color: #52677d;
+  background: var(--secondary-tint);
+  color: var(--text-secondary);
   font-size: 9px;
   font-weight: 700;
 }
 
 .status-action-required {
-  background: #fee4e2;
-  color: #b42318;
+  background: var(--danger-surface);
+  color: var(--danger-text);
 }
 
 .status-delayed {
-  background: #fff0e8;
-  color: #c2410c;
+  background: var(--warning-surface);
+  color: var(--warning-text);
 }
 
 .status-received {
-  background: #edf2f7;
-  color: #52677d;
+  background: var(--secondary-tint);
+  color: var(--text-secondary);
 }
 
 .status-in-transit {
-  background: #e8f1ff;
-  color: #245da8;
+  background: var(--secondary-tint);
+  color: var(--accent);
 }
 
 .status-out-for-delivery {
-  background: #fff4d6;
-  color: #946200;
+  background: var(--warning-surface);
+  color: var(--warning-text);
 }
 
 .status-ready-for-pickup {
-  background: #e2f5f2;
-  color: #14766c;
+  background: var(--success-surface);
+  color: var(--success-text);
 }
 
 .status-delivered {
-  background: #e4f5e9;
-  color: #237a3b;
+  background: var(--success-surface);
+  color: var(--success-text);
 }
 
 .status-unknown {
-  background: #edf2f7;
-  color: #52677d;
+  background: var(--secondary-tint);
+  color: var(--text-secondary);
 }
 
 /* Arrow at the end of a clickable mail row. */
 .row-arrow {
   flex-shrink: 0;
-  color: #b0b5c8;
+  color: var(--muted);
 }
 /* Search and filters: toolbar, search input, and filter buttons. */
 .toolbar {
@@ -1098,6 +1087,40 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   margin-bottom: 13px;
 }
 
+/* Keep mail search, sender, date range, and reset on a single row.
+   Narrow screens can scroll the controls without squeezing their labels. */
+.mail-filter-toolbar {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 5px;
+}
+
+.mail-filter-toolbar .search-box {
+  min-width: 220px;
+}
+
+.mail-filter-toolbar .sender-filter {
+  width: 180px;
+}
+
+.mail-filter-toolbar .past-date-filters {
+  flex: 0 0 260px;
+  width: 260px;
+  margin: 0;
+}
+
+.mail-filter-toolbar > label > svg {
+  flex-shrink: 0;
+}
+
+.mail-filter-toolbar .reset-filters-button {
+  flex: 0 0 auto;
+  min-height: 46px;
+  white-space: nowrap;
+}
+
 .sender-filter {
   display: flex;
   align-items: center;
@@ -1105,15 +1128,15 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 210px;
   height: 46px;
   padding: 0 12px;
-  border: 1px solid #dce8f4;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: white;
-  color: #71849b;
+  background: var(--surface);
+  color: var(--muted);
   flex: 0 0 auto;
 }
 
 .sender-filter:focus-within {
-  border-color: #70b1f0;
+  border-color: var(--accent);
 }
 
 .sender-filter select {
@@ -1140,19 +1163,19 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   height: 46px;
   padding: 0 13px;
   margin: 0 0 13px;
-  border: 1px solid #dce8f4;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: white;
-  color: #71849b;
+  background: var(--surface);
+  color: var(--muted);
 }
 
 .past-date-filters:focus-within {
-  border-color: #70b1f0;
+  border-color: var(--accent);
 }
 
 .past-date-filters > span {
   flex: 0 0 auto;
-  color: #71849b;
+  color: var(--muted);
   font-size: 11px;
   font-weight: 600;
 }
@@ -1169,6 +1192,39 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   cursor: pointer;
 }
 
+/* Let the native select receive clicks anywhere inside the control. */
+.sender-filter,
+.past-date-filters {
+  position: relative;
+  cursor: pointer;
+}
+
+.sender-filter select,
+.past-date-filters select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  padding: 0 34px 0 12px;
+}
+
+.past-date-filters select {
+  padding-left: 132px;
+}
+
+.sender-filter > svg:last-child,
+.past-date-filters > svg:last-child {
+  position: absolute;
+  right: 12px;
+}
+
+.sender-filter > svg,
+.past-date-filters > svg,
+.past-date-filters > span {
+  pointer-events: none;
+}
+
 /* Search field container, including its icon and input. */
 .search-box {
   display: flex;
@@ -1178,15 +1234,15 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   flex: 1;
   height: 46px;
   padding: 0 13px;
-  border: 1px solid #dce8f4;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: white;
-  color: #9197b0;
+  background: var(--surface);
+  color: var(--muted);
 }
 
 /* Highlight the search box when its input is focused. */
 .search-box:focus-within {
-  border-color: #70b1f0;
+  border-color: var(--accent);
 }
 
 /* Search input fills the remaining horizontal space. */
@@ -1202,7 +1258,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Muted placeholder text in the search field. */
 .search-box input::placeholder {
-  color: #a3a8bc;
+  color: var(--muted);
 }
 
 /* Clear or action button inside the search field. */
@@ -1211,7 +1267,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   place-items: center;
   border: none;
   background: transparent;
-  color: #8c92aa;
+  color: var(--muted);
 }
 
 /* Arrange filter buttons in a row that can wrap on small screens. */
@@ -1225,10 +1281,10 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Default appearance for a filter option. */
 .filter-chips button {
   padding: 8px 12px;
-  border: 1px solid #dce8f4;
+  border: 1px solid var(--border);
   border-radius: 7px;
-  background: white;
-  color: #858ba6;
+  background: var(--surface);
+  color: var(--muted);
   font-size: 10px;
   font-weight: 600;
 }
@@ -1237,7 +1293,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .filter-chips button.selected {
   background: var(--secondary-active);
   border-color: var(--secondary-active);
-  color: white;
+  color: var(--on-accent);
 }
 
 /* Summary row showing information about the current mail list. */
@@ -1246,14 +1302,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   justify-content: space-between;
   gap: 10px;
   padding: 13px 18px;
-  border-bottom: 1px solid #edf3f8;
-  color: #979cb0;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
   font-size: 10px;
 }
 
 /* Emphasize important values in the list summary. */
 .list-summary strong {
-  color: #23476f;
+  color: var(--navy);
 }
 
 /* Empty state displayed when no mail matches the current filters. */
@@ -1268,7 +1324,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Heading inside the empty state. */
 .empty-state h3 {
-  color: #3b4066;
+  color: var(--navy);
   margin-bottom: 4px;
 }
 
@@ -1283,7 +1339,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: flex;
   align-items: center;
   gap: 15px;
-  background: linear-gradient(115deg, #10366e, #1974d2);
+  background: var(--banner-background);
   color: white;
   border-radius: 12px;
   padding: 20px 22px;
@@ -1332,7 +1388,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .analytics-banner {
   padding: 26px;
   border-radius: 13px;
-  background: linear-gradient(115deg, #10366e, #1974d2);
+  background: var(--banner-background);
   color: white;
 }
 
@@ -1361,14 +1417,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: grid;
   gap: 8px;
   padding: 16px;
-  background: white;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 11px;
 }
 
 /* Label identifying an analytics metric. */
 .mini-stat > span {
-  color: #9398b0;
+  color: var(--muted);
   font-size: 9px;
   font-weight: 700;
 }
@@ -1380,7 +1436,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Supporting detail beneath the metric. */
 .mini-stat > small {
-  color: #8e94ab;
+  color: var(--muted);
   font-size: 10px;
 }
 
@@ -1394,7 +1450,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Small explanatory text beneath an analytics panel heading. */
 .panel-subtitle {
   padding: 0 18px;
-  color: #969bb1;
+  color: var(--muted);
   font-size: 10px;
 }
 
@@ -1405,13 +1461,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   align-items: flex-end;
   gap: 12px;
   padding: 18px 17px 30px;
-  border-bottom: 1px solid #eceef6;
+  border-bottom: 1px solid var(--border);
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
     transparent 37px,
-    #eff0f7 38px,
-    #eff0f7 39px
+    var(--border) 38px,
+    var(--border) 39px
   );
 }
 
@@ -1429,7 +1485,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Numeric value displayed above each chart bar. */
 .chart-column > span {
-  color: #547394;
+  color: var(--text-secondary);
   font-size: 9px;
   margin-bottom: 4px;
 }
@@ -1448,7 +1504,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   position: absolute;
   bottom: -21px;
   font-size: 9px;
-  color: #999eb3;
+  color: var(--muted);
 }
 
 /* Stack sender ranking entries vertically. */
@@ -1477,7 +1533,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Set a consistent width for sender names in the ranking. */
 .rank-row > strong {
   width: 85px;
-  color: #555b7a;
+  color: var(--navy);
   font-size: 10px;
 }
 
@@ -1509,7 +1565,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: flex;
   align-items: center;
   gap: 12px;
-  background: white;
+  background: var(--surface);
   border: none;
   text-align: left;
   color: #1974d2;
@@ -1524,27 +1580,28 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 /* Title inside an expandable section. */
 .expand-button strong {
-  color: #23476f;
+  color: var(--navy);
   font-size: 11px;
 }
 
 /* Description inside an expandable section. */
 .expand-button small {
-  color: #979cb1;
+  color: var(--muted);
   font-size: 10px;
 }
 
 /* Content revealed when an analytics section is expanded. */
 .expand-content {
   padding: 0 18px 15px;
-  color: #858ba6;
+  color: var(--muted);
   font-size: 11px;
 }
 
 /* Alert styling for important mail and its actionable message rows. */
 .important-mail-panel {
-  border-color: #f0c4c4;
-  background: #fffafa;
+  margin-top: 28px;
+  border-color: var(--danger-border);
+  background: var(--danger-surface);
 }
 
 .important-mail-heading {
@@ -1552,8 +1609,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   align-items: center;
   gap: 12px;
   padding: 16px 18px;
-  border-bottom: 1px solid #f3dada;
-  background: #fff1f1;
+  border-bottom: 1px solid var(--danger-border);
+  background: var(--danger-surface);
 }
 
 .important-mail-heading-icon {
@@ -1563,8 +1620,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: #ffe0e0;
-  color: #c62828;
+  background: var(--danger-surface);
+  color: var(--danger-text);
 }
 
 .important-mail-heading > div {
@@ -1574,22 +1631,22 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 .important-mail-heading > div strong {
-  color: #9f2020;
+  color: var(--danger-text);
   font-size: 13px;
 }
 
 .important-mail-heading > div small {
-  color: #a45b5b;
+  color: var(--danger-text);
   font-size: 10px;
 }
 
 .important-mail-count {
   margin-left: auto;
   padding: 5px 9px;
-  border: 1px solid #efbaba;
+  border: 1px solid var(--danger-border);
   border-radius: 20px;
-  background: #fff;
-  color: #a62828;
+  background: var(--surface);
+  color: var(--danger-text);
   font-size: 10px;
   font-weight: 700;
   white-space: nowrap;
@@ -1608,18 +1665,18 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: flex;
   align-items: center;
   gap: 11px;
-  border: 1px solid #f1d4d4;
+  border: 1px solid var(--danger-border);
   border-radius: 9px;
-  background: white;
+  background: var(--surface);
   text-align: left;
-  color: #7e3434;
+  color: var(--danger-text);
   transition: border-color .18s, background .18s, box-shadow .18s;
 }
 
 .important-row:hover {
-  border-color: #e69b9b;
-  background: #fff7f7;
-  box-shadow: 0 3px 10px #9f202010;
+  border-color: var(--danger-border);
+  background: var(--danger-surface);
+  box-shadow: 0 3px 10px var(--danger-text)10;
 }
 
 .important-row-icon {
@@ -1629,8 +1686,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: #fff0f0;
-  color: #bf3030;
+  background: var(--danger-surface);
+  color: var(--danger-text);
 }
 
 .important-row-copy {
@@ -1642,7 +1699,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .important-row-copy strong {
   overflow: hidden;
-  color: #713232;
+  color: var(--danger-text);
   font-size: 11px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1650,7 +1707,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .important-row-copy small {
   overflow: hidden;
-  color: #a36a6a;
+  color: var(--danger-text);
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1661,14 +1718,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   flex: 0 0 auto;
   align-items: center;
   gap: 3px;
-  color: #ae2929;
+  color: var(--danger-text);
   font-size: 10px;
   font-weight: 700;
 }
 
 .important-mail-empty {
   padding: 8px 6px;
-  color: #858ba6;
+  color: var(--muted);
   font-size: 12px;
 }
 
@@ -1720,7 +1777,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 /* Small labels for mail details and metadata fields. */
 .detail-label,
 .detail-grid small {
-  color: #969bb2;
+  color: var(--muted);
   font-size: 9px;
   letter-spacing: .8px;
   font-weight: 700;
@@ -1731,7 +1788,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   max-width: 620px;
   font-size: 12px;
   line-height: 1.7;
-  color: #858ba6;
+  color: var(--muted);
 }
 
 /* Grid containing mail metadata such as dates and tracking details. */
@@ -1740,8 +1797,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
   padding: 20px;
-  background: #f8f8fe;
-  border: 1px solid #eff0f7;
+  background: var(--secondary-tint);
+  border: 1px solid var(--border);
   border-radius: 10px;
   margin: 24px 0;
 }
@@ -1766,7 +1823,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   gap: 13px;
   margin-top: auto;
   padding-top: 32px;
-  color: #a1a6ba;
+  color: var(--muted);
   font-size: 9px;
 }
 
@@ -1779,7 +1836,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 .app-footer > button {
   border: none;
   background: none;
-  color: #8e94ad;
+  color: var(--muted);
   font-size: 10px;
 }
 
@@ -1789,8 +1846,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   right: 24px;
   bottom: 24px;
   z-index: 100;
-  background: var(--navy);
-  color: white;
+  background: var(--toast-background);
+  color: var(--toast-text);
   padding: 14px 18px;
   border-radius: 9px;
   box-shadow: 0 10px 30px #20255030;
@@ -1813,12 +1870,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   padding: 0;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: white;
-  color: #53677d;
+  background: var(--surface);
+  color: var(--navy);
 }
 
 .sidebar-toggle:hover {
-  border-color: #b7d4ef;
+  border-color: var(--border);
   background: var(--secondary-tint);
 }
 
@@ -2000,7 +2057,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     padding: 3px;
     border: 0;
     border-radius: 20px;
-    background: #c4cfdb;
+    background: var(--switch-off);
     transition: background .18s;
   }
 
@@ -2008,7 +2065,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: white;
+    background: var(--switch-thumb);
     box-shadow: 0 1px 3px #10243a30;
     transition: transform .18s;
   }
@@ -2045,108 +2102,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .account-details strong {
     overflow-wrap: anywhere;
-  }
-
-.app-layout.dark-mode {
-    --canvas: #111c2a;
-    --surface: #19283a;
-    --secondary-surface: #18293c;
-    --secondary-hover: #253a50;
-    --secondary-tint: #263b52;
-    --secondary-active: #2677cc;
-    --accent: #63aef5;
-    --accent-hover: #3991e3;
-    --navy: #e3edf8;
-    --muted: #9aacc0;
-    --border: #304258;
-    color: #e3edf8;
-    background: var(--canvas);
-  }
-
-.app-layout.dark-mode .sidebar {
-    border-color: var(--border);
-  }
-
-.app-layout.dark-mode .nav-link:not(.active),
-.app-layout.dark-mode .profile strong,
-.app-layout.dark-mode .connection strong {
-    color: #c3d1e0;
-  }
-
-.app-layout.dark-mode .profile {
-    border-color: var(--border);
-  }
-
-.app-layout.dark-mode .main-content,
-  .app-layout.dark-mode .empty-state {
-    background-color: var(--canvas);
-    color: #e3edf8;
-  }
-
-  .app-layout.dark-mode .panel,
-  .app-layout.dark-mode .stat-card,
-  .app-layout.dark-mode .mini-stat,
-  .app-layout.dark-mode .mail-row,
-  .app-layout.dark-mode .home-navigation-card,
-  .app-layout.dark-mode .search-box,
-  .app-layout.dark-mode .sender-filter,
-  .app-layout.dark-mode .past-date-filters {
-    background-color: var(--surface);
-    color: #e3edf8;
-  }
-
-.app-layout.dark-mode .panel,
-.app-layout.dark-mode .stat-card,
-.app-layout.dark-mode .mini-stat,
-.app-layout.dark-mode .search-box,
-.app-layout.dark-mode .sender-filter,
-.app-layout.dark-mode .past-date-filters {
-    border-color: var(--border);
-  }
-
-.app-layout.dark-mode .page-header h1,
-.app-layout.dark-mode .panel-heading > strong,
-.app-layout.dark-mode .stat-card > strong,
-.app-layout.dark-mode .mini-stat > strong,
-.app-layout.dark-mode .mail-row-top strong,
-.app-layout.dark-mode .detail-panel h2 {
-    color: #e3edf8;
-  }
-
-.app-layout.dark-mode .panel-heading,
-.app-layout.dark-mode .mail-row,
-.app-layout.dark-mode .detail-panel hr,
-.app-layout.dark-mode .settings-row {
-    border-color: var(--border);
-  }
-
-.app-layout.dark-mode .mail-row:hover,
-.app-layout.dark-mode .mail-row.unread {
-    background: #1c3045;
-  }
-
-.app-layout.dark-mode .mail-subject,
-.app-layout.dark-mode .detail-description,
-.app-layout.dark-mode .detail-grid strong {
-    color: #b7c7d8;
-  }
-
-.app-layout.dark-mode .chart {
-    border-color: var(--border);
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 37px,
-      #304258 38px,
-      #304258 39px
-    );
-  }
-
-.app-layout.dark-mode .app-footer,
-.app-layout.dark-mode .settings-section-heading h2,
-.app-layout.dark-mode .settings-row strong,
-.app-layout.dark-mode .account-details strong {
-    color: #e3edf8;
   }
 
 @media (max-width: 760px) {
@@ -2211,7 +2166,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     width: 38px;
     height: 38px;
     border: 1px solid var(--border);
-    background: white;
+    background: var(--surface);
     border-radius: 8px;
   }
 
@@ -2219,7 +2174,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   .mobile-close {
     border: none;
     background: transparent;
-    color: #777d98;
+    color: var(--muted);
   }
 
   /* Dark overlay behind the open mobile sidebar. */
@@ -2463,7 +2418,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .home-navigation-card:hover {
   transform: translateY(-4px);
-  border-color: #9cc2e8;
+  border-color: var(--border);
   box-shadow: 0 12px 26px rgba(16, 54, 110, 0.14);
 }
 
@@ -2528,7 +2483,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   height: 30px;
   border-radius: 50%;
   background: var(--accent-hover);
-  color: white;
+  color: var(--on-accent);
   transition: transform 0.2s ease;
 }
 
@@ -2550,9 +2505,9 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 220px;
   padding: 20px 24px;
   margin-top: 20px;
-  background: white;
+  background: var(--surface);
   border-radius: 18px;
-  color: #242341;
+  color: var(--navy);
 }
 
 .new-mail-today-card .new-mail-today-icon {
@@ -2563,8 +2518,8 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   height: 52px;
   margin-bottom: 12px;
   border-radius: 50%;
-  background: #d9f5fb;
-  color: #37318c;
+  background: var(--secondary-tint);
+  color: var(--accent);
 }
 
 .new-mail-today-card h3 {
@@ -2575,6 +2530,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .new-mail-today-card p {
   margin: 0;
-  color: #555477;
+  color: var(--muted);
   font-size: 14px;
 }

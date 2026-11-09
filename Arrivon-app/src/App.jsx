@@ -2,18 +2,19 @@
 // React state manages the interactive pages and forms.
 // Lucide React supplies the icons used in the interface.
 // App.css contains the component-level visual styles.
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import mailCsv from './mail.csv?raw';
 import devLoginCsv from './dev-logins.csv?raw';
 
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
-  LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
-  Bell, ShieldCheck, Zap, Settings, Sun, Moon, MapPin, Pencil
+  LogOut, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
+  Bell, ShieldCheck, Zap, Settings, Sun, Moon, MapPin, Pencil, Star
 } from 'lucide-react';
 
 import './App.css';
+import './theme.css';
 
 // Convert the CSV rows into the message shape used by the app.
 function parseMailCsv(csv) {
@@ -62,12 +63,33 @@ function parseMailCsv(csv) {
         category: record.category,
         status,
         deliveredAt: status === 'Delivered' ? record.date : undefined,
-        unread: record.unread?.toLowerCase() === 'true',
+        unread: true,
       };
     });
 }
 
 const mailFromCsv = parseMailCsv(mailCsv);
+
+// New mail starts unread. Remember opened messages separately for each account.
+function getInitialMail(user) {
+  let readIds = new Set();
+  let importantChoices = {};
+  try {
+    const saved = JSON.parse(localStorage.getItem(`arrivonReadMail:${user?.email}`) || '[]');
+    readIds = new Set(Array.isArray(saved) ? saved : []);
+  } catch { /* Start unread if the stored read state is unavailable. */ }
+  try {
+    const saved = JSON.parse(localStorage.getItem(`arrivonImportantMail:${user?.email}`) || '{}');
+    if (saved && typeof saved === 'object' && !Array.isArray(saved)) importantChoices = saved;
+  } catch { /* Keep the default important messages if storage is unavailable. */ }
+  return mailFromCsv.map((item) => ({
+    ...item,
+    unread: !readIds.has(item.id),
+    important: typeof importantChoices[item.id] === 'boolean'
+      ? importantChoices[item.id]
+      : ['Receipt', 'Personal'].includes(item.category),
+  }));
+}
 
 function getStatusClass(status) {
   const statusClasses = {
@@ -119,7 +141,7 @@ function getCurrentUser() {
 function getStoredSelectedMail() {
   try {
     const selectedMailId = Number(sessionStorage.getItem('arrivonSelectedMail'));
-    return mailFromCsv.find((item) => item.id === selectedMailId) || null;
+    return getInitialMail(getCurrentUser()).find((item) => item.id === selectedMailId) || null;
   } catch {
     return null;
   }
@@ -159,17 +181,30 @@ function Logo({ compact = false }) {
   );
 }
 // Defined outside App so React does not remount it on every keystroke.
-function SearchBar({ search, setSearch }) {
+function SearchBar({ search, setSearch, senderNames }) {
+  const suggestionsId = useId();
+  const query = search.trim().toLowerCase();
+  const suggestions = query
+    ? senderNames.filter((sender) => sender.toLowerCase().startsWith(query))
+    : [];
   return (
     <div className="search-box">
       <Search size={18} />
 
       <input
         type="text"
+        aria-label="Search mail by sender, subject, or tracking number"
+        list={suggestions.length ? suggestionsId : undefined}
+        autoComplete="off"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search sender, subject, or tracking number..."
       />
+      {suggestions.length > 0 && (
+        <datalist id={suggestionsId}>
+          {suggestions.map((sender) => <option key={sender} value={sender} />)}
+        </datalist>
+      )}
 
       {search && (
         <button
@@ -201,9 +236,14 @@ function isToday(dateString) {
 function App() {
   const [user, setUser] = useState(() => getCurrentUser());
   const [page, setPage] = useState(() => getInitialPage());
-  const [darkMode, setDarkMode] = useState(
-    () => localStorage.getItem('arrivonDarkMode') === 'true'
-  );
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem('arrivonDarkMode') === 'true'; }
+    catch { return false; }
+  });
+  const [highContrast, setHighContrast] = useState(() => {
+    try { return localStorage.getItem('arrivonHighContrast') === 'true'; }
+    catch { return false; }
+  });
   const [settings, setSettings] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem('arrivonSettings') || '{}');
@@ -220,10 +260,9 @@ function App() {
       };
     }
   });
-  const [mail, setMail] = useState(() => mailFromCsv);
+  const [mail, setMail] = useState(() => getInitialMail(user));
   const [accounts, setAccounts] = useState(() => devAccounts);
   const [search, setSearch] = useState('');
-  const [dateFilter, setDateFilter] = useState('All');
   const [pastPeriodFilter, setPastPeriodFilter] = useState('All');
   const [senderFilter, setSenderFilter] = useState('All');
   const [selectedMail, setSelectedMail] = useState(() => getStoredSelectedMail());
@@ -246,9 +285,7 @@ function App() {
   const [notice, setNotice] = useState('');
   const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
-  const importantMail = mail.filter((item) =>
-    ['Receipt', 'Personal'].includes(item.category)
-  );
+  const importantMail = mail.filter((item) => item.important);
 
   // PAGE NAVIGATION
   // Changes the active page and closes the mobile menu.
@@ -264,9 +301,20 @@ function App() {
     localStorage.setItem('arrivonSettings', JSON.stringify(updatedSettings));
   }
 
+  function resetMailFilters() {
+    setSearch('');
+    setPastPeriodFilter('All');
+    setSenderFilter('All');
+  }
+
   function changeAppearance(isDark) {
     setDarkMode(isDark);
-    localStorage.setItem('arrivonDarkMode', String(isDark));
+    try { localStorage.setItem('arrivonDarkMode', String(isDark)); } catch { /* Keep the session preference when storage is unavailable. */ }
+  }
+
+  function changeHighContrast(enabled) {
+    setHighContrast(enabled);
+    try { localStorage.setItem('arrivonHighContrast', String(enabled)); } catch { /* Keep the session preference when storage is unavailable. */ }
   }
 
   function toggleSidebar() {
@@ -293,7 +341,7 @@ function App() {
 
   // SEARCH AND FILTER LOGIC
   // Filters mail by search text, sender, and selected date range.
-  const activeDateFilter = page === 'past' ? pastPeriodFilter : dateFilter;
+  const activeDateFilter = page === 'past' ? pastPeriodFilter : 'All';
   const visibleMail = mail.filter((item) => {
     const query = search.toLowerCase().trim();
 
@@ -371,20 +419,44 @@ function App() {
       new Date(item.deliveredAt) < new Date()
     );
   });
+  const availableSearchSenders = [...new Set(
+    (page === 'past' ? pastMail : currentMail).map((item) => item.sender).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
   function openMail(item) {
     setPreviousPage(page);
-    setSelectedMail(item);
+    setSelectedMail({ ...item, unread: false });
     sessionStorage.setItem('arrivonPreviousPage', page);
     sessionStorage.setItem('arrivonSelectedMail', String(item.id));
 
-    setMail((old) => old.map((m) =>
+    const updatedMail = mail.map((m) =>
       m.id === item.id ? { ...m, unread: false } : m
-    ));
+    );
+    setMail(updatedMail);
+    try {
+      localStorage.setItem(`arrivonReadMail:${user?.email}`, JSON.stringify(
+        updatedMail.filter((message) => !message.unread).map((message) => message.id)
+      ));
+    } catch { /* Read state still works for this session when storage is unavailable. */ }
 
     navigate('details');
+  }
+
+  function toggleImportant(item) {
+    const important = !item.important;
+    const updatedMail = mail.map((message) =>
+      message.id === item.id ? { ...message, important } : message
+    );
+    setMail(updatedMail);
+    setSelectedMail((selected) => selected?.id === item.id ? { ...selected, important } : selected);
+    try {
+      localStorage.setItem(`arrivonImportantMail:${user?.email}`, JSON.stringify(
+        Object.fromEntries(updatedMail.map((message) => [message.id, message.important]))
+      ));
+    } catch { /* Changes still work for this session when storage is unavailable. */ }
+    notify(important ? 'Added to Important Mail in More Mail Info.' : 'Removed from Important Mail.');
   }
 
   // SIGN-UP HANDLER
@@ -441,6 +513,7 @@ function App() {
     }
 
     setUser(account);
+    setMail(getInitialMail(account));
     const { name, email: accountEmail, address } = account;
     sessionStorage.setItem('arrivonSessionUser', JSON.stringify({
       name,
@@ -472,7 +545,7 @@ function App() {
   ];
 
   // REUSABLE PAGE HEADER
-  // Displays the breadcrumb, page title, subtitle,
+  // Displays the page title, subtitle,
   // and optional action button.
   function Header({ title, subtitle, action }) {
     return (
@@ -490,9 +563,6 @@ function App() {
           </button>
 
           <div className="header-copy">
-            <div className="breadcrumb">
-              ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
-            </div>
             <h1>{title}</h1>
             <p>{subtitle}</p>
           </div>
@@ -597,7 +667,6 @@ function App() {
             className="secondary-button"
             onClick={() => {
               setSearch('');
-              setDateFilter('All');
               setPastPeriodFilter('All');
               setSenderFilter('All');
             }}
@@ -610,8 +679,9 @@ function App() {
 
     return items.map((item) => (
       <button
-        className={`mail-row ${item.unread ? 'unread' : ''}`}
+        className={`mail-row ${item.unread ? 'unread' : 'read'}`}
         key={item.id}
+        aria-label={`${item.unread ? 'Unread' : 'Read'}: ${item.sender}. ${item.subject}. ${item.date}. ${item.status}`}
         onClick={() => openMail(item)}
       >
         <div className="sender-avatar">{item.sender.charAt(0)}</div>
@@ -889,7 +959,7 @@ function App() {
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
   return (
-    <div className={`app-layout has-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`app-layout has-sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
       <Sidebar />
 
       <main className="main-content">
@@ -1000,36 +1070,22 @@ function App() {
                   ? 'Keep up with your latest messages and deliveries.'
                   : 'Find a message from any time, all in one place.'
               }
-              action={
-                <button
-                  className="secondary-button"
-                  onClick={() => {
-                    setSearch('');
-                    setDateFilter('All');
-                    setPastPeriodFilter('All');
-                    setSenderFilter('All');
-                  }}
-                >
-                  <Clock size={16} /> Reset filters
-                </button>
-              }
             />
 
 
 
             {/* Search field and CSV-backed sender filter */}
-            <div className="toolbar">
-              <SearchBar search={search} setSearch={setSearch} />
+            <div className="toolbar mail-filter-toolbar">
+              <SearchBar search={search} setSearch={setSearch} senderNames={availableSearchSenders} />
 
               {(page === 'current' || page === 'past') && (
                 <label className="sender-filter">
-                  <Filter size={16} />
                   <select
-                    aria-label="Filter by company"
+                    aria-label="Filter by sender"
                     value={senderFilter}
                     onChange={(event) => setSenderFilter(event.target.value)}
                   >
-                    <option value="All">All companies</option>
+                    <option value="All">All senders</option>
                     {senderNames.map((sender) => (
                       <option key={sender} value={sender}>{sender}</option>
                     ))}
@@ -1037,13 +1093,15 @@ function App() {
                   <ChevronDown size={14} />
                 </label>
               )}
-            </div>
-
-            {page === 'past' && (
+              {page === 'past' && (
               <label className="past-date-filters">
                 <Clock size={16} />
                 <span>Delivery period</span>
-                <select value={pastPeriodFilter} onChange={(event) => setPastPeriodFilter(event.target.value)}>
+                <select
+                  aria-label="Filter by delivery period"
+                  value={pastPeriodFilter}
+                  onChange={(event) => setPastPeriodFilter(event.target.value)}
+                >
                   <option value="All">All time</option>
                   <option value="Last 7 Days">Last 7 days</option>
                   <option value="Last 30 Days">Last 30 days</option>
@@ -1056,24 +1114,15 @@ function App() {
                 </select>
                 <ChevronDown size={14} />
               </label>
-            )}
-
-            {/* Date-range filter buttons */}
-            {page === 'current' && <div className="filter-chips">
-              {[
-                'All',
-                'Last 7 Days',
-                'Last 30 Days'
-              ].map((filter) => (
+              )}
                 <button
-                  key={filter}
-                  className={dateFilter === filter ? 'selected' : ''}
-                  onClick={() => setDateFilter(filter)}
+                  type="button"
+                  className="secondary-button reset-filters-button"
+                  onClick={resetMailFilters}
                 >
-                  {filter}
+                  <Clock size={16} /> Reset filters
                 </button>
-              ))}
-            </div>}
+            </div>
 
             {/* Filtered mail results */}
             <section className="panel">
@@ -1158,7 +1207,7 @@ function App() {
                 </span>
                 <div>
                   <strong>Important mail</strong>
-                  <small>Review messages that may need your attention</small>
+                  <small>Review important messages. Mark more mail as important from its details.</small>
                 </div>
                 {importantMail.length > 0 && (
                   <span className="important-mail-count">
@@ -1170,8 +1219,9 @@ function App() {
                 {importantMail.length > 0 ? (
                   importantMail.map((item) => (
                     <button
-                      className="important-row"
+                      className={`important-row ${item.unread ? 'unread' : 'read'}`}
                       key={item.id}
+                      aria-label={`${item.unread ? 'Unread' : 'Read'}: ${item.sender}. ${item.subject}. ${item.status}`}
                       onClick={() => openMail(item)}
                     >
                       <span className="important-row-icon">
@@ -1188,7 +1238,7 @@ function App() {
                   ))
                 ) : (
                   <div className="important-mail-empty">
-                    <span>No important mail needs your attention right now.</span>
+                    <span>No important mail right now. Open a message and choose “Mark as important” to add it here.</span>
                   </div>
                 )}
               </div>
@@ -1226,6 +1276,22 @@ function App() {
                     onClick={() => changeAppearance(true)}
                   >
                     <Moon size={17} /> Dark
+                  </button>
+                </div>
+                <div className="settings-row contrast-setting">
+                  <div>
+                    <strong>High contrast</strong>
+                    <small>Increase text contrast and make controls and borders easier to see in light or dark mode.</small>
+                  </div>
+                  <button
+                    className={`settings-switch ${highContrast ? 'on' : ''}`}
+                    type="button"
+                    role="switch"
+                    aria-checked={highContrast}
+                    aria-label="High contrast"
+                    onClick={() => changeHighContrast(!highContrast)}
+                  >
+                    <span />
                   </button>
                 </div>
               </section>
@@ -1336,6 +1402,17 @@ function App() {
             <Header
               title="Mail Details"
               subtitle="Review message and delivery information."
+              action={(
+                <button
+                  type="button"
+                  className={`secondary-button importance-button ${selectedMail.important ? 'selected' : ''}`}
+                  aria-pressed={selectedMail.important}
+                  onClick={() => toggleImportant(selectedMail)}
+                >
+                  <Star size={17} fill={selectedMail.important ? 'currentColor' : 'none'} aria-hidden="true" />
+                  {selectedMail.important ? 'Remove from important' : 'Mark as important'}
+                </button>
+              )}
             />
 
             <section className="panel detail-panel">
@@ -1385,7 +1462,7 @@ function App() {
 
                 <div>
                   <small>DELIVERY STATUS</small>
-                  <strong className={`status status-${getStatusClass(selectedMail.status)}`}>
+                  <strong>
                     {selectedMail.status}
                   </strong>
                 </div>
