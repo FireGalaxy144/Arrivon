@@ -834,6 +834,27 @@ function App() {
     );
   }
 
+  const deliveredCount = mail.filter((m) => m.status === 'Delivered').length + 5;
+  const mailMetrics = [
+    ['DELIVERED', deliveredCount, 'Successfully received'],
+    ['SENT', 3, 'Recent activity'],
+    ['ADDRESSES', 4, 'Saved destinations'],
+  ];
+  const dailyActivityWeights = [2, 13, 10, 8, 12, 15, 9];
+  const dailyActivityWeightTotal = dailyActivityWeights.reduce((total, weight) => total + weight, 0);
+  const dailyActivity = dailyActivityWeights.map((weight) => {
+    const exactCount = (weight / dailyActivityWeightTotal) * deliveredCount;
+    return { count: Math.floor(exactCount), remainder: exactCount % 1 };
+  });
+  const unassignedDeliveries = deliveredCount - dailyActivity.reduce((total, day) => total + day.count, 0);
+  const remainderOrder = dailyActivity
+    .map((day, index) => ({ index, remainder: day.remainder }))
+    .sort((a, b) => b.remainder - a.remainder);
+  for (let i = 0; i < unassignedDeliveries; i += 1) {
+    dailyActivity[remainderOrder[i].index].count += 1;
+  }
+  const maxDailyActivity = Math.max(1, ...dailyActivity.map((day) => day.count));
+
   // MAIN APPLICATION LAYOUT
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
@@ -1057,11 +1078,7 @@ function App() {
 
             {/* Summary statistics */}
             <section className="analytics-stats">
-              {[
-                ['DELIVERED', mail.filter((m) => m.status === 'Delivered').length + 5, 'Successfully received'],
-                ['SENT', 3, 'Recent activity'],
-                ['ADDRESSES', 4, 'Saved destinations'],
-              ].map(([label, value, caption]) => (
+              {mailMetrics.map(([label, value, caption]) => (
                 <div className="mini-stat" key={label}>
                   <span>{label}</span>
                   <strong>{value}</strong>
@@ -1075,10 +1092,10 @@ function App() {
               <section className="panel analytics-panel">
                 <PanelHeading title="Mail activity this week" />
                 <div className="chart">
-                  {[2, 13, 10, 8, 12, 15, 9].map((n, i) => (
+                  {dailyActivity.map(({ count }, i) => (
                     <div className="chart-column" key={i}>
-                      <span>{n}</span>
-                      <div style={{ height: `${n * 6}%` }} />
+                      <span>{count}</span>
+                      <div style={{ height: `${(count / maxDailyActivity) * 90}%` }} />
                       <small>{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}</small>
                     </div>
                   ))}
