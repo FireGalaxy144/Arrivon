@@ -1141,7 +1141,6 @@ function App() {
                   ))
                 ) : (
                   <div className="important-mail-empty">
-                    <CheckCircle size={18} />
                     <span>No important mail needs your attention right now.</span>
                   </div>
                 )}
@@ -1160,14 +1159,6 @@ function App() {
             <Header
               title="Mail Details"
               subtitle="Review message and delivery information."
-              action={
-                <button
-                  className="secondary-button"
-                  onClick={() => navigate(previousPage)}
-                >
-                  <ArrowLeft size={16} /> Back to mail
-                </button>
-              }
             />
 
             <section className="panel detail-panel">

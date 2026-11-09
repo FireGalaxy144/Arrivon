@@ -1667,19 +1667,9 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 .important-mail-empty {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 12px;
-  border: 1px solid #d5ebdf;
-  border-radius: 9px;
-  background: #f4fbf6;
-  color: #39744e;
-  font-size: 11px;
-}
-
-.important-mail-empty svg {
-  flex: 0 0 auto;
+  padding: 8px 6px;
+  color: #858ba6;
+  font-size: 12px;
 }
 
 /* Mail details: layout for the selected mail's information panel. */
