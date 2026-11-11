@@ -1,12 +1,17 @@
+
 {
   "name": "arrivon",
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "homepage": "https://FireGalaxy144.github.io/Arrivon",
+   
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -17,6 +22,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^4.7.0",
+    "gh-pages": "^6.1.1",
     "typescript": "^7.0.2",
     "vite": "^6.0.5"
   }

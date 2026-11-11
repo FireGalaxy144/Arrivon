@@ -2,108 +2,170 @@
 // React state manages the interactive pages and forms.
 // Lucide React supplies the icons used in the interface.
 // App.css contains the component-level visual styles.
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import mailCsv from './mail.csv?raw';
+import devLoginCsv from './dev-logins.csv?raw';
 
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
-  LogOut, Filter, ArrowLeft, User, Eye, EyeOff, FileSignature,
-  Bell, ShieldCheck, Zap
+  LogOut, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
+  Bell, ShieldCheck, Zap, Settings, Sun, Moon, MapPin, Pencil, Star
 } from 'lucide-react';
 
 import './App.css';
+import './theme.css';
+import './text-size.css';
+import './responsive.css';
 
-// SAMPLE MAIL DATA
-// Example messages used to populate the inbox, dashboard,
-// past-mail list, analytics, and message details.
-// This data is local to the prototype.
+// Convert the CSV rows into the message shape used by the app.
+function parseMailCsv(csv) {
+  const rows = csv.trim().split(/\r?\n/).map((line) => {
+    const values = [];
+    let value = '';
+    let quoted = false;
 
-const sampleMail = [
-  {
-    id: 1,
-    sender: 'Amazon',
-    subject: 'Your order has shipped',
-    tracking: 'TBA392840157',
-    date: '2026-10-20',
-    category: 'Package',
-    status: 'In transit',
-    unread: true,
-  },
-  {
-    id: 2,
-    sender: 'Best Buy',
-    subject: 'Your delivery is on its way',
-    tracking: 'BBY18463028',
-    date: '2026-10-20',
-    category: 'Package',
-    status: 'Out for delivery',
-    unread: true,
-  },
-  {
-    id: 3,
-    sender: 'eBay',
-    subject: 'Your item has been delivered',
-    tracking: 'EBY99201743',
-    date: '2026-10-19',
-    deliveredAt: '2026-10-19',
-    category: 'Package',
-    status: 'Delivered',
-    unread: false,
-  },
-  {
-    id: 4,
-    sender: 'Home Depot',
-    subject: 'Thanks for your recent purchase',
-    tracking: 'HD41028933',
-    date: '2026-10-09',
-    category: 'Receipt',
-    status: 'Order confirmed',
-    unread: false,
-  },
-  {
-    id: 5,
-    sender: 'Hyvee',
-    subject: 'Your weekly savings are here',
-    tracking: '',
-    date: '2026-10-08',
-    category: 'Promotion',
-    status: 'Received',
-    unread: false,
-  },
-  {
-    id: 7,
-    sender: 'Amazon',
-    subject: 'A package was delivered',
-    tracking: 'TBA392840156',
-    date: '2026-10-06',
-    deliveredAt: '2026-10-06',
-    category: 'Package',
-    status: 'Delivered',
-    unread: false,
-  },
-  {
-    id: 8,
-    sender: 'Amazon',
-    subject: 'A package was delivered',
-    tracking: 'RTY392840156',
-    date: '2026-10-20',
-    deliveredAt: '2026-10-20',
-    category: 'Package',
-    status: 'Delivered',
-    unread: false,
-  },
-  {
-    id: 9,
-    sender: 'Target',
-    subject: 'A package was delivered',
-    tracking: 'YUII92840156',
-    date: '2026-05-20',
-    deliveredAt: '2026-05-20',
-    category: 'Package',
-    status: 'Delivered',
-    unread: false,
-  },
-];
+    for (let i = 0; i < line.length; i += 1) {
+      const character = line[i];
+      if (character === '"' && line[i + 1] === '"' && quoted) {
+        value += '"';
+        i += 1;
+      } else if (character === '"') {
+        quoted = !quoted;
+      } else if (character === ',' && !quoted) {
+        values.push(value);
+        value = '';
+      } else {
+        value += character;
+      }
+    }
+    values.push(value);
+    return values;
+  });
+
+  const [headers, ...records] = rows;
+  return records
+    .filter((row) => row.some((value) => value.trim()))
+    .map((row, index) => {
+      const record = Object.fromEntries(headers.map((header, i) => [header.trim(), row[i]?.trim() ?? '']));
+      const rawStatus = record.deliveryStatus || 'Received';
+      const status = {
+        'In Transit': 'In transit',
+        'Out for Delivery': 'Out for delivery',
+        'Ready for Pickup': 'Ready for pickup',
+      }[rawStatus] || rawStatus;
+
+      return {
+        id: index + 1,
+        sender: record.sender,
+        subject: record.subject,
+        tracking: record.trackingNumber,
+        date: record.date,
+        time: record.time,
+        category: record.category,
+        status,
+        deliveredAt: status === 'Delivered' ? record.date : undefined,
+        unread: true,
+      };
+    });
+}
+
+const mailFromCsv = parseMailCsv(mailCsv);
+
+// New mail starts unread. Remember opened messages separately for each account.
+function getInitialMail(user) {
+  let readIds = new Set();
+  let importantChoices = {};
+  try {
+    const saved = JSON.parse(localStorage.getItem(`arrivonReadMail:${user?.email}`) || '[]');
+    readIds = new Set(Array.isArray(saved) ? saved : []);
+  } catch { /* Start unread if the stored read state is unavailable. */ }
+  try {
+    const saved = JSON.parse(localStorage.getItem(`arrivonImportantMail:${user?.email}`) || '{}');
+    if (saved && typeof saved === 'object' && !Array.isArray(saved)) importantChoices = saved;
+  } catch { /* Keep the default important messages if storage is unavailable. */ }
+  return mailFromCsv.map((item) => ({
+    ...item,
+    unread: !readIds.has(item.id),
+    important: typeof importantChoices[item.id] === 'boolean'
+      ? importantChoices[item.id]
+      : ['Receipt', 'Personal'].includes(item.category),
+  }));
+}
+
+function getStatusClass(status) {
+  const statusClasses = {
+    'Action Required': 'action-required',
+    Delayed: 'delayed',
+    Received: 'received',
+    'In transit': 'in-transit',
+    'Out for delivery': 'out-for-delivery',
+    'Ready for pickup': 'ready-for-pickup',
+    Delivered: 'delivered',
+  };
+
+  return statusClasses[status] || 'unknown';
+}
+
+// Development-only accounts for exercising the prototype login form.
+const devAccounts = devLoginCsv
+  .trim()
+  .split(/\r?\n/)
+  .slice(1)
+  .filter(Boolean)
+  .map((line) => {
+    const [name, email, password, address = ''] = line.split(',');
+    return { name, email: email.toLowerCase(), password, address };
+  });
+
+function getRememberedUser() {
+  try {
+    const storedUser = localStorage.getItem('arrivonRememberedUser');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getSessionUser() {
+  try {
+    const storedUser = sessionStorage.getItem('arrivonSessionUser');
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+function getCurrentUser() {
+  return getSessionUser() || getRememberedUser();
+}
+
+function getStoredSelectedMail() {
+  try {
+    const selectedMailId = Number(sessionStorage.getItem('arrivonSelectedMail'));
+    return getInitialMail(getCurrentUser()).find((item) => item.id === selectedMailId) || null;
+  } catch {
+    return null;
+  }
+}
+
+function getInitialPage() {
+  const user = getCurrentUser();
+  const authPages = ['login', 'signup'];
+  const appPages = ['home', 'current', 'past', 'more', 'details', 'settings'];
+
+  try {
+    const storedPage = sessionStorage.getItem('arrivonPage');
+    if (authPages.includes(storedPage)) return storedPage;
+    if (appPages.includes(storedPage) && user) {
+      if (storedPage !== 'details' || getStoredSelectedMail()) return storedPage;
+    }
+  } catch {
+    return user ? 'home' : 'signup';
+  }
+
+  return user ? 'home' : 'signup';
+}
 
 // REUSABLE BRAND LOGO
 // Displays the Arrivon logo. The compact option is used
@@ -121,17 +183,30 @@ function Logo({ compact = false }) {
   );
 }
 // Defined outside App so React does not remount it on every keystroke.
-function SearchBar({ search, setSearch }) {
+function SearchBar({ search, setSearch, senderNames }) {
+  const suggestionsId = useId();
+  const query = search.trim().toLowerCase();
+  const suggestions = query
+    ? senderNames.filter((sender) => sender.toLowerCase().startsWith(query))
+    : [];
   return (
     <div className="search-box">
       <Search size={18} />
 
       <input
         type="text"
+        aria-label="Search mail by sender, subject, or tracking number"
+        list={suggestions.length ? suggestionsId : undefined}
+        autoComplete="off"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search sender, subject, or tracking number..."
       />
+      {suggestions.length > 0 && (
+        <datalist id={suggestionsId}>
+          {suggestions.map((sender) => <option key={sender} value={sender} />)}
+        </datalist>
+      )}
 
       {search && (
         <button
@@ -161,25 +236,105 @@ function isToday(dateString) {
 // Stores the current page, sample mail, account state,
 // search/filter values, selected message, and UI notices.
 function App() {
-  const [page, setPage] = useState('login');
-  const [mail, setMail] = useState(sampleMail);
-  const [user, setUser] = useState(null);
-  const [accounts, setAccounts] = useState([]);
+  const [user, setUser] = useState(() => getCurrentUser());
+  const [page, setPage] = useState(() => getInitialPage());
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem('arrivonDarkMode') === 'true'; }
+    catch { return false; }
+  });
+  const [highContrast, setHighContrast] = useState(() => {
+    try { return localStorage.getItem('arrivonHighContrast') === 'true'; }
+    catch { return false; }
+  });
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('arrivonSettings') || '{}');
+      return {
+        importantMailAlerts: saved.importantMailAlerts ?? true,
+        deliveryUpdates: saved.deliveryUpdates ?? true,
+        showTrackingNumbers: saved.showTrackingNumbers ?? true,
+        textSize: ['normal', 'large', 'extra-large'].includes(saved.textSize) ? saved.textSize : 'normal',
+      };
+    } catch {
+      return {
+        importantMailAlerts: true,
+        deliveryUpdates: true,
+        showTrackingNumbers: true,
+        textSize: 'normal',
+      };
+    }
+  });
+  const [mail, setMail] = useState(() => getInitialMail(user));
+  const [accounts, setAccounts] = useState(() => devAccounts);
   const [search, setSearch] = useState('');
-  const [dateFilter, setDateFilter] = useState('All');
+  const [pastPeriodFilter, setPastPeriodFilter] = useState('All');
   const [senderFilter, setSenderFilter] = useState('All');
-  const [selectedMail, setSelectedMail] = useState(null);
-  const [previousPage, setPreviousPage] = useState('current');
+  const [selectedMail, setSelectedMail] = useState(() => getStoredSelectedMail());
+  const [previousPage, setPreviousPage] = useState(() => {
+    try {
+      const storedPreviousPage = sessionStorage.getItem('arrivonPreviousPage');
+      return ['home', 'current', 'past', 'more'].includes(storedPreviousPage)
+        ? storedPreviousPage
+        : 'current';
+    } catch {
+      return 'current';
+    }
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [expanded, setExpanded] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    () => sessionStorage.getItem('arrivonSidebarCollapsed') === 'true'
+  );
   const [notice, setNotice] = useState('');
+  const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b));
+  const importantMail = mail.filter((item) => item.important);
 
   // PAGE NAVIGATION
   // Changes the active page and closes the mobile menu.
   function navigate(next) {
     setPage(next);
+    sessionStorage.setItem('arrivonPage', next);
     setMenuOpen(false);
+  }
+
+  function updateSetting(name, value) {
+    const updatedSettings = { ...settings, [name]: value };
+    setSettings(updatedSettings);
+    try { localStorage.setItem('arrivonSettings', JSON.stringify(updatedSettings)); }
+    catch { /* Keep settings usable when browser storage is unavailable. */ }
+  }
+
+  function resetMailFilters() {
+    setSearch('');
+    setPastPeriodFilter('All');
+    setSenderFilter('All');
+  }
+
+  function changeAppearance(isDark) {
+    setDarkMode(isDark);
+    try { localStorage.setItem('arrivonDarkMode', String(isDark)); } catch { /* Keep the session preference when storage is unavailable. */ }
+  }
+
+  function changeHighContrast(enabled) {
+    setHighContrast(enabled);
+    try { localStorage.setItem('arrivonHighContrast', String(enabled)); } catch { /* Keep the session preference when storage is unavailable. */ }
+  }
+
+  function toggleSidebar() {
+    const collapsed = !sidebarCollapsed;
+    setSidebarCollapsed(collapsed);
+    sessionStorage.setItem('arrivonSidebarCollapsed', String(collapsed));
+  }
+
+  function toggleNavigation() {
+    if (window.matchMedia('(max-width: 760px)').matches) {
+      setMenuOpen((isOpen) => !isOpen);
+      return;
+    }
+
+    toggleSidebar();
   }
 
   // TEMPORARY NOTIFICATION
@@ -189,87 +344,124 @@ function App() {
     window.setTimeout(() => setNotice(''), 3000);
   }
 
-// SEARCH AND FILTER LOGIC
-// Filters mail by search text, sender, and selected date range.
-const visibleMail = mail.filter((item) => {
-  const query = search.toLowerCase().trim();
+  // SEARCH AND FILTER LOGIC
+  // Filters mail by search text, sender, and selected date range.
+  const activeDateFilter = page === 'past' ? pastPeriodFilter : 'All';
+  const visibleMail = mail.filter((item) => {
+    const query = search.toLowerCase().trim();
 
-  // Search sender, subject, tracking number, and delivery status.
-  const searchable = [
-    item.sender,
-    item.subject,
-    item.tracking,
-    item.status,
-  ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
+    // Search sender, subject, tracking number, and delivery status.
+    const searchable = [
+      item.sender,
+      item.subject,
+      item.tracking,
+      item.status,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
-  const matchesSearch = searchable.includes(query);
+    const matchesSearch = searchable.includes(query);
 
-  // Filter by sender.
-  const matchesSender =
-    senderFilter === 'All' || item.sender === senderFilter;
+    // Filter by sender.
+    const matchesSender =
+      senderFilter === 'All' || item.sender === senderFilter;
 
-  
-  // Filter by date range using actual timestamps.
-  let matchesDate = true;
 
-  if (dateFilter !== 'All') {
-    const messageDate = new Date(item.date);
-    const cutoff = new Date();
+    // Filter by date range using actual timestamps.
+    let matchesDate = true;
 
-    if (dateFilter === 'Last 7 Days') {
-      cutoff.setDate(cutoff.getDate() - 7);
-    } else if (dateFilter === 'Last 30 Days') {
-      cutoff.setDate(cutoff.getDate() - 30);
-    } else if (dateFilter === 'Last 3 Months') {
-      cutoff.setMonth(cutoff.getMonth() - 3);
+    if (activeDateFilter !== 'All') {
+      const messageDate = new Date(item.date);
+      const cutoff = new Date();
+
+      if (activeDateFilter === 'Last 7 Days') {
+        cutoff.setDate(cutoff.getDate() - 7);
+      } else if (activeDateFilter === 'Last 40 Days') {
+        cutoff.setDate(cutoff.getDate() - 40);
+      } else if (activeDateFilter === 'Last 30 Days') {
+        cutoff.setDate(cutoff.getDate() - 30);
+      } else if (activeDateFilter === 'Last 3 Months') {
+        cutoff.setMonth(cutoff.getMonth() - 3);
+      } else if (activeDateFilter === 'Last 6 Months') {
+        cutoff.setMonth(cutoff.getMonth() - 6);
+      } else if (activeDateFilter === 'Last 9 Months') {
+        cutoff.setMonth(cutoff.getMonth() - 9);
+      } else if (activeDateFilter === 'Last 1 Year') {
+        cutoff.setFullYear(cutoff.getFullYear() - 1);
+      } else if (activeDateFilter === 'Last 2 Years') {
+        cutoff.setFullYear(cutoff.getFullYear() - 2);
+      } else if (activeDateFilter === 'Last 5 Years') {
+        cutoff.setFullYear(cutoff.getFullYear() - 5);
+      }
+
+      matchesDate =
+        !Number.isNaN(messageDate.getTime()) &&
+        messageDate >= cutoff &&
+        messageDate <= new Date();
     }
 
-    matchesDate =
-      !Number.isNaN(messageDate.getTime()) &&
-      messageDate >= cutoff &&
-      messageDate <= new Date();
-  }
 
+    return matchesSearch && matchesSender && matchesDate;
+  });
 
-  return matchesSearch && matchesSender && matchesDate;
-});
+  const currentMail = visibleMail.filter((item) => {
+    // Keep delivered packages in Current Mail for the day of delivery.
+    if (item.status === "Delivered") {
+      return isToday(item.deliveredAt);
+    }
 
-const currentMail = visibleMail.filter((item) => {
-  // Keep delivered packages in Current Mail for the day of delivery.
-  if (item.status === "Delivered") {
-    return isToday(item.deliveredAt);
-  }
+    // Keep orders still being processed or shipped in Current Mail.
+    return item.status !== 'Delivered';
+  });
 
-  // Keep orders still being processed or shipped in Current Mail.
-  return item.status === "Order confirmed" ||
-         item.status === "In transit" ||
-         item.status === "Out for delivery";
-});
-
-const pastMail = visibleMail.filter((item) => {
-  return (
-    item.category === "Package" &&
-    item.status === "Delivered" &&
-    item.deliveredAt &&
-    !isToday(item.deliveredAt) &&
-    new Date(item.deliveredAt) < new Date()
-  );
-});
+  const pastMail = visibleMail.filter((item) => {
+    return (
+      item.category === "Package" &&
+      item.status === "Delivered" &&
+      item.deliveredAt &&
+      !isToday(item.deliveredAt) &&
+      new Date(item.deliveredAt) < new Date()
+    );
+  });
+  const availableSearchSenders = [...new Set(
+    (page === 'past' ? pastMail : currentMail).map((item) => item.sender).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
   function openMail(item) {
     setPreviousPage(page);
-    setSelectedMail(item);
+    setSelectedMail({ ...item, unread: false });
+    sessionStorage.setItem('arrivonPreviousPage', page);
+    sessionStorage.setItem('arrivonSelectedMail', String(item.id));
 
-    setMail((old) => old.map((m) =>
+    const updatedMail = mail.map((m) =>
       m.id === item.id ? { ...m, unread: false } : m
-    ));
+    );
+    setMail(updatedMail);
+    try {
+      localStorage.setItem(`arrivonReadMail:${user?.email}`, JSON.stringify(
+        updatedMail.filter((message) => !message.unread).map((message) => message.id)
+      ));
+    } catch { /* Read state still works for this session when storage is unavailable. */ }
 
     navigate('details');
+  }
+
+  function toggleImportant(item) {
+    const important = !item.important;
+    const updatedMail = mail.map((message) =>
+      message.id === item.id ? { ...message, important } : message
+    );
+    setMail(updatedMail);
+    setSelectedMail((selected) => selected?.id === item.id ? { ...selected, important } : selected);
+    try {
+      localStorage.setItem(`arrivonImportantMail:${user?.email}`, JSON.stringify(
+        Object.fromEntries(updatedMail.map((message) => [message.id, message.important]))
+      ));
+    } catch { /* Changes still work for this session when storage is unavailable. */ }
+    notify(important ? 'Added to Important Mail in More Mail Info.' : 'Removed from Important Mail.');
   }
 
   // SIGN-UP HANDLER
@@ -289,14 +481,14 @@ const pastMail = visibleMail.filter((item) => {
       return;
     }
 
-    if (accounts.some((a) => a.email === email)) {
+    if (accounts.some((a) => a.email.toLowerCase() === email.toLowerCase())) {
       notify('That email already has an account.');
       return;
     }
 
     const account = {
       name,
-      email,
+      email: email.toLowerCase(),
       password,
       address: data.get('address').toString()
     };
@@ -313,11 +505,11 @@ const pastMail = visibleMail.filter((item) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    const email = data.get('email').toString().trim();
+    const email = data.get('email').toString().trim().toLowerCase();
     const password = data.get('password').toString();
 
     const account = accounts.find(
-      (a) => a.email === email && a.password === password
+      (a) => a.email.toLowerCase() === email && a.password === password
     );
 
     if (!account) {
@@ -326,6 +518,24 @@ const pastMail = visibleMail.filter((item) => {
     }
 
     setUser(account);
+    setMail(getInitialMail(account));
+    const { name, email: accountEmail, address } = account;
+    sessionStorage.setItem('arrivonSessionUser', JSON.stringify({
+      name,
+      email: accountEmail,
+      address,
+    }));
+    setSidebarCollapsed(true);
+    sessionStorage.setItem('arrivonSidebarCollapsed', 'true');
+    if (data.get('remember') === 'on') {
+      localStorage.setItem('arrivonRememberedUser', JSON.stringify({
+        name,
+        email: accountEmail,
+        address,
+      }));
+    } else {
+      localStorage.removeItem('arrivonRememberedUser');
+    }
     navigate('home');
     notify('Welcome back!');
   }
@@ -340,24 +550,27 @@ const pastMail = visibleMail.filter((item) => {
   ];
 
   // REUSABLE PAGE HEADER
-  // Displays the breadcrumb, page title, subtitle,
+  // Displays the page title, subtitle,
   // and optional action button.
   function Header({ title, subtitle, action }) {
     return (
       <header className="page-header">
-        <button
-          className="icon-button mobile-menu"
-          onClick={() => setMenuOpen(true)}
-        >
-          <Menu size={21} />
-        </button>
+        <div className="header-leading">
+          <button
+            className="icon-button sidebar-toggle"
+            type="button"
+            onClick={toggleNavigation}
+            aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
+            aria-expanded={menuOpen || !sidebarCollapsed}
+            title={menuOpen ? 'Close menu' : 'Toggle menu'}
+          >
+            <Menu size={21} />
+          </button>
 
-        <div className="header-copy">
-          <div className="breadcrumb">
-            ARRIVON <ChevronRight size={12} /> {title.toUpperCase()}
+          <div className="header-copy">
+            <h1>{title}</h1>
+            <p>{subtitle}</p>
           </div>
-          <h1>{title}</h1>
-          <p>{subtitle}</p>
         </div>
 
         {action && <div className="header-action">{action}</div>}
@@ -374,22 +587,21 @@ const pastMail = visibleMail.filter((item) => {
         {menuOpen && (
           <button
             className="overlay"
+            type="button"
+            aria-label="Close navigation menu"
             onClick={() => setMenuOpen(false)}
           />
         )}
 
         <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div className="sidebar-top">
-            <button
-              className="brand-home-button"
-              type="button"
-              aria-label="Go to home"
-              onClick={() => navigate('home')}
-            >
+            <div className="sidebar-brand">
               <Logo compact />
-            </button>
+            </div>
             <button
               className="icon-button mobile-close"
+              type="button"
+              aria-label="Close navigation menu"
               onClick={() => setMenuOpen(false)}
             >
               <X size={19} />
@@ -397,7 +609,6 @@ const pastMail = visibleMail.filter((item) => {
           </div>
 
           <div className="nav-label">YOUR MAILBOX</div>
-
           <nav>
             {navItems.map(({ id, label, icon: Icon }) => (
               <button
@@ -407,40 +618,11 @@ const pastMail = visibleMail.filter((item) => {
               >
                 <Icon size={18} />
                 <span>{label}</span>
-
-                
               </button>
             ))}
           </nav>
 
           <div className="sidebar-bottom">
-            <div className="connection">
-              <CheckCircle size={19} />
-              <div>
-                <strong>Mail connected</strong>
-                <small>You're all caught up</small>
-              </div>
-            </div>
-
-            <button
-              className="nav-link"
-              onClick={() => notify('Settings coming soon.')}
-            >
-              <User size={18} />
-              <span>Settings</span>
-            </button>
-
-            <button
-              className="nav-link"
-              onClick={() => {
-                setUser(null);
-                navigate('login');
-              }}
-            >
-              <LogOut size={18} />
-              <span>Log out</span>
-            </button>
-
             {user && (
               <div className="profile">
                 <div className="avatar">
@@ -452,6 +634,27 @@ const pastMail = visibleMail.filter((item) => {
                 </div>
               </div>
             )}
+
+            <button
+              className={`nav-link ${page === 'settings' ? 'active' : ''}`}
+              onClick={() => navigate('settings')}
+            >
+              <Settings size={18} />
+              <span>Settings</span>
+            </button>
+
+            <button
+              className="nav-link"
+              onClick={() => {
+                setUser(null);
+                localStorage.removeItem('arrivonRememberedUser');
+                sessionStorage.removeItem('arrivonSessionUser');
+                navigate('login');
+              }}
+            >
+              <LogOut size={18} />
+              <span>Log out</span>
+            </button>
           </div>
         </aside>
       </>
@@ -473,7 +676,7 @@ const pastMail = visibleMail.filter((item) => {
             className="secondary-button"
             onClick={() => {
               setSearch('');
-              setDateFilter('All');
+              setPastPeriodFilter('All');
               setSenderFilter('All');
             }}
           >
@@ -485,8 +688,9 @@ const pastMail = visibleMail.filter((item) => {
 
     return items.map((item) => (
       <button
-        className={`mail-row ${item.unread ? 'unread' : ''}`}
+        className={`mail-row ${item.unread ? 'unread' : 'read'}`}
         key={item.id}
+        aria-label={`${item.unread ? 'Unread' : 'Read'}: ${item.sender}. ${item.subject}. ${item.date}. ${item.status}`}
         onClick={() => openMail(item)}
       >
         <div className="sender-avatar">{item.sender.charAt(0)}</div>
@@ -500,13 +704,13 @@ const pastMail = visibleMail.filter((item) => {
           <div className="mail-subject">{item.subject}</div>
 
           <div className="mail-tracking">
-            {item.tracking === '—'
-              ? item.category
-              : `Tracking: ${item.tracking}`}
+            {settings.showTrackingNumbers
+              ? (item.tracking === '—' ? item.category : `Tracking: ${item.tracking}`)
+              : item.category}
           </div>
         </div>
 
-        <span className={`status ${item.status === 'Delivered' ? 'delivered' : ''}`}>
+        <span className={`status status-${getStatusClass(item.status)}`}>
           {item.status}
         </span>
 
@@ -691,7 +895,7 @@ const pastMail = visibleMail.filter((item) => {
               {!signup && (
                 <div className="form-extras">
                   <label className="remember">
-                    <input type="checkbox" />
+                    <input type="checkbox" name="remember" />
                     Remember me
                   </label>
 
@@ -739,11 +943,32 @@ const pastMail = visibleMail.filter((item) => {
     );
   }
 
+  const deliveredCount = mail.filter((m) => m.status === 'Delivered').length + 5;
+  const mailMetrics = [
+    ['DELIVERED', deliveredCount, 'Successfully received'],
+    ['SENT', 3, 'Recent activity'],
+    ['ADDRESSES', 4, 'Saved destinations'],
+  ];
+  const dailyActivityWeights = [2, 13, 10, 8, 12, 15, 9];
+  const dailyActivityWeightTotal = dailyActivityWeights.reduce((total, weight) => total + weight, 0);
+  const dailyActivity = dailyActivityWeights.map((weight) => {
+    const exactCount = (weight / dailyActivityWeightTotal) * deliveredCount;
+    return { count: Math.floor(exactCount), remainder: exactCount % 1 };
+  });
+  const unassignedDeliveries = deliveredCount - dailyActivity.reduce((total, day) => total + day.count, 0);
+  const remainderOrder = dailyActivity
+    .map((day, index) => ({ index, remainder: day.remainder }))
+    .sort((a, b) => b.remainder - a.remainder);
+  for (let i = 0; i < unassignedDeliveries; i += 1) {
+    dailyActivity[remainderOrder[i].index].count += 1;
+  }
+  const maxDailyActivity = Math.max(1, ...dailyActivity.map((day) => day.count));
+
   // MAIN APPLICATION LAYOUT
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
   return (
-    <div className="app-layout">
+    <div className={`app-layout has-sidebar text-size-${settings.textSize} ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
       <Sidebar />
 
       <main className="main-content">
@@ -757,14 +982,6 @@ const pastMail = visibleMail.filter((item) => {
             <Header
               title="Home"
               subtitle={`Here's what's happening with your mail${user ? `, ${user.name.split(' ')[0]}` : ''}.`}
-              action={
-                <button
-                  className="secondary-button"
-                  onClick={() => navigate('current')}
-                >
-                  <Mail size={16} /> View inbox
-                </button>
-              }
             />
 
             {/* Home welcome banner */}
@@ -780,15 +997,15 @@ const pastMail = visibleMail.filter((item) => {
                 <p>Your mail and packages, neatly organized in one place.</p>
                 <div className="new-mail-today-card">
                   <div className="new-mail-today-icon">
-                       <Mail size={24} />
-                   </div>
+                    <Mail size={24} />
+                  </div>
 
-            <h3>New mail today</h3>
+                  <h3>New mail today</h3>
 
-  <p>
-    {mail.filter(item => isToday(item.date)).length} mail updates today
-  </p>
-</div>
+                  <p>
+                    {mail.filter(item => isToday(item.date)).length} mail updates today
+                  </p>
+                </div>
               </div>
 
               <div className="banner-illustration">
@@ -806,7 +1023,7 @@ const pastMail = visibleMail.filter((item) => {
                 </div>
               </div>
             </section>
-            
+
             {/* Three main navigation cards */}
             <section className="home-navigation-cards">
               <button
@@ -827,7 +1044,7 @@ const pastMail = visibleMail.filter((item) => {
               >
                 <span className="home-card-icon"><Clock size={19} /></span>
                 <strong>Past Mail</strong>
-                <p>Search and filter everything that has been delivered.</p>
+                <p>See packages that were delivered in the past.</p>
                 <span className="home-card-action">
                   View past mail <ChevronRight size={14} />
                 </span>
@@ -862,56 +1079,58 @@ const pastMail = visibleMail.filter((item) => {
                   ? 'Keep up with your latest messages and deliveries.'
                   : 'Find a message from any time, all in one place.'
               }
-              action={
+            />
+
+
+
+            {/* Search field and CSV-backed sender filter */}
+            <div className="toolbar mail-filter-toolbar">
+              <SearchBar search={search} setSearch={setSearch} senderNames={availableSearchSenders} />
+
+              {(page === 'current' || page === 'past') && (
+                <label className="sender-filter">
+                  <select
+                    aria-label="Filter by sender"
+                    value={senderFilter}
+                    onChange={(event) => setSenderFilter(event.target.value)}
+                  >
+                    <option value="All">All senders</option>
+                    {senderNames.map((sender) => (
+                      <option key={sender} value={sender}>{sender}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} />
+                </label>
+              )}
+              {page === 'past' && (
+              <label className="past-date-filters">
+                <Clock size={16} />
+                <span>Delivery period</span>
+                <select
+                  aria-label="Filter by delivery period"
+                  value={pastPeriodFilter}
+                  onChange={(event) => setPastPeriodFilter(event.target.value)}
+                >
+                  <option value="All">All time</option>
+                  <option value="Last 7 Days">Last 7 days</option>
+                  <option value="Last 30 Days">Last 30 days</option>
+                  <option value="Last 3 Months">Last 3 months</option>
+                  <option value="Last 6 Months">Last 6 months</option>
+                  <option value="Last 9 Months">Last 9 months</option>
+                  <option value="Last 1 Year">Last 1 year</option>
+                  <option value="Last 2 Years">Last 2 years</option>
+                  <option value="Last 5 Years">Last 5 years</option>
+                </select>
+                <ChevronDown size={14} />
+              </label>
+              )}
                 <button
-                  className="secondary-button"
-                  onClick={() => {
-                    setSearch('');
-                    setDateFilter('All');
-                    setSenderFilter('All');
-                  }}
+                  type="button"
+                  className="secondary-button reset-filters-button"
+                  onClick={resetMailFilters}
                 >
                   <Clock size={16} /> Reset filters
                 </button>
-              }
-            />
-
-           
-
-            {/* Search field and Current Mail sender filter */}
-            <div className="toolbar">
-              <SearchBar search={search} setSearch={setSearch} />
-
-              {page === 'current' && (
-                <button
-                  className="secondary-button"
-                  onClick={() =>
-                    setSenderFilter(senderFilter === 'All' ? 'Amazon' : 'All')
-                  }
-                >
-                  <Filter size={16} />
-                  {senderFilter === 'All' ? 'Filter' : 'Amazon'}
-                  <ChevronDown size={14} />
-                </button>
-              )}
-            </div>
-
-            {/* Date-range filter buttons */}
-            <div className="filter-chips">
-              {[
-                'All',
-                'Last 7 Days',
-                'Last 30 Days',
-                ...(page === 'past' ? ['Last 3 Months'] : [])
-              ].map((filter) => (
-                <button
-                  key={filter}
-                  className={dateFilter === filter ? 'selected' : ''}
-                  onClick={() => setDateFilter(filter)}
-                >
-                  {filter}
-                </button>
-              ))}
             </div>
 
             {/* Filtered mail results */}
@@ -919,16 +1138,15 @@ const pastMail = visibleMail.filter((item) => {
               <div className="list-summary">
                 <span>
                   <strong>
-                 {page === 'current' ? currentMail.length : pastMail.length}
-  </strong>{' '}
-  messages
-</span>
-                <span>Unread messages are highlighted</span>
+                    {page === 'current' ? currentMail.length : pastMail.length}
+                  </strong>{' '}
+                  messages
+                </span>
               </div>
 
-             <MailRows
-              items={page === 'current' ? currentMail : pastMail}
-            />
+              <MailRows
+                items={page === 'current' ? currentMail : pastMail}
+              />
             </section>
           </>
         )}
@@ -945,55 +1163,27 @@ const pastMail = visibleMail.filter((item) => {
               subtitle="Useful insights to help you stay organized."
             />
 
-            {/* Analytics introduction banner */}
-            <section className="analytics-banner">
-              <div className="live-label">
-                <span /> YOUR MAIL INSIGHTS
-              </div>
-
-              <h2>A clearer view of your mailbox.</h2>
-              <p>See delivery activity and your frequent senders.</p>
-            </section>
-
             {/* Summary statistics */}
             <section className="analytics-stats">
-              <div className="mini-stat">
-                <span>DELIVERED</span>
-                <strong>
-                  {mail.filter(m => m.status === 'Delivered').length + 5}
-                </strong>
-                <small>Successfully received</small>
-              </div>
-
-              <div className="mini-stat">
-                <span>SENT / REPLIES</span>
-                <strong>3</strong>
-                <small>Recent activity</small>
-              </div>
-
-              <div className="mini-stat">
-                <span>ADDRESSES</span>
-                <strong>4</strong>
-                <small>Saved destinations</small>
-              </div>
+              {mailMetrics.map(([label, value, caption]) => (
+                <div className="mini-stat" key={label}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                  <small>{caption}</small>
+                </div>
+              ))}
             </section>
 
-            {/* Activity chart and frequent-sender ranking */}
+            {/* Weekly activity chart and top senders */}
             <div className="analytics-grid">
               <section className="panel analytics-panel">
-                <PanelHeading title="Mail activity" />
-                <p className="panel-subtitle">
-                  Messages received this week
-                </p>
-
+                <PanelHeading title="Mail activity this week" />
                 <div className="chart">
-                  {[2, 13, 10, 8, 12, 15, 9].map((n, i) => (
+                  {dailyActivity.map(({ count }, i) => (
                     <div className="chart-column" key={i}>
-                      <span>{n}</span>
-                      <div style={{ height: `${n * 6}%` }} />
-                      <small>
-                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}
-                      </small>
+                      <span>{count}</span>
+                      <div style={{ height: `${(count / maxDailyActivity) * 90}%` }} />
+                      <small>{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}</small>
                     </div>
                   ))}
                 </div>
@@ -1001,70 +1191,230 @@ const pastMail = visibleMail.filter((item) => {
 
               <section className="panel analytics-panel">
                 <PanelHeading title="Top monthly senders" />
-
                 <div className="ranking">
-                  {[
-                    ['Home Depot', 13],
-                    ['Amazon', 8],
-                    ['SuperSaver', 7],
-                    ['Hyvee', 5],
-                    ['John Doe', 3]
-                  ].map(([name, count], i) => (
-                    <div className="rank-row" key={name}>
-                      <span>{i + 1}</span>
-                      <strong>{name}</strong>
-
-                      <div className="rank-track">
-                        <div style={{ width: `${count / 13 * 100}%` }} />
+                  {[['Home Depot', 13], ['Amazon', 8], ['SuperSaver', 7], ['Hyvee', 5], ['John Doe', 3]].map(
+                    ([name, count], i) => (
+                      <div className="rank-row" key={name}>
+                        <span>{i + 1}</span>
+                        <strong>{name}</strong>
+                        <div className="rank-track">
+                          <div style={{ width: `${(count / 13) * 100}%` }} />
+                        </div>
+                        <small>{count}</small>
                       </div>
-
-                      <small>{count}</small>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               </section>
             </div>
 
-            {/* Expandable important-mail and signature sections */}
-            {[
-              ['important', 'Important mail', 'Messages that may need your attention'],
-              ['signature', 'Needs signature', 'Mail that may require a signature']
-            ].map(([id, title, subtitle]) => (
-              <section className="panel expandable" key={id}>
-                <button
-                  className="expand-button"
-                  onClick={() => setExpanded(expanded === id ? '' : id)}
-                >
-                  <FileSignature size={19} />
-
-                  <span>
-                    <strong>{title}</strong>
-                    <small>{subtitle}</small>
+            <section className="panel analytics-panel important-mail-panel">
+              <div className="important-mail-heading">
+                <span className="important-mail-heading-icon">
+                  <CircleAlert size={20} />
+                </span>
+                <div>
+                  <strong>Important mail</strong>
+                  <small>Review important messages. Mark more mail as important from its details.</small>
+                </div>
+                {importantMail.length > 0 && (
+                  <span className="important-mail-count">
+                    {importantMail.length} {importantMail.length === 1 ? 'item' : 'items'}
                   </span>
-
-                  {expanded === id ? <X size={17} /> : <Plus size={18} />}
-                </button>
-
-                {expanded === id && (
-                  <div className="expand-content">
-                    {id === 'important'
-                      ? mail
-                          .filter(m => ['Receipt', 'Personal'].includes(m.category))
-                          .map(m => (
-                            <button
-                              className="important-row"
-                              key={m.id}
-                              onClick={() => openMail(m)}
-                            >
-                              {m.sender}: {m.subject}
-                              <ChevronRight size={16} />
-                            </button>
-                          ))
-                      : <p>No mail currently requires a signature.</p>}
+                )}
+              </div>
+              <div className="important-mail-list">
+                {importantMail.length > 0 ? (
+                  importantMail.map((item) => (
+                    <button
+                      className={`important-row ${item.unread ? 'unread' : 'read'}`}
+                      key={item.id}
+                      aria-label={`${item.unread ? 'Unread' : 'Read'}: ${item.sender}. ${item.subject}. ${item.status}`}
+                      onClick={() => openMail(item)}
+                    >
+                      <span className="important-row-icon">
+                        <FileSignature size={18} />
+                      </span>
+                      <span className="important-row-copy">
+                        <strong>{item.sender}</strong>
+                        <small>{item.subject}</small>
+                      </span>
+                      <span className="important-row-action">
+                        Review <ChevronRight size={15} />
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <div className="important-mail-empty">
+                    <span>No important mail right now. Open a message and choose “Mark as important” to add it here.</span>
                   </div>
                 )}
+              </div>
+            </section>
+          </>
+        )}
+
+        {page === 'settings' && (
+          <>
+            <Header
+              title="Settings"
+              subtitle="Make Arrivon work the way you like."
+            />
+
+            <div className="settings-grid">
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><Sun size={18} /></span>
+                  <div>
+                    <h2>Appearance</h2>
+                  </div>
+                </div>
+                <div className="appearance-options" aria-label="Appearance mode">
+                  <button
+                    className={!darkMode ? 'selected' : ''}
+                    aria-pressed={!darkMode}
+                    onClick={() => changeAppearance(false)}
+                  >
+                    <Sun size={17} /> Light
+                  </button>
+                  <button
+                    className={darkMode ? 'selected' : ''}
+                    aria-pressed={darkMode}
+                    onClick={() => changeAppearance(true)}
+                  >
+                    <Moon size={17} /> Dark
+                  </button>
+                </div>
+                <div className="settings-row contrast-setting">
+                  <div>
+                    <strong>High contrast</strong>
+                  </div>
+                  <button
+                    className={`settings-switch ${highContrast ? 'on' : ''}`}
+                    type="button"
+                    role="switch"
+                    aria-checked={highContrast}
+                    aria-label="High contrast"
+                    onClick={() => changeHighContrast(!highContrast)}
+                  >
+                    <span />
+                  </button>
+                </div>
+                <fieldset className="text-size-setting">
+                  <legend>Text size</legend>
+                  <div className="appearance-options text-size-options">
+                    {[
+                      ['normal', 'Normal'],
+                      ['large', 'Large'],
+                      ['extra-large', 'Extra large'],
+                    ].map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={settings.textSize === value ? 'selected' : ''}
+                        aria-pressed={settings.textSize === value}
+                        onClick={() => updateSetting('textSize', value)}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
               </section>
-            ))}
+
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><Bell size={18} /></span>
+                  <div>
+                    <h2>Notifications</h2>
+                    <p>Choose which mail updates you want to keep enabled.</p>
+                  </div>
+                </div>
+                <div className="settings-options">
+                  {[
+                    ['importantMailAlerts', 'Important mail alerts', 'Get a heads-up when a message may need your attention.'],
+                    ['deliveryUpdates', 'Delivery status updates', 'Stay informed about package status changes.'],
+                  ].map(([key, title, description]) => (
+                    <div className="settings-row" key={key}>
+                      <div>
+                        <strong>{title}</strong>
+                        <small>{description}</small>
+                      </div>
+                      <button
+                        className={`settings-switch ${settings[key] ? 'on' : ''}`}
+                        type="button"
+                        role="switch"
+                        aria-checked={settings[key]}
+                        aria-label={title}
+                        onClick={() => updateSetting(key, !settings[key])}
+                      >
+                        <span />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><Package size={18} /></span>
+                  <div>
+                    <h2>Inbox preferences</h2>
+                    <p>Adjust the delivery details shown in your mail list.</p>
+                  </div>
+                </div>
+                <div className="settings-options">
+                  <div className="settings-row">
+                    <div>
+                      <strong>Show tracking numbers</strong>
+                      <small>Display package tracking numbers beneath message subjects.</small>
+                    </div>
+                    <button
+                      className={`settings-switch ${settings.showTrackingNumbers ? 'on' : ''}`}
+                      type="button"
+                      role="switch"
+                      aria-checked={settings.showTrackingNumbers}
+                      aria-label="Show tracking numbers"
+                      onClick={() => updateSetting('showTrackingNumbers', !settings.showTrackingNumbers)}
+                    >
+                      <span />
+                    </button>
+                  </div>
+                </div>
+              </section>
+
+              <section className="panel settings-section">
+                <div className="settings-section-heading">
+                  <span className="settings-icon"><User size={18} /></span>
+                  <div>
+                    <h2>Account</h2>
+                    <p>Your profile and saved delivery destination.</p>
+                  </div>
+                  <button
+                    className="account-edit-button"
+                    type="button"
+                    aria-label="Edit profile"
+                    title="Edit profile"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                </div>
+                <div className="account-details">
+                  <div>
+                    <small>NAME</small>
+                    <strong>{user?.name || 'Not available'}</strong>
+                  </div>
+                  <div>
+                    <small>EMAIL</small>
+                    <strong>{user?.email || 'Not available'}</strong>
+                  </div>
+                  <div>
+                    <small><MapPin size={13} /> DELIVERY ADDRESS</small>
+                    <strong>{user?.address || 'No saved address'}</strong>
+                  </div>
+                </div>
+              </section>
+            </div>
           </>
         )}
 
@@ -1078,14 +1428,17 @@ const pastMail = visibleMail.filter((item) => {
             <Header
               title="Mail Details"
               subtitle="Review message and delivery information."
-              action={
+              action={(
                 <button
-                  className="secondary-button"
-                  onClick={() => navigate(previousPage)}
+                  type="button"
+                  className={`secondary-button importance-button ${selectedMail.important ? 'selected' : ''}`}
+                  aria-pressed={selectedMail.important}
+                  onClick={() => toggleImportant(selectedMail)}
                 >
-                  <ArrowLeft size={16} /> Back to mail
+                  <Star size={17} fill={selectedMail.important ? 'currentColor' : 'none'} aria-hidden="true" />
+                  {selectedMail.important ? 'Remove from important' : 'Mark as important'}
                 </button>
-              }
+              )}
             />
 
             <section className="panel detail-panel">
@@ -1100,7 +1453,9 @@ const pastMail = visibleMail.filter((item) => {
                   <p>{selectedMail.date}</p>
                 </div>
 
-                <span className="status">{selectedMail.status}</span>
+                <span className={`status status-${getStatusClass(selectedMail.status)}`}>
+                  {selectedMail.status}
+                </span>
               </div>
 
               <hr />
@@ -1133,7 +1488,9 @@ const pastMail = visibleMail.filter((item) => {
 
                 <div>
                   <small>DELIVERY STATUS</small>
-                  <strong>{selectedMail.status}</strong>
+                  <strong>
+                    {selectedMail.status}
+                  </strong>
                 </div>
               </div>
 
@@ -1147,20 +1504,8 @@ const pastMail = visibleMail.filter((item) => {
           </>
         )}
 
-        {/* 
-            APPLICATION FOOTER
-            Displays the compact brand logo, copyright text,
-            and Help action at the bottom of the page.
-            */}
+        {/* APPLICATION FOOTER */}
         <footer className="app-footer">
-          <button
-            className="brand-home-button"
-            type="button"
-            aria-label="Go to home"
-            onClick={() => navigate('home')}
-          >
-            <Logo compact />
-          </button>
           <span>© 2026 Arrivon. Your mail, made simple.</span>
           <button onClick={() => notify('Help center coming soon.')}>
             Help
