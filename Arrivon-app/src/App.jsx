@@ -826,7 +826,7 @@ function App() {
             </p>
 
             {/* Uses the appropriate form handler for each screen */}
-            <form onSubmit={signup ? createAccount : login}>
+            <form className={signup ? 'signup-form' : 'login-form'} onSubmit={signup ? createAccount : login}>
               {signup && (
                 <>
                   <label>
@@ -844,7 +844,7 @@ function App() {
                 </>
               )}
 
-              <label>
+              <label className="auth-field-wide">
                 Email
                 <input
                   name="email"

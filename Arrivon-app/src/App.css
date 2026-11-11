@@ -51,10 +51,8 @@ button {
   --auth-muted: #6884ad;
   display: grid;
   grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
-  height: 100vh;
-  height: 100dvh;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--canvas);
   color: var(--auth-ink);
 }
@@ -266,23 +264,17 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  min-height: 0;
-  overflow: hidden;
-  padding: 48px clamp(28px, 6vw, 88px);
+  min-height: 100dvh;
+  min-width: 0;
+  padding: clamp(20px, 4vh, 40px) clamp(24px, 4vw, 64px);
   background: var(--canvas);
 }
 
 .auth-card {
   width: 100%;
   max-width: 430px;
-  height: min(calc(100vh - 96px), 820px);
-  height: min(calc(100dvh - 96px), 820px);
-  min-height: 0;
-  padding: 40px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
+  height: auto;
+  padding: 28px;
   border: 1px solid #e6eff8;
   border-radius: 18px;
   background: #fff;
@@ -304,7 +296,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 .auth-subtitle {
-  margin: 0 0 28px;
+  margin: 0 0 20px;
   color: #7389a7;
   font-size: calc(13px * var(--text-scale, 1));
   line-height: 1.6;
@@ -312,7 +304,14 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .auth-card form {
   display: grid;
-  gap: 17px;
+  gap: 14px;
+}
+
+/* Pair signup fields when there is room, keeping the full form in view. */
+@media (min-width: 761px) {
+  .auth-card:has(.signup-form) { max-width: 520px; }
+  .signup-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .signup-form > :is(.auth-field-wide, .full-width) { grid-column: 1 / -1; }
 }
 
 .auth-card form > label {
@@ -419,7 +418,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 .auth-switch {
-  margin-top: 22px;
+  margin-top: 16px;
   color: #7389a7;
   font-size: calc(11px * var(--text-scale, 1));
   text-align: center;
@@ -434,7 +433,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 .secure-note {
-  margin-top: 32px;
+  margin-top: 16px;
   color: #91a2b8;
   font-size: calc(10px * var(--text-scale, 1));
   text-align: center;
