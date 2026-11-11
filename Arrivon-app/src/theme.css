@@ -1,4 +1,7 @@
-/* Semantic pairs keep text, icons, and controls readable on every surface. */
+/* Semantic pairs keep text, icons, and controls readable on every surface.
+   Four themes share these names: light, dark, light + high contrast, and
+   dark + high contrast. Every text pair meets WCAG AA (4.5:1) and every
+   border or control meets 3:1. */
 .app-layout {
   color-scheme: light;
   color: var(--navy);
@@ -24,95 +27,137 @@
   --banner-background: linear-gradient(115deg, #10366e, #155da8);
   --mail-unread-surface: #ffffff;
   --mail-read-surface: #f2f6fc;
+  --track: #dce8f4;
+  --button-shadow: 0 8px 18px #1974d229;
+  --card-shadow: 0 5px 16px #10366e14;
+  --card-shadow-hover: 0 12px 26px #10366e24;
 }
 
-/* Charcoal surfaces and cool accents, inspired by Chrome's dark appearance. */
+/* Dark mode is the light palette with its lightness flipped: the same navy
+   and blue hues become deep navy surfaces, a darker blue sidebar, and
+   lighter blue accents, so the app keeps its identity at night. */
 .app-layout.dark-mode {
   color-scheme: dark;
-  --canvas: #202124;
-  --surface: #292a2d;
-  --secondary-surface: #292a2d;
-  --secondary-hover: #414349;
-  --secondary-tint: #35363a;
-  --secondary-active: #a8c7fa;
-  --accent: #a8c7fa;
-  --accent-hover: #c2d7fc;
-  --on-accent: #172d4e;
-  --navy: #f1f3f4;
-  --muted: #bdc1c6;
-  --text-secondary: #d5d8dc;
-  --border: #92969e;
-  --danger-surface: #422729;
-  --danger-text: #ffb4ab;
-  --danger-border: #d98c87;
-  --warning-surface: #40331e;
-  --warning-text: #ffda8a;
-  --success-surface: #203b30;
-  --success-text: #96dbb5;
-  --switch-off: #858991;
-  --switch-thumb: #202124;
-  --toast-background: #e8eaed;
-  --toast-text: #202124;
-  --banner-background: #293b55;
-  --mail-unread-surface: #292a2d;
-  --mail-read-surface: #202124;
+  --canvas: #0e1726;
+  --surface: #16223a;
+  --secondary-surface: #1a2b45;
+  --secondary-hover: #243a5c;
+  --secondary-tint: #1f3150;
+  --secondary-active: #86b9f2;
+  --accent: #86b9f2;
+  --accent-hover: #a9cdf6;
+  --on-accent: #0b1a31;
+  --navy: #e4edf9;
+  --muted: #a5b6cc;
+  --text-secondary: #c3d2e5;
+  --border: #6a819f;
+  --danger-surface: #3b1f27;
+  --danger-text: #ffb4ae;
+  --danger-border: #c98585;
+  --warning-surface: #382d15;
+  --warning-text: #f6cf7f;
+  --success-surface: #12322a;
+  --success-text: #90dcb5;
+  --switch-off: #7c8fa8;
+  --switch-thumb: #0e1726;
+  --toast-background: #e4edf9;
+  --toast-text: #0e1726;
+  --banner-background: linear-gradient(115deg, #0f2a52, #1a4f8f);
+  --mail-unread-surface: #16223a;
+  --mail-read-surface: #111c2f;
+  --track: #2b3f60;
+  --button-shadow: 0 8px 18px #00000059;
+  --card-shadow: 0 5px 16px #00000040;
+  --card-shadow-hover: 0 12px 26px #00000066;
 }
 
+/* High contrast is a stronger version of the active theme, not a separate
+   black-and-white look. It keeps the same navy and blue hues, deepens text
+   and borders to at least 7:1 (WCAG AAA) for text and 4.5:1 for borders and
+   controls, and replaces soft shadows with solid 2px outlines. */
+
+/* High contrast + light: the light blue design with darker ink. */
 .app-layout.high-contrast {
-  --canvas: #ffffff;
+  --canvas: #f3f7fc;
   --surface: #ffffff;
-  --secondary-surface: #ffffff;
-  --secondary-hover: #e6e6e6;
-  --secondary-tint: #f0f0f0;
-  --navy: #000000;
-  --muted: #252525;
-  --text-secondary: #111111;
-  --border: #000000;
-  --accent: #003a90;
-  --accent-hover: #002a68;
-  --secondary-active: #003a90;
+  --secondary-surface: #d6e5f5;
+  --secondary-hover: #c4d8ee;
+  --secondary-tint: #e5eef9;
+  --navy: #061f45;
+  --muted: #22385a;
+  --text-secondary: #1a3456;
+  --border: #2b4669;
+  --accent: #0a4589;
+  --accent-hover: #073670;
+  --secondary-active: #0a4589;
   --on-accent: #ffffff;
-  --danger-surface: #ffffff;
-  --danger-text: #800000;
-  --danger-border: #800000;
-  --warning-surface: #ffffff;
-  --warning-text: #603600;
-  --success-surface: #ffffff;
-  --success-text: #004d25;
-  --switch-off: #252525;
+  --danger-surface: #fde9e9;
+  --danger-text: #760e0e;
+  --danger-border: #760e0e;
+  --warning-surface: #fdf0d0;
+  --warning-text: #572e00;
+  --success-surface: #ddf2e6;
+  --success-text: #0a4529;
+  --switch-off: #2b4669;
   --switch-thumb: #ffffff;
-  --banner-background: #000000;
+  --toast-background: #061f45;
+  --toast-text: #ffffff;
+  --banner-background: linear-gradient(115deg, #061f45, #0b3f80);
   --mail-unread-surface: #ffffff;
-  --mail-read-surface: #f0f0f0;
+  --mail-read-surface: #eaf1fa;
+  --track: #a9c0dc;
+  --chart-letters: #8a4500;
+  --button-shadow: none;
+  --card-shadow: none;
+  --card-shadow-hover: none;
 }
 
+/* High contrast + dark: the navy dark design with brighter ink. */
 .app-layout.dark-mode.high-contrast {
-  --canvas: #000000;
-  --surface: #000000;
-  --secondary-surface: #000000;
-  --secondary-hover: #262626;
-  --secondary-tint: #1a1a1a;
+  --canvas: #060d1a;
+  --surface: #0c1628;
+  --secondary-surface: #11213a;
+  --secondary-hover: #1b3152;
+  --secondary-tint: #15284a;
   --navy: #ffffff;
-  --muted: #eeeeee;
-  --text-secondary: #ffffff;
-  --border: #ffffff;
-  --accent: #a8d5ff;
-  --accent-hover: #d4eaff;
-  --secondary-active: #a8d5ff;
-  --on-accent: #000000;
-  --danger-surface: #000000;
-  --danger-text: #ffb4ab;
-  --danger-border: #ffb4ab;
-  --warning-surface: #000000;
-  --warning-text: #ffe49c;
-  --success-surface: #000000;
-  --success-text: #a4f4bf;
-  --switch-off: #ffffff;
-  --switch-thumb: #000000;
+  --muted: #d7e3f3;
+  --text-secondary: #e9f0fa;
+  --border: #a8bdd9;
+  --accent: #a9d3ff;
+  --accent-hover: #d0e6ff;
+  --secondary-active: #a9d3ff;
+  --on-accent: #031027;
+  --danger-surface: #2c0f16;
+  --danger-text: #ffcac5;
+  --danger-border: #ffcac5;
+  --warning-surface: #2a2008;
+  --warning-text: #ffe3a6;
+  --success-surface: #0a2a20;
+  --success-text: #b5f1d0;
+  --switch-off: #a8bdd9;
+  --switch-thumb: #060d1a;
   --toast-background: #ffffff;
-  --toast-text: #000000;
-  --mail-unread-surface: #000000;
-  --mail-read-surface: #1a1a1a;
+  --toast-text: #060d1a;
+  --banner-background: linear-gradient(115deg, #0a2247, #123f78);
+  --mail-unread-surface: #0c1628;
+  --mail-read-surface: #08111f;
+  --track: #3a5680;
+  --chart-letters: #ffc46b;
+}
+
+/* Paint the page behind the app too, so overscroll and short pages never
+   flash the light background in dark mode. */
+html:has(.app-layout.dark-mode),
+body:has(.app-layout.dark-mode) {
+  background: #0e1726;
+}
+html:has(.app-layout.dark-mode.high-contrast),
+body:has(.app-layout.dark-mode.high-contrast) {
+  background: #060d1a;
+}
+html:has(.app-layout.high-contrast:not(.dark-mode)),
+body:has(.app-layout.high-contrast:not(.dark-mode)) {
+  background: #f3f7fc;
 }
 
 /* Gmail-style rows: unread messages stand out on a brighter surface in bold;
@@ -200,7 +245,26 @@
 .app-layout.high-contrast :is(.welcome-banner, .past-banner, .analytics-banner) {
   border: 2px solid var(--border);
 }
-.app-layout.high-contrast :is(.banner-copy h2 span, .banner-copy p, .live-label,
-  .past-banner p, .past-banner > strong small, .analytics-banner p, .banner-caption small) {
+/* Theme-aware depth: soft shadows in light, deeper ones in dark, none in
+   high contrast where solid borders do the work. */
+.app-layout .primary-button { box-shadow: var(--button-shadow); }
+.app-layout .home-navigation-card { box-shadow: var(--card-shadow); }
+.app-layout .home-navigation-card:hover { box-shadow: var(--card-shadow-hover); }
+
+/* Sender ranking bars sit on their own track color so the track stays
+   visible when the card and sidebar share a color. */
+.app-layout .rank-track { background: var(--track); }
+
+/* High contrast keeps the navy banner and lifts its pale blue text to white
+   (or near white for the highlighted phrase) so every line clears 7:1. */
+.app-layout.high-contrast :is(.live-label, .banner-copy > p, .banner-caption small) {
   color: #ffffff;
+}
+.app-layout.high-contrast .banner-copy h2 span { color: #d3e9ff; }
+.app-layout.high-contrast .new-mail-today-card {
+  border: 2px solid var(--border);
+}
+.app-layout.high-contrast .illustration-envelope {
+  border: 2px solid #ffffff;
+  box-shadow: none;
 }
