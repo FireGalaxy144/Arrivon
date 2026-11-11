@@ -2,7 +2,7 @@
 // React state manages the interactive pages and forms.
 // Lucide React supplies the icons used in the interface.
 // App.css contains the component-level visual styles.
-import React, { useId, useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import mailCsv from './mail.csv?raw';
 import devLoginCsv from './dev-logins.csv?raw';
 
@@ -167,6 +167,9 @@ function getInitialPage() {
   return user ? 'home' : 'signup';
 }
 
+// Breakpoint shared with the CSS (max-width: 760px) for the mobile drawer.
+const MOBILE_QUERY = '(max-width: 760px)';
+
 // REUSABLE BRAND LOGO
 // Displays the Arrivon logo. The compact option is used
 // in places such as the sidebar and footer.
@@ -283,9 +286,38 @@ function App() {
   const [showPassword, setShowPassword] = useState(false);
   const [expanded, setExpanded] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(
-    () => sessionStorage.getItem('arrivonSidebarCollapsed') === 'true'
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia(MOBILE_QUERY).matches
   );
+
+  // Track the mobile breakpoint. Phones use a slide-out drawer opened by the
+  // menu button; on desktop the sidebar expands when hovered, so no button.
+  useEffect(() => {
+    const query = window.matchMedia(MOBILE_QUERY);
+    const sync = (event) => {
+      setIsMobile(event.matches);
+      if (!event.matches) setMenuOpen(false);
+    };
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
+
+  // While the mobile drawer is open, Escape closes it and the page
+  // behind it stops scrolling.
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [menuOpen]);
+
   const [notice, setNotice] = useState('');
   const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));
@@ -322,20 +354,6 @@ function App() {
     try { localStorage.setItem('arrivonHighContrast', String(enabled)); } catch { /* Keep the session preference when storage is unavailable. */ }
   }
 
-  function toggleSidebar() {
-    const collapsed = !sidebarCollapsed;
-    setSidebarCollapsed(collapsed);
-    sessionStorage.setItem('arrivonSidebarCollapsed', String(collapsed));
-  }
-
-  function toggleNavigation() {
-    if (window.matchMedia('(max-width: 760px)').matches) {
-      setMenuOpen((isOpen) => !isOpen);
-      return;
-    }
-
-    toggleSidebar();
-  }
 
   // TEMPORARY NOTIFICATION
   // Shows a toast message and clears it after three seconds.
@@ -525,8 +543,6 @@ function App() {
       email: accountEmail,
       address,
     }));
-    setSidebarCollapsed(true);
-    sessionStorage.setItem('arrivonSidebarCollapsed', 'true');
     if (data.get('remember') === 'on') {
       localStorage.setItem('arrivonRememberedUser', JSON.stringify({
         name,
@@ -556,16 +572,19 @@ function App() {
     return (
       <header className="page-header">
         <div className="header-leading">
-          <button
-            className="icon-button sidebar-toggle"
-            type="button"
-            onClick={toggleNavigation}
-            aria-label={menuOpen ? 'Close navigation menu' : 'Toggle navigation menu'}
-            aria-expanded={menuOpen || !sidebarCollapsed}
-            title={menuOpen ? 'Close menu' : 'Toggle menu'}
-          >
-            <Menu size={21} />
-          </button>
+          {/* Phones only: desktop opens the sidebar by hovering over it. */}
+          {isMobile && (
+            <button
+              className="icon-button sidebar-toggle"
+              type="button"
+              onClick={() => setMenuOpen((isOpen) => !isOpen)}
+              aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={menuOpen}
+              aria-controls="app-sidebar"
+            >
+              {menuOpen ? <X size={21} aria-hidden="true" /> : <Menu size={21} aria-hidden="true" />}
+            </button>
+          )}
 
           <div className="header-copy">
             <h1>{title}</h1>
@@ -593,7 +612,11 @@ function App() {
           onClick={() => setMenuOpen(false)}
         />
 
-        <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
+        <aside
+          id="app-sidebar"
+          className={`sidebar ${menuOpen ? 'open' : ''}`}
+          aria-label="Main navigation"
+        >
           <div className="sidebar-top">
             <div className="sidebar-brand">
               <Logo compact />
@@ -613,10 +636,13 @@ function App() {
             {navItems.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
+                type="button"
                 className={`nav-link ${page === id ? 'active' : ''}`}
                 onClick={() => navigate(id)}
+                aria-current={page === id ? 'page' : undefined}
+                aria-label={label}
               >
-                <Icon size={18} />
+                <Icon size={18} aria-hidden="true" />
                 <span>{label}</span>
               </button>
             ))}
@@ -624,8 +650,8 @@ function App() {
 
           <div className="sidebar-bottom">
             {user && (
-              <div className="profile">
-                <div className="avatar">
+              <div className="profile" title={user.name}>
+                <div className="avatar" aria-hidden="true">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
@@ -636,15 +662,20 @@ function App() {
             )}
 
             <button
+              type="button"
               className={`nav-link ${page === 'settings' ? 'active' : ''}`}
               onClick={() => navigate('settings')}
+              aria-current={page === 'settings' ? 'page' : undefined}
+              aria-label="Settings"
             >
-              <Settings size={18} />
+              <Settings size={18} aria-hidden="true" />
               <span>Settings</span>
             </button>
 
             <button
+              type="button"
               className="nav-link"
+              aria-label="Log out"
               onClick={() => {
                 setUser(null);
                 localStorage.removeItem('arrivonRememberedUser');
@@ -652,7 +683,7 @@ function App() {
                 navigate('login');
               }}
             >
-              <LogOut size={18} />
+              <LogOut size={18} aria-hidden="true" />
               <span>Log out</span>
             </button>
           </div>
@@ -980,7 +1011,7 @@ function App() {
   // After login, displays the sidebar, active page content,
   // footer, and any temporary notification.
   return (
-    <div className={`app-layout has-sidebar text-size-${settings.textSize} ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
+    <div className={`app-layout has-sidebar text-size-${settings.textSize} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
       {renderSidebar()}
 
       <main className="main-content">
