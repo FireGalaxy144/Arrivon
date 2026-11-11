@@ -962,7 +962,19 @@ function App() {
   for (let i = 0; i < unassignedDeliveries; i += 1) {
     dailyActivity[remainderOrder[i].index].count += 1;
   }
-  const maxDailyActivity = Math.max(1, ...dailyActivity.map((day) => day.count));
+  // Split each day's delivered items into packages and letters.
+  const dailyLetterShare = [0.5, 0.4, 0.3, 0.5, 0.25, 0.35, 0.45];
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dailyDeliveries = dailyActivity.map(({ count }, i) => {
+    const letters = Math.round(count * dailyLetterShare[i]);
+    return { day: weekDays[i], total: count, letters, packages: count - letters };
+  });
+  const weeklyPackages = dailyDeliveries.reduce((sum, d) => sum + d.packages, 0);
+  const weeklyLetters = dailyDeliveries.reduce((sum, d) => sum + d.letters, 0);
+  const maxDailyActivity = Math.max(1, ...dailyDeliveries.map((d) => d.total));
+  const chartTickStep = Math.max(1, Math.ceil(maxDailyActivity / 4));
+  const chartMax = chartTickStep * 4;
+  const chartTicks = [4, 3, 2, 1, 0].map((n) => n * chartTickStep);
 
   // MAIN APPLICATION LAYOUT
   // After login, displays the sidebar, active page content,
@@ -1178,14 +1190,49 @@ function App() {
             <div className="analytics-grid">
               <section className="panel analytics-panel">
                 <PanelHeading title="Mail activity this week" />
-                <div className="chart">
-                  {dailyActivity.map(({ count }, i) => (
-                    <div className="chart-column" key={i}>
-                      <span>{count}</span>
-                      <div style={{ height: `${(count / maxDailyActivity) * 90}%` }} />
-                      <small>{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][i]}</small>
-                    </div>
-                  ))}
+                <p className="panel-subtitle chart-description">
+                  Each bar shows the number of items delivered to you that day,
+                  split into packages and letters.
+                </p>
+                <div className="chart-legend">
+                  <span><i className="legend-swatch packages" /> Packages ({weeklyPackages})</span>
+                  <span><i className="legend-swatch letters" /> Letters ({weeklyLetters})</span>
+                  <span className="chart-legend-total">Total delivered: {weeklyPackages + weeklyLetters}</span>
+                </div>
+                <div className="delivery-chart">
+                  <div className="chart-y-axis" aria-hidden="true">
+                    <span className="chart-y-title">Items delivered</span>
+                    {chartTicks.map((tick) => (
+                      <span className="chart-tick" key={tick} style={{ bottom: `${(tick / chartMax) * 100}%` }}>
+                        {tick}
+                      </span>
+                    ))}
+                  </div>
+                  <div
+                    className="chart-plot"
+                    role="img"
+                    aria-label={`Items delivered this week: ${dailyDeliveries
+                      .map((d) => `${d.day} ${d.total} (${d.packages} packages, ${d.letters} letters)`)
+                      .join('; ')}`}
+                  >
+                    {chartTicks.map((tick) => (
+                      <div className="chart-gridline" key={tick} style={{ bottom: `${(tick / chartMax) * 100}%` }} />
+                    ))}
+                    {dailyDeliveries.map(({ day, total, packages, letters }) => (
+                      <div
+                        className="chart-column"
+                        key={day}
+                        title={`${day}: ${total} delivered — ${packages} packages, ${letters} letters`}
+                      >
+                        <div className="chart-stack" style={{ height: `${(total / chartMax) * 100}%` }}>
+                          <span className="chart-total">{total}</span>
+                          <div className="chart-segment letters" style={{ flexGrow: letters }} />
+                          <div className="chart-segment packages" style={{ flexGrow: packages }} />
+                        </div>
+                        <small>{day}</small>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
 

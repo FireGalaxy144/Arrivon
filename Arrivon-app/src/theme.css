@@ -188,7 +188,9 @@
   outline: 1px solid var(--accent);
   font-weight: 700;
 }
-.app-layout .chart-column > div { background: var(--accent); }
+.app-layout { --chart-packages: var(--accent); --chart-letters: #b35f00; }
+.app-layout.dark-mode { --chart-letters: #f6b860; }
+.app-layout.high-contrast .chart-segment { outline: 1px solid var(--navy); outline-offset: -1px; }
 .app-layout .rank-track > div { background: var(--accent); }
 .app-layout.high-contrast :is(.panel, .home-navigation-card, .stat-card, .mini-stat, .toast) {
   border: 2px solid var(--border);
