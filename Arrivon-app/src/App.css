@@ -1988,16 +1988,32 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   }
 }
 
+/* Shared timing so the sidebar and page move together. */
+.app-layout {
+  --sidebar-duration: .3s;
+  --sidebar-ease: cubic-bezier(.32, .72, 0, 1);
+}
+
 @media (min-width: 761px) {
-  .sidebar,
+  /* Slide the sidebar and shift the page in sync. Visibility flips only
+     after the slide finishes, so the panel glides out instead of vanishing. */
+  .sidebar {
+    transition:
+      transform var(--sidebar-duration) var(--sidebar-ease),
+      visibility 0s linear 0s;
+  }
+
   .main-content {
-    transition: transform .2s ease, margin-left .2s ease;
+    transition: margin-left var(--sidebar-duration) var(--sidebar-ease);
   }
 
   .app-layout.sidebar-collapsed .sidebar {
     visibility: hidden;
-    transform: translateX(-105%);
+    transform: translateX(-100%);
     pointer-events: none;
+    transition:
+      transform var(--sidebar-duration) var(--sidebar-ease),
+      visibility 0s linear var(--sidebar-duration);
   }
 
   .app-layout.has-sidebar.sidebar-collapsed .main-content {
@@ -2226,14 +2242,19 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   /* Hide the sidebar off-screen until the menu is opened. */
   .sidebar {
     width: 260px;
-    transform: translateX(-105%);
-    transition: transform .2s ease;
+    transform: translateX(-100%);
+    transition:
+      transform var(--sidebar-duration) var(--sidebar-ease),
+      visibility 0s linear var(--sidebar-duration);
     box-shadow: 12px 0 35px #14194314;
   }
 
   /* Slide the sidebar into view when it has the open class. */
   .sidebar.open {
     transform: translateX(0);
+    transition:
+      transform var(--sidebar-duration) var(--sidebar-ease),
+      visibility 0s linear 0s;
   }
 
   /* Show the mobile menu and close buttons. */
@@ -2267,6 +2288,20 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     z-index: 15;
     background: #151a3d55;
     border: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--sidebar-duration) ease,
+      visibility 0s linear var(--sidebar-duration);
+  }
+
+  /* Fade the backdrop in and out with the sliding menu. */
+  .overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity var(--sidebar-duration) ease, visibility 0s linear 0s;
   }
 
   /* Remove the desktop sidebar offset and reduce page padding. */
@@ -2614,4 +2649,9 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   margin: 0;
   color: var(--muted);
   font-size: calc(14px * var(--text-scale, 1));
+}
+
+/* Respect the system "reduce motion" preference. */
+@media (prefers-reduced-motion: reduce) {
+  .app-layout { --sidebar-duration: 0s; }
 }

@@ -552,7 +552,7 @@ function App() {
   // REUSABLE PAGE HEADER
   // Displays the page title, subtitle,
   // and optional action button.
-  function Header({ title, subtitle, action }) {
+  function renderHeader({ title, subtitle, action }) {
     return (
       <header className="page-header">
         <div className="header-leading">
@@ -581,17 +581,17 @@ function App() {
   // SIDEBAR AND MOBILE NAVIGATION
   // Renders page links, unread count, connection status,
   // settings, logout, and the signed-in profile.
-  function Sidebar() {
+  function renderSidebar() {
     return (
       <>
-        {menuOpen && (
-          <button
-            className="overlay"
-            type="button"
-            aria-label="Close navigation menu"
-            onClick={() => setMenuOpen(false)}
-          />
-        )}
+        <button
+          className={`overlay ${menuOpen ? 'open' : ''}`}
+          type="button"
+          aria-label="Close navigation menu"
+          aria-hidden={!menuOpen}
+          tabIndex={menuOpen ? 0 : -1}
+          onClick={() => setMenuOpen(false)}
+        />
 
         <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div className="sidebar-top">
@@ -981,7 +981,7 @@ function App() {
   // footer, and any temporary notification.
   return (
     <div className={`app-layout has-sidebar text-size-${settings.textSize} ${sidebarCollapsed ? 'sidebar-collapsed' : ''} ${darkMode ? 'dark-mode' : ''} ${highContrast ? 'high-contrast' : ''}`}>
-      <Sidebar />
+      {renderSidebar()}
 
       <main className="main-content">
 
@@ -991,10 +991,7 @@ function App() {
             */}
         {page === 'home' && (
           <>
-            <Header
-              title="Home"
-              subtitle={`Here's what's happening with your mail${user ? `, ${user.name.split(' ')[0]}` : ''}.`}
-            />
+            {renderHeader({ title: "Home", subtitle: (`Here's what's happening with your mail${user ? `, ${user.name.split(' ')[0]}` : ''}.`) })}
 
             {/* Home welcome banner */}
             <section className="welcome-banner home-welcome">
@@ -1084,14 +1081,9 @@ function App() {
             */}
         {(page === 'current' || page === 'past') && (
           <>
-            <Header
-              title={page === 'current' ? 'Current Mail' : 'Past Mail'}
-              subtitle={
-                page === 'current'
+            {renderHeader({ title: (page === 'current' ? 'Current Mail' : 'Past Mail'), subtitle: (page === 'current'
                   ? 'Keep up with your latest messages and deliveries.'
-                  : 'Find a message from any time, all in one place.'
-              }
-            />
+                  : 'Find a message from any time, all in one place.') })}
 
 
 
@@ -1170,10 +1162,7 @@ function App() {
              */}
         {page === 'more' && (
           <>
-            <Header
-              title="More Mail Info"
-              subtitle="Useful insights to help you stay organized."
-            />
+            {renderHeader({ title: "More Mail Info", subtitle: "Useful insights to help you stay organized." })}
 
             {/* Summary statistics */}
             <section className="analytics-stats">
@@ -1303,10 +1292,7 @@ function App() {
 
         {page === 'settings' && (
           <>
-            <Header
-              title="Settings"
-              subtitle="Make Arrivon work the way you like."
-            />
+            {renderHeader({ title: "Settings", subtitle: "Make Arrivon work the way you like." })}
 
             <div className="settings-grid">
               <section className="panel settings-section">
@@ -1472,10 +1458,7 @@ function App() {
              */}
         {page === 'details' && selectedMail && (
           <>
-            <Header
-              title="Mail Details"
-              subtitle="Review message and delivery information."
-              action={(
+            {renderHeader({ title: "Mail Details", subtitle: "Review message and delivery information.", action: ((
                 <button
                   type="button"
                   className={`secondary-button importance-button ${selectedMail.important ? 'selected' : ''}`}
@@ -1485,8 +1468,7 @@ function App() {
                   <Star size={17} fill={selectedMail.important ? 'currentColor' : 'none'} aria-hidden="true" />
                   {selectedMail.important ? 'Remove from important' : 'Mark as important'}
                 </button>
-              )}
-            />
+              )) })}
 
             <section className="panel detail-panel">
               {/* Selected message sender and delivery status */}
