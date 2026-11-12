@@ -32,16 +32,11 @@
 }
 .app-layout .nav-link > svg,
 .app-layout .avatar { flex-shrink: 0; }
-.app-layout .mail-filter-toolbar :is(.search-box, .sender-filter, .past-date-filters, .reset-filters-button) {
+.app-layout .mail-filter-toolbar :is(.search-box, .sender-filter, .reset-filters-button) {
   height: calc(46px * var(--text-scale));
   min-height: calc(46px * var(--text-scale));
 }
 .app-layout .mail-filter-toolbar .sender-filter { width: calc(180px * var(--text-scale)); }
-.app-layout .mail-filter-toolbar .past-date-filters {
-  flex-basis: calc(260px * var(--text-scale));
-  width: calc(260px * var(--text-scale));
-}
-.app-layout .past-date-filters select { padding-left: calc(132px * var(--text-scale)); }
 .app-layout:not(.text-size-normal) :is(.mail-subject, .mail-tracking, .important-row-copy strong, .important-row-copy small) {
   white-space: normal;
   overflow-wrap: anywhere;

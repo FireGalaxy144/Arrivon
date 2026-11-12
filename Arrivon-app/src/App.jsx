@@ -10,8 +10,24 @@ import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
   LogOut, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
-  Bell, ShieldCheck, Zap, Settings, Sun, Moon, Monitor, MapPin, Pencil, Star
+  Bell, ShieldCheck, Zap, Settings, Sun, Moon, Monitor, MapPin, Pencil, Star,
+  RotateCcw
 } from 'lucide-react';
+
+// Past Mail delivery-period choices: [filter value, label shown to the user].
+const DELIVERY_PERIODS = [
+  ['All', 'All dates'],
+  ['Last 7 Days', 'Past 7 days'],
+  ['Last 30 Days', 'Past 30 days'],
+  ['Last 3 Months', 'Past 3 months'],
+  ['Last 6 Months', 'Past 6 months'],
+  ['Last 1 Year', 'Past year'],
+  ['Last 2 Years', 'Past 2 years'],
+];
+
+function deliveryPeriodLabel(value) {
+  return DELIVERY_PERIODS.find(([key]) => key === value)?.[1] ?? 'All dates';
+}
 
 import './App.css';
 import './theme.css';
@@ -1201,25 +1217,17 @@ function App() {
                 </label>
               )}
               {page === 'past' && (
-              <label className="past-date-filters">
-                <Clock size={16} />
-                <span>Delivery period</span>
+              <label className="sender-filter">
                 <select
-                  aria-label="Filter by delivery period"
+                  aria-label="Filter by delivery date"
                   value={pastPeriodFilter}
                   onChange={(event) => setPastPeriodFilter(event.target.value)}
                 >
-                  <option value="All">All time</option>
-                  <option value="Last 7 Days">Last 7 days</option>
-                  <option value="Last 30 Days">Last 30 days</option>
-                  <option value="Last 3 Months">Last 3 months</option>
-                  <option value="Last 6 Months">Last 6 months</option>
-                  <option value="Last 9 Months">Last 9 months</option>
-                  <option value="Last 1 Year">Last 1 year</option>
-                  <option value="Last 2 Years">Last 2 years</option>
-                  <option value="Last 5 Years">Last 5 years</option>
+                  {DELIVERY_PERIODS.map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
-                <ChevronDown size={14} />
+                <ChevronDown size={14} aria-hidden="true" />
               </label>
               )}
                 <button
@@ -1227,7 +1235,7 @@ function App() {
                   className="secondary-button reset-filters-button"
                   onClick={resetMailFilters}
                 >
-                  <Clock size={16} /> Reset filters
+                  <RotateCcw size={16} aria-hidden="true" /> Clear filters
                 </button>
             </div>
 
@@ -1238,7 +1246,10 @@ function App() {
                   <strong>
                     {page === 'current' ? currentMail.length : pastMail.length}
                   </strong>{' '}
-                  messages
+                  {(page === 'current' ? currentMail.length : pastMail.length) === 1 ? 'message' : 'messages'}
+                  {page === 'past' && pastPeriodFilter !== 'All' && (
+                    <> delivered in the {deliveryPeriodLabel(pastPeriodFilter).toLowerCase()}</>
+                  )}
                 </span>
               </div>
 
