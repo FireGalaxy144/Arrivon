@@ -65,9 +65,30 @@ function parseMailCsv(csv) {
         category: record.category,
         status,
         deliveredAt: status === 'Delivered' ? record.date : undefined,
+        orderedAt: record.orderDate || undefined,
+        estimatedDelivery: status === 'Delivered' ? undefined : record.estimatedDelivery || undefined,
         unread: true,
       };
     });
+}
+
+// Format a CSV date (YYYY-MM-DD) for display, e.g. "Oct 26, 2026".
+// The parts are read as a local date so the day never shifts by time zone.
+function formatDate(isoDate) {
+  const date = parseLocalDate(isoDate);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString(undefined, {
+    month: 'short', day: 'numeric', year: 'numeric',
+  });
+}
+
+// Format a CSV time (HH:MM:SS) for display, e.g. "2:25 PM".
+function formatTime(time) {
+  const [hours, minutes] = (time || '').split(':').map(Number);
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) return '';
+  return new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(undefined, {
+    hour: 'numeric', minute: '2-digit',
+  });
 }
 
 const mailFromCsv = parseMailCsv(mailCsv);
@@ -223,10 +244,17 @@ function SearchBar({ search, setSearch, senderNames }) {
     </div>
   );
 }
+// Read a CSV date (YYYY-MM-DD) as local midnight. `new Date('2026-11-11')`
+// is UTC midnight, which is still the previous day in US time zones.
+function parseLocalDate(dateString) {
+  const [year, month, day] = (dateString || '').split('T')[0].split('-').map(Number);
+  return year && month && day ? new Date(year, month - 1, day) : new Date(NaN);
+}
+
 function isToday(dateString) {
   if (!dateString) return false;
 
-  const date = new Date(dateString);
+  const date = parseLocalDate(dateString);
   const today = new Date();
 
   return (
@@ -390,7 +418,7 @@ function App() {
     let matchesDate = true;
 
     if (activeDateFilter !== 'All') {
-      const messageDate = new Date(item.date);
+      const messageDate = parseLocalDate(item.date);
       const cutoff = new Date();
 
       if (activeDateFilter === 'Last 7 Days') {
@@ -439,7 +467,7 @@ function App() {
       item.status === "Delivered" &&
       item.deliveredAt &&
       !isToday(item.deliveredAt) &&
-      new Date(item.deliveredAt) < new Date()
+      parseLocalDate(item.deliveredAt) < new Date()
     );
   });
   const availableSearchSenders = [...new Set(
@@ -1510,7 +1538,10 @@ function App() {
 
                 <div>
                   <h2>{selectedMail.sender}</h2>
-                  <p>{selectedMail.date}</p>
+                  <p>
+                    Last update {formatDate(selectedMail.date)}
+                    {selectedMail.time && ` at ${formatTime(selectedMail.time)}`}
+                  </p>
                 </div>
 
                 <span className={`status status-${getStatusClass(selectedMail.status)}`}>
@@ -1532,14 +1563,23 @@ function App() {
               {/* Key details displayed in a grid */}
               <div className="detail-grid">
                 <div>
-                  <small>CATEGORY</small>
-                  <strong>{selectedMail.category}</strong>
+                  <small>DATE ORDERED</small>
+                  <strong>{formatDate(selectedMail.orderedAt)}</strong>
                 </div>
 
-                <div>
-                  <small>DATE RECEIVED</small>
-                  <strong>{selectedMail.date?.split('T')[0]}</strong>
-                </div>
+                {/* Delivered items show the actual delivery date;
+                    everything else shows when it is expected. */}
+                {selectedMail.status === 'Delivered' ? (
+                  <div>
+                    <small>DELIVERED ON</small>
+                    <strong>{formatDate(selectedMail.deliveredAt)}</strong>
+                  </div>
+                ) : (
+                  <div>
+                    <small>ESTIMATED DELIVERY</small>
+                    <strong>{formatDate(selectedMail.estimatedDelivery)}</strong>
+                  </div>
+                )}
 
                 <div>
                   <small>TRACKING NUMBER</small>
@@ -1550,6 +1590,19 @@ function App() {
                   <small>DELIVERY STATUS</small>
                   <strong>
                     {selectedMail.status}
+                  </strong>
+                </div>
+
+                <div>
+                  <small>CATEGORY</small>
+                  <strong>{selectedMail.category}</strong>
+                </div>
+
+                <div>
+                  <small>LAST UPDATE</small>
+                  <strong>
+                    {formatDate(selectedMail.date)}
+                    {selectedMail.time && `, ${formatTime(selectedMail.time)}`}
                   </strong>
                 </div>
               </div>
