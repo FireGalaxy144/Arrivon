@@ -1992,6 +1992,10 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     width: 215px;
   }
 
+  .app-layout {
+    --sidebar-full-width: 215px;
+  }
+
   .app-layout.has-sidebar .main-content {
     margin-left: 215px;
     padding: 28px 24px 18px;
@@ -2028,9 +2032,16 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     --sidebar-open-delay: .15s;
   }
 
-  /* The page always sits beside the rail and never shifts on hover. */
+  /* The page sits beside the rail and slides over when the sidebar
+     expands, so the sidebar never covers the page content. */
   .app-layout.has-sidebar .main-content {
     margin-left: var(--sidebar-rail-width);
+    transition: margin-left var(--sidebar-duration) var(--sidebar-ease);
+  }
+
+  .app-layout.has-sidebar:has(.sidebar:is(:hover, :has(:focus-visible))) .main-content {
+    margin-left: var(--sidebar-full-width, 245px);
+    transition-delay: var(--sidebar-open-delay);
   }
 
   .app-layout .sidebar {

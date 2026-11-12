@@ -270,14 +270,13 @@ function App() {
   const [user, setUser] = useState(() => getCurrentUser());
   const [page, setPage] = useState(() => getInitialPage());
   // Appearance is 'system' (follow the browser/OS setting), 'light', or 'dark'.
-  // Earlier versions saved only a light/dark choice, so that is honored too.
+  // It defaults to 'system' unless the user picked a mode in Settings. The old
+  // light/dark toggle value is discarded so it can't override the system default.
   const [appearance, setAppearance] = useState(() => {
     try {
+      localStorage.removeItem('arrivonDarkMode');
       const saved = localStorage.getItem('arrivonAppearance');
       if (['system', 'light', 'dark'].includes(saved)) return saved;
-      const legacy = localStorage.getItem('arrivonDarkMode');
-      if (legacy === 'true') return 'dark';
-      if (legacy === 'false') return 'light';
     } catch { /* Fall back to the system setting when storage is unavailable. */ }
     return 'system';
   });
