@@ -358,8 +358,6 @@ function App() {
   }, [menuOpen]);
 
   const [notice, setNotice] = useState('');
-  const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
   const importantMail = mail.filter((item) => item.important);
 
   // PAGE NAVIGATION
@@ -416,6 +414,19 @@ function App() {
   // SEARCH AND FILTER LOGIC
   // Filters mail by search text, sender, and selected date range.
   const activeDateFilter = page === 'past' ? pastPeriodFilter : 'All';
+
+  // Senders for the open section only, taken from all of that section's
+  // mail so choosing a sender or searching doesn't shrink the dropdown.
+  const sectionSenders = [...new Set(
+    mail.filter(page === 'past' ? isPastMail : isCurrentMail)
+      .map((item) => item.sender)
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  // A sender chosen in one section that has no mail in the other
+  // falls back to "All senders" there.
+  const activeSenderFilter = sectionSenders.includes(senderFilter) ? senderFilter : 'All';
+
   const visibleMail = mail.filter((item) => {
     const query = search.toLowerCase().trim();
 
@@ -434,7 +445,7 @@ function App() {
 
     // Filter by sender.
     const matchesSender =
-      senderFilter === 'All' || item.sender === senderFilter;
+      activeSenderFilter === 'All' || item.sender === activeSenderFilter;
 
 
     // Filter by date range using actual timestamps.
@@ -474,17 +485,17 @@ function App() {
     return matchesSearch && matchesSender && matchesDate;
   });
 
-  const currentMail = visibleMail.filter((item) => {
-    // Keep delivered packages in Current Mail for the day of delivery.
+  // Section rules shared by the mail lists and the sender dropdown.
+  function isCurrentMail(item) {
+    // Keep delivered packages in Current Mail for the day of delivery;
+    // orders still being processed or shipped always stay here.
     if (item.status === "Delivered") {
       return isToday(item.deliveredAt);
     }
+    return true;
+  }
 
-    // Keep orders still being processed or shipped in Current Mail.
-    return item.status !== 'Delivered';
-  });
-
-  const pastMail = visibleMail.filter((item) => {
+  function isPastMail(item) {
     return (
       item.category === "Package" &&
       item.status === "Delivered" &&
@@ -492,10 +503,11 @@ function App() {
       !isToday(item.deliveredAt) &&
       parseLocalDate(item.deliveredAt) < new Date()
     );
-  });
-  const availableSearchSenders = [...new Set(
-    (page === 'past' ? pastMail : currentMail).map((item) => item.sender).filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b));
+  }
+
+  const currentMail = visibleMail.filter(isCurrentMail);
+  const pastMail = visibleMail.filter(isPastMail);
+  const availableSearchSenders = sectionSenders;
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
@@ -1177,11 +1189,11 @@ function App() {
                 <label className="sender-filter">
                   <select
                     aria-label="Filter by sender"
-                    value={senderFilter}
+                    value={activeSenderFilter}
                     onChange={(event) => setSenderFilter(event.target.value)}
                   >
                     <option value="All">All senders</option>
-                    {senderNames.map((sender) => (
+                    {sectionSenders.map((sender) => (
                       <option key={sender} value={sender}>{sender}</option>
                     ))}
                   </select>
