@@ -2704,6 +2704,59 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   font-size: calc(14px * var(--text-scale, 1));
 }
 
+/* Fill the screen: on desktop, Home and More Mail Info stretch their main
+   sections to use the full viewport height instead of leaving an empty
+   band above the footer. Taller-than-screen content scrolls as usual. */
+.home-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+}
+
+@media (min-width: 761px) {
+  /* Home: the banner absorbs the leftover height; cards keep their size. */
+  .home-welcome {
+    flex: 1 1 auto;
+  }
+
+  .home-navigation-cards {
+    margin-bottom: 0;
+  }
+
+  /* More Mail Info: chart and sender panels grow to fill the page. */
+  .analytics-stats {
+    margin-top: 0;
+  }
+
+  .analytics-grid {
+    flex: 1 1 auto;
+  }
+
+  .analytics-grid > .analytics-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .analytics-grid .delivery-chart {
+    flex: 1 1 auto;
+  }
+
+  .analytics-grid .chart-plot {
+    height: auto;
+    min-height: 170px;
+  }
+
+  .analytics-grid .ranking {
+    flex: 1 1 auto;
+    align-content: space-evenly;
+  }
+
+  .important-mail-panel {
+    margin-top: 14px;
+  }
+}
+
 /* Respect the system "reduce motion" preference. */
 @media (prefers-reduced-motion: reduce) {
   .app-layout { --sidebar-duration: 0s; }
