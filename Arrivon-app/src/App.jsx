@@ -5,6 +5,7 @@
 import React, { useEffect, useId, useState } from 'react';
 import mailCsv from './mail.csv?raw';
 import devLoginCsv from './dev-logins.csv?raw';
+import { generateMail } from './mailGenerator.js';
 
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
@@ -107,7 +108,11 @@ function formatTime(time) {
   });
 }
 
-const mailFromCsv = parseMailCsv(mailCsv);
+// Random mail from the senders in mail.csv: new on each run, same on refresh.
+// To go back to the exact messages in the CSV, use: parseMailCsv(mailCsv)
+const mailFromCsv = generateMail(
+  [...new Set(parseMailCsv(mailCsv).map((item) => item.sender).filter(Boolean))]
+);
 
 // New mail starts unread. Remember opened messages separately for each account.
 function getInitialMail(user) {
