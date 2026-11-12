@@ -36,7 +36,8 @@
 /* Dark mode is the light palette with its lightness flipped: the same navy
    and blue hues become deep navy surfaces, a darker blue sidebar, and
    lighter blue accents, so the app keeps its identity at night. */
-.app-layout.dark-mode {
+.app-layout.dark-mode,
+.auth-layout.dark-mode {
   color-scheme: dark;
   --canvas: #0e1726;
   --surface: #16223a;
@@ -266,5 +267,67 @@ body:has(.app-layout.high-contrast:not(.dark-mode)) {
 }
 .app-layout.high-contrast .illustration-envelope {
   border: 2px solid #ffffff;
+  box-shadow: none;
+}
+
+/* Sign-in and sign-up pages in dark mode. They share the app's dark palette
+   (above) and swap their own fixed light colors for theme tokens. */
+html:has(.auth-layout.dark-mode),
+body:has(.auth-layout.dark-mode) {
+  background: #0e1726;
+}
+.auth-layout.dark-mode {
+  --auth-ink: var(--navy);
+  color: var(--navy);
+}
+.auth-layout.dark-mode .auth-art {
+  background: linear-gradient(145deg, #16284a, #0b1628);
+  color: var(--navy);
+}
+.auth-layout.dark-mode .auth-art::before {
+  border-color: #ffffff2e;
+  box-shadow: 0 0 0 30px #ffffff0d, 0 0 0 60px #ffffff08;
+}
+.auth-layout.dark-mode :is(.auth-brand-name, .auth-art-center h2, .auth-benefit strong, .auth-card h1) {
+  color: var(--navy);
+}
+.auth-layout.dark-mode :is(.auth-brand-tagline, .auth-art-center h2 span, .eyebrow, .text-button, .auth-switch button) {
+  color: var(--accent);
+}
+.auth-layout.dark-mode :is(.auth-art-center p, .auth-benefit small, .auth-footer, .auth-subtitle, .remember, .auth-switch, .secure-note, .password-field button) {
+  color: var(--muted);
+}
+.auth-layout.dark-mode .auth-footer::before {
+  background: var(--border);
+}
+.auth-layout.dark-mode .auth-benefit-icon {
+  background: var(--secondary-tint);
+  color: var(--accent);
+}
+.auth-layout.dark-mode .auth-card {
+  border-color: #2a3d5c;
+  background: var(--surface);
+  box-shadow: 0 18px 50px #00000066;
+}
+.auth-layout.dark-mode .auth-card form > label {
+  color: var(--text-secondary);
+}
+.auth-layout.dark-mode .auth-card input:not([type="checkbox"]) {
+  border-color: var(--border);
+  background: var(--canvas);
+  color: var(--navy);
+}
+.auth-layout.dark-mode .auth-card input::placeholder {
+  color: var(--muted);
+}
+.auth-layout.dark-mode .auth-card input:not([type="checkbox"]):focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #86b9f233;
+}
+.auth-layout.dark-mode .remember input {
+  accent-color: var(--accent);
+}
+.auth-layout.dark-mode .primary-button {
+  color: var(--on-accent);
   box-shadow: none;
 }

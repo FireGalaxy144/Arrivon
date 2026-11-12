@@ -10,7 +10,7 @@ import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
   LogOut, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
-  Bell, ShieldCheck, Zap, Settings, Sun, Moon, MapPin, Pencil, Star
+  Bell, ShieldCheck, Zap, Settings, Sun, Moon, Monitor, MapPin, Pencil, Star
 } from 'lucide-react';
 
 import './App.css';
@@ -269,10 +269,22 @@ function isToday(dateString) {
 function App() {
   const [user, setUser] = useState(() => getCurrentUser());
   const [page, setPage] = useState(() => getInitialPage());
-  const [darkMode, setDarkMode] = useState(() => {
-    try { return localStorage.getItem('arrivonDarkMode') === 'true'; }
-    catch { return false; }
+  // Appearance is 'system' (follow the browser/OS setting), 'light', or 'dark'.
+  // Earlier versions saved only a light/dark choice, so that is honored too.
+  const [appearance, setAppearance] = useState(() => {
+    try {
+      const saved = localStorage.getItem('arrivonAppearance');
+      if (['system', 'light', 'dark'].includes(saved)) return saved;
+      const legacy = localStorage.getItem('arrivonDarkMode');
+      if (legacy === 'true') return 'dark';
+      if (legacy === 'false') return 'light';
+    } catch { /* Fall back to the system setting when storage is unavailable. */ }
+    return 'system';
   });
+  const [systemDark, setSystemDark] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+  ));
+  const darkMode = appearance === 'system' ? systemDark : appearance === 'dark';
   const [highContrast, setHighContrast] = useState(() => {
     try { return localStorage.getItem('arrivonHighContrast') === 'true'; }
     catch { return false; }
@@ -372,9 +384,21 @@ function App() {
     setSenderFilter('All');
   }
 
-  function changeAppearance(isDark) {
-    setDarkMode(isDark);
-    try { localStorage.setItem('arrivonDarkMode', String(isDark)); } catch { /* Keep the session preference when storage is unavailable. */ }
+  // Follow live changes to the browser/OS theme (e.g. Windows switching to dark at night).
+  useEffect(() => {
+    const query = window.matchMedia?.('(prefers-color-scheme: dark)');
+    if (!query) return undefined;
+    const update = (event) => setSystemDark(event.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  function changeAppearance(mode) {
+    setAppearance(mode);
+    try {
+      localStorage.setItem('arrivonAppearance', mode);
+      localStorage.removeItem('arrivonDarkMode');
+    } catch { /* Keep the session preference when storage is unavailable. */ }
   }
 
   function changeHighContrast(enabled) {
@@ -832,7 +856,7 @@ function App() {
     const signup = page === 'signup';
 
     return (
-      <div className="auth-layout">
+      <div className={`auth-layout ${darkMode ? 'dark-mode' : ''}`}>
         {/* Branding and introduction panel */}
         <section className="auth-art">
           <Logo />
@@ -1362,21 +1386,26 @@ function App() {
                   </div>
                 </div>
                 <div className="appearance-options" aria-label="Appearance mode">
-                  <button
-                    className={!darkMode ? 'selected' : ''}
-                    aria-pressed={!darkMode}
-                    onClick={() => changeAppearance(false)}
-                  >
-                    <Sun size={17} /> Light
-                  </button>
-                  <button
-                    className={darkMode ? 'selected' : ''}
-                    aria-pressed={darkMode}
-                    onClick={() => changeAppearance(true)}
-                  >
-                    <Moon size={17} /> Dark
-                  </button>
+                  {[
+                    ['system', 'System', Monitor],
+                    ['light', 'Light', Sun],
+                    ['dark', 'Dark', Moon],
+                  ].map(([mode, label, Icon]) => (
+                    <button
+                      key={mode}
+                      className={appearance === mode ? 'selected' : ''}
+                      aria-pressed={appearance === mode}
+                      onClick={() => changeAppearance(mode)}
+                    >
+                      <Icon size={17} /> {label}
+                    </button>
+                  ))}
                 </div>
+                {appearance === 'system' && (
+                  <p className="appearance-hint">
+                    Matching your device: currently {systemDark ? 'dark' : 'light'}.
+                  </p>
+                )}
                 <div className="settings-row contrast-setting">
                   <div>
                     <strong>High contrast</strong>
