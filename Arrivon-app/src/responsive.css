@@ -45,16 +45,13 @@
     overflow: visible;
     gap: 10px;
   }
-  .app-layout .mail-filter-toolbar :is(.search-box, .sender-filter, .past-date-filters, .reset-filters-button) {
+  .app-layout .mail-filter-toolbar :is(.search-box, .sender-filter, .reset-filters-button) {
     min-width: 0;
     width: 100%;
     min-height: calc(48px * var(--text-scale));
   }
-  .app-layout .past-date-filters > span { display: none; }
-  .app-layout .past-date-filters > svg:first-child { display: none; }
-  .app-layout .past-date-filters select { padding-left: 12px; }
   /* At least 16px also avoids automatic input zoom on phone browsers. */
-  .app-layout :is(.search-box input, .sender-filter select, .past-date-filters select) {
+  .app-layout :is(.search-box input, .sender-filter select) {
     font-size: calc(16px * var(--text-scale));
   }
   .app-layout :is(.secondary-button, .primary-button, .appearance-options button) {

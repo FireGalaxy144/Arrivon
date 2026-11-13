@@ -1104,12 +1104,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   width: 180px;
 }
 
-.mail-filter-toolbar .past-date-filters {
-  flex: 0 0 260px;
-  width: 260px;
-  margin: 0;
-}
-
 .mail-filter-toolbar > label > svg {
   flex-shrink: 0;
 }
@@ -1154,52 +1148,13 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   color: var(--navy);
 }
 
-.past-date-filters {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: min(100%, 290px);
-  height: 46px;
-  padding: 0 13px;
-  margin: 0 0 13px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  background: var(--surface);
-  color: var(--muted);
-}
-
-.past-date-filters:focus-within {
-  border-color: var(--accent);
-}
-
-.past-date-filters > span {
-  flex: 0 0 auto;
-  color: var(--muted);
-  font-size: calc(11px * var(--text-scale, 1));
-  font-weight: 600;
-}
-
-.past-date-filters select {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  appearance: none;
-  background: transparent;
-  color: var(--navy);
-  font-size: calc(11px * var(--text-scale, 1));
-  cursor: pointer;
-}
-
 /* Let the native select receive clicks anywhere inside the control. */
-.sender-filter,
-.past-date-filters {
+.sender-filter {
   position: relative;
   cursor: pointer;
 }
 
-.sender-filter select,
-.past-date-filters select {
+.sender-filter select {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1208,19 +1163,12 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   padding: 0 34px 0 12px;
 }
 
-.past-date-filters select {
-  padding-left: 132px;
-}
-
-.sender-filter > svg:last-child,
-.past-date-filters > svg:last-child {
+.sender-filter > svg:last-child {
   position: absolute;
   right: 12px;
 }
 
-.sender-filter > svg,
-.past-date-filters > svg,
-.past-date-filters > span {
+.sender-filter > svg {
   pointer-events: none;
 }
 
@@ -1992,6 +1940,10 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     width: 215px;
   }
 
+  .app-layout {
+    --sidebar-full-width: 215px;
+  }
+
   .app-layout.has-sidebar .main-content {
     margin-left: 215px;
     padding: 28px 24px 18px;
@@ -2019,31 +1971,24 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 /* Desktop with a mouse: the sidebar rests as a slim icon rail and expands
-   while hovered, so no toggle button is needed. The page slides over to make
-   room, so nothing is ever covered. Keyboard users get the same expansion
-   when they tab into it. Touch screens wider than a phone keep the full
-   sidebar, since they cannot hover. */
+   over the page while hovered, so no toggle button is needed. Keyboard users
+   get the same expansion when they tab into it. Touch screens wider than a
+   phone keep the full sidebar, since they cannot hover. */
 @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
   .app-layout {
     --sidebar-rail-width: 76px;
-    --sidebar-full-width: 245px;
     --sidebar-open-delay: .15s;
   }
 
-  @media (max-width: 1150px) {
-    .app-layout {
-      --sidebar-full-width: 215px;
-    }
-  }
-
-  /* The page sits beside the rail and moves with the sidebar as it opens. */
+  /* The page sits beside the rail and slides over when the sidebar
+     expands, so the sidebar never covers the page content. */
   .app-layout.has-sidebar .main-content {
     margin-left: var(--sidebar-rail-width);
     transition: margin-left var(--sidebar-duration) var(--sidebar-ease);
   }
 
   .app-layout.has-sidebar:has(.sidebar:is(:hover, :has(:focus-visible))) .main-content {
-    margin-left: var(--sidebar-full-width);
+    margin-left: var(--sidebar-full-width, 245px);
     transition-delay: var(--sidebar-open-delay);
   }
 
@@ -2093,6 +2038,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   /* Expanded state: a short delay keeps the sidebar from popping open
      when the pointer only passes over it on the way somewhere else. */
   .app-layout .sidebar:is(:hover, :has(:focus-visible)) {
+    box-shadow: 12px 0 35px #14194322;
     transition-delay: var(--sidebar-open-delay);
   }
 

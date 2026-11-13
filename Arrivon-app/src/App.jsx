@@ -5,13 +5,30 @@
 import React, { useEffect, useId, useState } from 'react';
 import mailCsv from './mail.csv?raw';
 import devLoginCsv from './dev-logins.csv?raw';
+import { generateMail } from './mailGenerator.js';
 
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
   ChevronRight, ChevronDown, Plus, X, Menu, CheckCircle,
   LogOut, ArrowLeft, User, Eye, EyeOff, FileSignature, CircleAlert,
-  Bell, ShieldCheck, Zap, Settings, Sun, Moon, Monitor, MapPin, Pencil, Star
+  Bell, ShieldCheck, Zap, Settings, Sun, Moon, Monitor, MapPin, Pencil, Star,
+  RotateCcw
 } from 'lucide-react';
+
+// Past Mail delivery-period choices: [filter value, label shown to the user].
+const DELIVERY_PERIODS = [
+  ['All', 'All dates'],
+  ['Last 7 Days', 'Past 7 days'],
+  ['Last 30 Days', 'Past 30 days'],
+  ['Last 3 Months', 'Past 3 months'],
+  ['Last 6 Months', 'Past 6 months'],
+  ['Last 1 Year', 'Past year'],
+  ['Last 2 Years', 'Past 2 years'],
+];
+
+function deliveryPeriodLabel(value) {
+  return DELIVERY_PERIODS.find(([key]) => key === value)?.[1] ?? 'All dates';
+}
 
 import './App.css';
 import './theme.css';
@@ -91,7 +108,11 @@ function formatTime(time) {
   });
 }
 
-const mailFromCsv = parseMailCsv(mailCsv);
+// Random mail from the senders in mail.csv: new on each run, same on refresh.
+// To go back to the exact messages in the CSV, use: parseMailCsv(mailCsv)
+const mailFromCsv = generateMail(
+  [...new Set(parseMailCsv(mailCsv).map((item) => item.sender).filter(Boolean))]
+);
 
 // New mail starts unread. Remember opened messages separately for each account.
 function getInitialMail(user) {
@@ -270,14 +291,13 @@ function App() {
   const [user, setUser] = useState(() => getCurrentUser());
   const [page, setPage] = useState(() => getInitialPage());
   // Appearance is 'system' (follow the browser/OS setting), 'light', or 'dark'.
-  // Earlier versions saved only a light/dark choice, so that is honored too.
+  // It defaults to 'system' unless the user picked a mode in Settings. The old
+  // light/dark toggle value is discarded so it can't override the system default.
   const [appearance, setAppearance] = useState(() => {
     try {
+      localStorage.removeItem('arrivonDarkMode');
       const saved = localStorage.getItem('arrivonAppearance');
       if (['system', 'light', 'dark'].includes(saved)) return saved;
-      const legacy = localStorage.getItem('arrivonDarkMode');
-      if (legacy === 'true') return 'dark';
-      if (legacy === 'false') return 'light';
     } catch { /* Fall back to the system setting when storage is unavailable. */ }
     return 'system';
   });
@@ -359,8 +379,6 @@ function App() {
   }, [menuOpen]);
 
   const [notice, setNotice] = useState('');
-  const senderNames = [...new Set(mail.map((item) => item.sender).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b));
   const importantMail = mail.filter((item) => item.important);
 
   // PAGE NAVIGATION
@@ -417,6 +435,19 @@ function App() {
   // SEARCH AND FILTER LOGIC
   // Filters mail by search text, sender, and selected date range.
   const activeDateFilter = page === 'past' ? pastPeriodFilter : 'All';
+
+  // Senders for the open section only, taken from all of that section's
+  // mail so choosing a sender or searching doesn't shrink the dropdown.
+  const sectionSenders = [...new Set(
+    mail.filter(page === 'past' ? isPastMail : isCurrentMail)
+      .map((item) => item.sender)
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  // A sender chosen in one section that has no mail in the other
+  // falls back to "All senders" there.
+  const activeSenderFilter = sectionSenders.includes(senderFilter) ? senderFilter : 'All';
+
   const visibleMail = mail.filter((item) => {
     const query = search.toLowerCase().trim();
 
@@ -435,7 +466,7 @@ function App() {
 
     // Filter by sender.
     const matchesSender =
-      senderFilter === 'All' || item.sender === senderFilter;
+      activeSenderFilter === 'All' || item.sender === activeSenderFilter;
 
 
     // Filter by date range using actual timestamps.
@@ -475,17 +506,17 @@ function App() {
     return matchesSearch && matchesSender && matchesDate;
   });
 
-  const currentMail = visibleMail.filter((item) => {
-    // Keep delivered packages in Current Mail for the day of delivery.
+  // Section rules shared by the mail lists and the sender dropdown.
+  function isCurrentMail(item) {
+    // Keep delivered packages in Current Mail for the day of delivery;
+    // orders still being processed or shipped always stay here.
     if (item.status === "Delivered") {
       return isToday(item.deliveredAt);
     }
+    return true;
+  }
 
-    // Keep orders still being processed or shipped in Current Mail.
-    return item.status !== 'Delivered';
-  });
-
-  const pastMail = visibleMail.filter((item) => {
+  function isPastMail(item) {
     return (
       item.category === "Package" &&
       item.status === "Delivered" &&
@@ -493,10 +524,11 @@ function App() {
       !isToday(item.deliveredAt) &&
       parseLocalDate(item.deliveredAt) < new Date()
     );
-  });
-  const availableSearchSenders = [...new Set(
-    (page === 'past' ? pastMail : currentMail).map((item) => item.sender).filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b));
+  }
+
+  const currentMail = visibleMail.filter(isCurrentMail);
+  const pastMail = visibleMail.filter(isPastMail);
+  const availableSearchSenders = sectionSenders;
   // OPEN A MAIL ITEM
   // Remembers the current page, selects the message,
   // marks it as read, and navigates to its details.
@@ -1178,11 +1210,11 @@ function App() {
                 <label className="sender-filter">
                   <select
                     aria-label="Filter by sender"
-                    value={senderFilter}
+                    value={activeSenderFilter}
                     onChange={(event) => setSenderFilter(event.target.value)}
                   >
                     <option value="All">All senders</option>
-                    {senderNames.map((sender) => (
+                    {sectionSenders.map((sender) => (
                       <option key={sender} value={sender}>{sender}</option>
                     ))}
                   </select>
@@ -1190,25 +1222,17 @@ function App() {
                 </label>
               )}
               {page === 'past' && (
-              <label className="past-date-filters">
-                <Clock size={16} />
-                <span>Delivery period</span>
+              <label className="sender-filter">
                 <select
-                  aria-label="Filter by delivery period"
+                  aria-label="Filter by delivery date"
                   value={pastPeriodFilter}
                   onChange={(event) => setPastPeriodFilter(event.target.value)}
                 >
-                  <option value="All">All time</option>
-                  <option value="Last 7 Days">Last 7 days</option>
-                  <option value="Last 30 Days">Last 30 days</option>
-                  <option value="Last 3 Months">Last 3 months</option>
-                  <option value="Last 6 Months">Last 6 months</option>
-                  <option value="Last 9 Months">Last 9 months</option>
-                  <option value="Last 1 Year">Last 1 year</option>
-                  <option value="Last 2 Years">Last 2 years</option>
-                  <option value="Last 5 Years">Last 5 years</option>
+                  {DELIVERY_PERIODS.map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </select>
-                <ChevronDown size={14} />
+                <ChevronDown size={14} aria-hidden="true" />
               </label>
               )}
                 <button
@@ -1216,7 +1240,7 @@ function App() {
                   className="secondary-button reset-filters-button"
                   onClick={resetMailFilters}
                 >
-                  <Clock size={16} /> Reset filters
+                  <RotateCcw size={16} aria-hidden="true" /> Clear filters
                 </button>
             </div>
 
@@ -1227,7 +1251,10 @@ function App() {
                   <strong>
                     {page === 'current' ? currentMail.length : pastMail.length}
                   </strong>{' '}
-                  messages
+                  {(page === 'current' ? currentMail.length : pastMail.length) === 1 ? 'message' : 'messages'}
+                  {page === 'past' && pastPeriodFilter !== 'All' && (
+                    <> delivered in the {deliveryPeriodLabel(pastPeriodFilter).toLowerCase()}</>
+                  )}
                 </span>
               </div>
 

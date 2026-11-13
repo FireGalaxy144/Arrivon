@@ -226,7 +226,7 @@ body:has(.app-layout.high-contrast:not(.dark-mode)) {
   outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
-.app-layout :is(.search-box, .sender-filter, .past-date-filters):focus-within {
+.app-layout :is(.search-box, .sender-filter):focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
