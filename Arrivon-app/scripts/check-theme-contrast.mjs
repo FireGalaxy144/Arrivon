@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const css = readFileSync(new URL('../src/App.css', import.meta.url), 'utf8');
-const themes = readFileSync(new URL('../src/theme.css', import.meta.url), 'utf8');
+const css = readFileSync(new URL('../src/styles/App.css', import.meta.url), 'utf8');
+const themes = readFileSync(new URL('../src/styles/theme.css', import.meta.url), 'utf8');
 function tokens(source, selector) {
   const block = source.slice(source.indexOf(`${selector} {`)).split('}')[0];
   return Object.fromEntries([...block.matchAll(/--([\w-]+):\s*(#[\da-f]{6});/gi)]

@@ -16,7 +16,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 
 // Global styles shared throughout the application.
-import './index.css';
+import './styles/index.css';
 
 // Find the root HTML element and render Arrivon.
 createRoot(document.getElementById('root')).render(

@@ -40,23 +40,21 @@ The application uses React for its user interface, Vite for development, CSS for
 
 ```text
 Arrivon-app/
-├── public/
-│   ├── favicon.svg              # Browser tab icon
-│   └── icons.svg                # SVG icons (not currently used by the app)
 ├── scripts/
 │   └── check-theme-contrast.mjs # Checks theme colors meet contrast requirements
 ├── src/
-│   ├── App.jsx                  # Main application component and page logic
-│   ├── App.css                  # Component layouts and visual styling
-│   ├── theme.css                # Light, dark, and high-contrast color themes
-│   ├── text-size.css            # Normal, large, and extra-large text sizes
-│   ├── responsive.css           # Tablet and phone layouts
-│   ├── index.css                # Global styles and CSS defaults
 │   ├── main.jsx                 # React application entry point
-│   ├── mailGenerator.js         # Generates the sample mail shown in the app
-│   ├── mail.csv                 # Sample senders used by the mail generator
-│   ├── dev-logins.csv           # Test account for logging in
-│   └── assets/                  # Images from the Vite template (not currently used)
+│   ├── App.jsx                  # Main application component and page logic
+│   ├── styles/
+│   │   ├── App.css              # Component layouts and visual styling
+│   │   ├── theme.css            # Light, dark, and high-contrast color themes
+│   │   ├── text-size.css        # Normal, large, and extra-large text sizes
+│   │   ├── responsive.css       # Tablet and phone layouts
+│   │   └── index.css            # Global styles and CSS defaults
+│   └── data/
+│       ├── mailGenerator.js     # Generates the sample mail shown in the app
+│       ├── mail.csv             # Sample senders used by the mail generator
+│       └── dev-logins.csv       # Test account for logging in
 ├── index.html                   # HTML entry point
 ├── package.json                 # Dependencies and npm scripts
 ├── package-lock.json            # Locked dependency versions
@@ -69,14 +67,14 @@ Arrivon-app/
 |---|---|
 | `src/main.jsx` | Loads React, imports the global stylesheet, and renders the main application. |
 | `src/App.jsx` | Contains the main component, page navigation, login and sign-up, settings, statistics, and page rendering logic. |
-| `src/App.css` | Contains styles for the sidebar, dashboard, mail cards, forms, buttons, and other interface components. |
-| `src/theme.css` | Defines the colors for the light, dark, and high-contrast themes. Text colors meet WCAG AA contrast. |
-| `src/text-size.css` | Scales text for the Text size setting. |
-| `src/responsive.css` | Adjusts layouts for smaller screens. |
-| `src/index.css` | Contains global styling, default fonts, page resets, and base element rules. |
-| `src/mailGenerator.js` | Builds the sample inbox: random subjects, statuses, tracking numbers, and dates relative to today. |
-| `src/mail.csv` | Sample mail. Only the sender names are currently used, by the mail generator. |
-| `src/dev-logins.csv` | The test account (name, email, password, address) available for logging in. |
+| `src/styles/App.css` | Contains styles for the sidebar, dashboard, mail cards, forms, buttons, and other interface components. |
+| `src/styles/theme.css` | Defines the colors for the light, dark, and high-contrast themes. Text colors meet WCAG AA contrast. |
+| `src/styles/text-size.css` | Scales text for the Text size setting. |
+| `src/styles/responsive.css` | Adjusts layouts for smaller screens. |
+| `src/styles/index.css` | Contains global styling, default fonts, page resets, and base element rules. |
+| `src/data/mailGenerator.js` | Builds the sample inbox: random subjects, statuses, tracking numbers, and dates relative to today. |
+| `src/data/mail.csv` | Sample mail. Only the sender names are currently used, by the mail generator. |
+| `src/data/dev-logins.csv` | The test account (name, email, password, address) available for logging in. |
 | `scripts/check-theme-contrast.mjs` | Checks that the theme colors in `App.css` and `theme.css` meet contrast requirements. Run with `node scripts/check-theme-contrast.mjs`. |
 | `index.html` | Defines the HTML document that loads the application. |
 | `package.json` | Lists project dependencies and npm scripts, including `deploy` for publishing to GitHub Pages. |
@@ -155,7 +153,7 @@ Arrivon is a front-end prototype. There is no backend, no database, and no conne
 
 ### Simulated mail data
 
-- **Mail is randomly generated.** `src/mailGenerator.js` creates the inbox from the sender names in `src/mail.csv`. The subjects, statuses, tracking numbers, and dates are all made up. Tracking numbers are not real and cannot be looked up with a carrier.
+- **Mail is randomly generated.** `src/data/mailGenerator.js` creates the inbox from the sender names in `src/data/mail.csv`. The subjects, statuses, tracking numbers, and dates are all made up. Tracking numbers are not real and cannot be looked up with a carrier.
 - **The mail changes each time the app starts.** Vite sets a new random seed whenever `npm run dev` starts or the site is built (see `vite.config.js`). Refreshing the page keeps the same mail, but restarting the server or rebuilding produces a different inbox. All dates are relative to today, so Current Mail always has active deliveries and Past Mail always has a history.
 - **Statuses never update.** Items do not move from "In transit" to "Delivered" over time, and there are no live delivery updates.
 - **Message content is placeholder text.** The Mail Details page shows a fixed sample message instead of the original email.
@@ -169,7 +167,7 @@ Arrivon is a front-end prototype. There is no backend, no database, and no conne
 
 ### Simulated accounts and login
 
-- **Not secure.** Accounts are checked in the browser, and passwords are stored and compared as plain text. The test account in `src/dev-logins.csv` is bundled into the app's JavaScript, so anyone can read it. Do not use real passwords.
+- **Not secure.** Accounts are checked in the browser, and passwords are stored and compared as plain text. The test account in `src/data/dev-logins.csv` is bundled into the app's JavaScript, so anyone can read it. Do not use real passwords.
 - **New sign-ups are lost on refresh.** Accounts created on the Sign up page are kept only in memory. After reloading the page, they no longer exist and only the test account can log in.
 - **Forgot password** only shows a message saying a backend is needed.
 - **Each account has one delivery address**, which can only be set at sign-up. The **Edit profile** button in Settings does nothing yet.
@@ -187,8 +185,8 @@ Arrivon is a front-end prototype. There is no backend, no database, and no conne
 ## Development Notes
 
 - Add page-level behavior and navigation changes in `src/App.jsx`.
-- Update the appearance of individual components in `src/App.css`.
-- Update application-wide styling in `src/index.css`.
+- Update the appearance of individual components in `src/styles/App.css`.
+- Update application-wide styling in `src/styles/index.css`.
 - Update dependencies through npm and keep `package-lock.json` synchronized.
 - Keep this README updated as new features and integrations are added.
 

@@ -3,9 +3,9 @@
 // Lucide React supplies the icons used in the interface.
 // App.css contains the component-level visual styles.
 import React, { useEffect, useId, useRef, useState } from 'react';
-import mailCsv from './mail.csv?raw';
-import devLoginCsv from './dev-logins.csv?raw';
-import { generateMail } from './mailGenerator.js';
+import mailCsv from './data/mail.csv?raw';
+import devLoginCsv from './data/dev-logins.csv?raw';
+import { generateMail } from './data/mailGenerator.js';
 
 import {
   Mail, Inbox, Clock, Package, ChartColumn, Search,
@@ -30,10 +30,10 @@ function deliveryPeriodLabel(value) {
   return DELIVERY_PERIODS.find(([key]) => key === value)?.[1] ?? 'All dates';
 }
 
-import './App.css';
-import './theme.css';
-import './text-size.css';
-import './responsive.css';
+import './styles/App.css';
+import './styles/theme.css';
+import './styles/text-size.css';
+import './styles/responsive.css';
 
 // Convert the CSV rows into the message shape used by the app.
 function parseMailCsv(csv) {
