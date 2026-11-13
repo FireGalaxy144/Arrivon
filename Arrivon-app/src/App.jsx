@@ -1062,7 +1062,7 @@ function App() {
   const mailMetrics = [
     ['DELIVERED', deliveredCount, 'Successfully received'],
     ['SENT', 3, 'Recent activity'],
-    ['ADDRESSES', 4, 'Saved destinations'],
+    ['ON THE WAY', mail.filter((m) => m.status !== 'Delivered').length, 'Not yet delivered'],
   ];
   const dailyActivityWeights = [2, 13, 10, 8, 12, 15, 9];
   const dailyActivityWeightTotal = dailyActivityWeights.reduce((total, weight) => total + weight, 0);
