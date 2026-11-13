@@ -2,7 +2,7 @@
 // React state manages the interactive pages and forms.
 // Lucide React supplies the icons used in the interface.
 // App.css contains the component-level visual styles.
-import React, { useEffect, useId, useState } from 'react';
+import React, { useEffect, useId, useRef, useState } from 'react';
 import mailCsv from './mail.csv?raw';
 import devLoginCsv from './dev-logins.csv?raw';
 import { generateMail } from './mailGenerator.js';
@@ -379,6 +379,7 @@ function App() {
   }, [menuOpen]);
 
   const [notice, setNotice] = useState('');
+  const noticeTimer = useRef(null);
   const importantMail = mail.filter((item) => item.important);
 
   // PAGE NAVIGATION
@@ -427,9 +428,11 @@ function App() {
 
   // TEMPORARY NOTIFICATION
   // Shows a toast message and clears it after three seconds.
+  // Restarting the timer keeps a repeated message visible for the full time.
   function notify(message) {
     setNotice(message);
-    window.setTimeout(() => setNotice(''), 3000);
+    window.clearTimeout(noticeTimer.current);
+    noticeTimer.current = window.setTimeout(() => setNotice(''), 3000);
   }
 
   // SEARCH AND FILTER LOGIC
@@ -610,12 +613,15 @@ function App() {
     const email = data.get('email').toString().trim().toLowerCase();
     const password = data.get('password').toString();
 
-    const account = accounts.find(
-      (a) => a.email.toLowerCase() === email && a.password === password
-    );
+    const account = accounts.find((a) => a.email.toLowerCase() === email);
 
     if (!account) {
       notify('Account not found. Please create an account first.');
+      return;
+    }
+
+    if (account.password !== password) {
+      notify('That password is incorrect. Please try again.');
       return;
     }
 
