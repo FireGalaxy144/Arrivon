@@ -1065,9 +1065,14 @@ function App() {
   }
 
   const deliveredCount = mail.filter((m) => m.status === 'Delivered').length + 5;
+  // Items still on their way that are out for delivery or due today.
+  const arrivingTodayCount = mail.filter((m) =>
+    m.status !== 'Delivered' &&
+    (m.status === 'Out for delivery' || isToday(m.estimatedDelivery))
+  ).length;
   const mailMetrics = [
     ['DELIVERED', deliveredCount, 'Successfully received'],
-    ['SENT', 3, 'Recent activity'],
+    ['ARRIVING TODAY', arrivingTodayCount, arrivingTodayCount ? 'Out for delivery or due today' : 'Nothing expected today'],
     ['ON THE WAY', mail.filter((m) => m.status !== 'Delivered').length, 'Not yet delivered'],
   ];
   const dailyActivityWeights = [2, 13, 10, 8, 12, 15, 9];
