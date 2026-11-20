@@ -172,21 +172,21 @@ body:has(.app-layout.high-contrast:not(.dark-mode)) {
 .app-layout :is(.mail-row, .important-row):hover {
   background: var(--secondary-hover);
 }
-.app-layout .mail-row :is(.mail-row-top strong, .mail-subject, .mail-row-top > span),
+.app-layout .mail-row :is(.mail-row-top strong, .mail-subject, .mail-date),
 .app-layout .important-row :is(.important-row-copy strong, .important-row-copy small) {
   font-weight: 500;
 }
-.app-layout .mail-row.unread :is(.mail-row-top strong, .mail-subject, .mail-row-top > span),
+.app-layout .mail-row.unread :is(.mail-row-top strong, .mail-subject, .mail-date),
 .app-layout .important-row.unread :is(.important-row-copy strong, .important-row-copy small) {
   font-weight: 700;
 }
-.app-layout .mail-row.unread :is(.mail-subject, .mail-row-top > span) {
+.app-layout .mail-row.unread :is(.mail-subject, .mail-date) {
   color: var(--navy);
 }
 .app-layout .mail-row.read :is(.mail-row-top strong, .mail-subject) {
   color: var(--navy);
 }
-.app-layout .mail-row.read :is(.mail-row-top > span, .mail-tracking) {
+.app-layout .mail-row.read :is(.mail-date, .mail-tracking) {
   color: var(--text-secondary);
 }
 /* Keep row typography the same size when a message changes read state. */
@@ -195,7 +195,7 @@ body:has(.app-layout.high-contrast:not(.dark-mode)) {
   font-size: calc(12px * var(--text-scale, 1));
   line-height: 1.5;
 }
-.app-layout .mail-row :is(.mail-row-top > span, .mail-tracking),
+.app-layout .mail-row :is(.mail-date, .mail-tracking),
 .app-layout .important-row .important-row-copy small {
   font-size: calc(11px * var(--text-scale, 1));
   line-height: 1.5;

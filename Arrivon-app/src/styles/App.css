@@ -991,8 +991,20 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   font-size: calc(11px * var(--text-scale, 1));
 }
 
-/* Date or time shown at the right of a mail row. */
-.mail-row-top > span {
+/* Right-hand column holding the date above the delivery status. A fixed
+   width keeps both left-aligned in the same spot on every row. */
+.mail-row-meta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: calc(110px * var(--text-scale, 1));
+}
+
+/* Date shown at the top of the right-hand column. */
+.mail-date {
+  font-variant-numeric: tabular-nums;
   color: var(--muted);
   font-size: calc(9px * var(--text-scale, 1));
   white-space: nowrap;
@@ -1038,11 +1050,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   height: 6px;
   border-radius: 50%;
   background: currentColor;
-}
-
-/* Fixed-width status column so every row's date lines up vertically. */
-.mail-row > .status {
-  width: 11.5em;
 }
 
 .status-action-required {

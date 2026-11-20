@@ -89,12 +89,13 @@ function parseMailCsv(csv) {
     });
 }
 
-// Format a CSV date (YYYY-MM-DD) for display, e.g. "Oct 26, 2026".
-// The parts are read as a local date so the day never shifts by time zone.
+// Format a CSV date (YYYY-MM-DD) for display as month day, year, e.g.
+// "Oct 26, 2026". The locale is fixed so the order never changes by browser,
+// and the parts are read as a local date so the day never shifts by time zone.
 function formatDate(isoDate) {
   const date = parseLocalDate(isoDate);
   if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   });
 }
@@ -811,7 +812,7 @@ function App() {
       <button
         className={`mail-row ${item.unread ? 'unread' : 'read'}`}
         key={item.id}
-        aria-label={`${item.unread ? 'Unread' : 'Read'}: ${item.sender}. ${item.subject}. ${item.date}. ${item.status}`}
+        aria-label={`${item.unread ? 'Unread' : 'Read'}: ${item.sender}. ${item.subject}. ${formatDate(item.date)}. ${item.status}`}
         onClick={() => openMail(item)}
       >
         <div className="sender-avatar">{item.sender.charAt(0)}</div>
@@ -819,7 +820,6 @@ function App() {
         <div className="mail-row-content">
           <div className="mail-row-top">
             <strong>{item.sender}</strong>
-            <span>{item.date}</span>
           </div>
 
           <div className="mail-subject">{item.subject}</div>
@@ -831,9 +831,14 @@ function App() {
           </div>
         </div>
 
-        <span className={`status status-${getStatusClass(item.status)}`}>
-          {item.status}
-        </span>
+        {/* Date and status share one fixed-width column so they line up
+            with each other and with every other row. */}
+        <div className="mail-row-meta">
+          <span className="mail-date">{formatDate(item.date)}</span>
+          <span className={`status status-${getStatusClass(item.status)}`}>
+            {item.status}
+          </span>
+        </div>
 
         <ChevronRight className="row-arrow" size={17} />
       </button>

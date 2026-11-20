@@ -67,21 +67,25 @@
     gap: 10px 12px;
     align-items: start;
   }
-  .app-layout .mail-row > .status {
+  /* Phones: the date and status move under the message text, side by side. */
+  .app-layout .mail-row > .mail-row-meta {
     grid-column: 2;
-    justify-self: start;
     width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 14px;
   }
   .app-layout .mail-row-top { flex-wrap: wrap; align-items: flex-start; }
   .app-layout .mail-row :is(.mail-row-top strong, .mail-subject),
   .app-layout .important-row .important-row-copy strong {
     font-size: calc(14px * var(--text-scale));
   }
-  .app-layout .mail-row :is(.mail-row-top > span, .mail-tracking),
+  .app-layout .mail-row :is(.mail-date, .mail-tracking),
   .app-layout .important-row .important-row-copy small {
     font-size: calc(12px * var(--text-scale));
   }
-  .app-layout :is(.mail-subject, .mail-tracking, .mail-row-top strong, .mail-row-top > span,
+  .app-layout :is(.mail-subject, .mail-tracking, .mail-row-top strong, .mail-date,
     .important-row-copy strong, .important-row-copy small) {
     white-space: normal;
     overflow-wrap: anywhere;
