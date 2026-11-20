@@ -1931,10 +1931,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     width: 215px;
   }
 
-  .app-layout {
-    --sidebar-full-width: 215px;
-  }
-
   .app-layout.has-sidebar .main-content {
     margin-left: 215px;
     padding: 28px 24px 18px;
@@ -1962,7 +1958,7 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 }
 
 /* Desktop with a mouse: the sidebar rests as a slim icon rail and expands
-   over the page while hovered, so no toggle button is needed. Keyboard users
+   over the page (without moving it) while hovered, so no toggle button is needed. Keyboard users
    get the same expansion when they tab into it. Touch screens wider than a
    phone keep the full sidebar, since they cannot hover. */
 @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
@@ -1971,16 +1967,11 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     --sidebar-open-delay: .15s;
   }
 
-  /* The page sits beside the rail and slides over when the sidebar
-     expands, so the sidebar never covers the page content. */
+  /* The page always sits beside the rail and never moves. The expanded
+     sidebar floats over the page instead of pushing it aside, so text and
+     buttons stay put while the pointer travels from the sidebar to them. */
   .app-layout.has-sidebar .main-content {
     margin-left: var(--sidebar-rail-width);
-    transition: margin-left var(--sidebar-duration) var(--sidebar-ease);
-  }
-
-  .app-layout.has-sidebar:has(.sidebar:is(:hover, :has(:focus-visible))) .main-content {
-    margin-left: var(--sidebar-full-width, 245px);
-    transition-delay: var(--sidebar-open-delay);
   }
 
   .app-layout .sidebar {

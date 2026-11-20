@@ -6,6 +6,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Always reserve room for the scrollbar so pages don't shift sideways
+   when moving between short and long pages. */
+html {
+  scrollbar-gutter: stable;
+}
+
 html,
 body,
 #root {
