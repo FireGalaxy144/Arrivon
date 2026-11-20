@@ -70,6 +70,7 @@
   .app-layout .mail-row > .status {
     grid-column: 2;
     justify-self: start;
+    width: auto;
   }
   .app-layout .mail-row-top { flex-wrap: wrap; align-items: flex-start; }
   .app-layout .mail-row :is(.mail-row-top strong, .mail-subject),

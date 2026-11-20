@@ -242,7 +242,6 @@ body:has(.app-layout.high-contrast:not(.dark-mode)) {
   border: 2px solid var(--border);
   box-shadow: none;
 }
-.app-layout.high-contrast .status { border: 1px solid currentColor; }
 .app-layout.high-contrast :is(.welcome-banner, .past-banner, .analytics-banner) {
   border: 2px solid var(--border);
 }

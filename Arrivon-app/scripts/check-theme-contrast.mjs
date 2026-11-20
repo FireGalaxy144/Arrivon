@@ -36,7 +36,10 @@ for (const [name, palette, target] of [
     check('border', surface, 3);
   }
   for (const status of ['danger', 'warning', 'success']) check(`${status}-text`, `${status}-surface`, target);
-  for (const surface of ['mail-unread-surface', 'mail-read-surface', 'secondary-hover']) check('danger-text', surface, target);
+  // Status labels and the important-mail count are plain text on mail-row surfaces.
+  for (const surface of ['mail-unread-surface', 'mail-read-surface', 'secondary-hover', 'surface']) {
+    for (const status of ['danger', 'warning', 'success']) check(`${status}-text`, surface, target);
+  }
   check('on-accent', 'secondary-active', target);
   check('on-accent', 'accent-hover', target);
   check('toast-text', 'toast-background', target);

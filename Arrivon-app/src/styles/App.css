@@ -1020,57 +1020,52 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
   margin-top: 4px;
 }
 
-/* Status badge for delivery or tracking state. */
+/* Delivery or tracking state, shown as colored text with a small dot. */
 .status {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   flex-shrink: 0;
-  padding: 5px 8px;
-  border-radius: 6px;
-  background: var(--secondary-tint);
   color: var(--text-secondary);
   font-size: calc(9px * var(--text-scale, 1));
   font-weight: 700;
 }
 
+.status::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Fixed-width status column so every row's date lines up vertically. */
+.mail-row > .status {
+  width: 11.5em;
+}
+
 .status-action-required {
-  background: var(--danger-surface);
   color: var(--danger-text);
 }
 
-.status-delayed {
-  background: var(--warning-surface);
+.status-delayed,
+.status-out-for-delivery {
   color: var(--warning-text);
 }
 
-.status-received {
-  background: var(--secondary-tint);
+.status-received,
+.status-unknown {
   color: var(--text-secondary);
 }
 
 .status-in-transit {
-  background: var(--secondary-tint);
   color: var(--accent);
 }
 
-.status-out-for-delivery {
-  background: var(--warning-surface);
-  color: var(--warning-text);
-}
-
-.status-ready-for-pickup {
-  background: var(--success-surface);
-  color: var(--success-text);
-}
-
+.status-ready-for-pickup,
 .status-delivered {
-  background: var(--success-surface);
   color: var(--success-text);
-}
-
-.status-unknown {
-  background: var(--secondary-tint);
-  color: var(--text-secondary);
 }
 
 /* Arrow at the end of a clickable mail row. */
@@ -1672,10 +1667,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
 
 .important-mail-count {
   margin-left: auto;
-  padding: 5px 9px;
-  border: 1px solid var(--danger-border);
-  border-radius: 20px;
-  background: var(--surface);
   color: var(--danger-text);
   font-size: calc(10px * var(--text-scale, 1));
   font-weight: 700;
@@ -2494,13 +2485,6 @@ background: linear-gradient(145deg, var(--secondary-surface), #c9daea);
     gap: 3px;
   }
 
-  /* Prevent delivery badges from taking up too much horizontal space. */
-  .status {
-    max-width: 78px;
-    white-space: normal;
-    line-height: 1.3;
-    text-align: center;
-  }
 
   /* Reduce filter button spacing and padding. */
   .filter-chips {
